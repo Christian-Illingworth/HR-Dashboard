@@ -1,0 +1,90 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this is
+
+The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec in [specs/001-hr-dashboard/spec.md](specs/001-hr-dashboard/spec.md) and is ready for `/speckit-plan`. There is no plan and no code yet. The repository is github.com/Christian-Illingworth/HR-Dashboard.
+
+**[.specify/memory/constitution.md](.specify/memory/constitution.md) is the governing document. Read it before any spec, plan or code work.** It wins over this file if the two ever disagree. This file only adds how Claude should work here. Do not copy the constitution's rules into this file.
+
+## Workflow
+
+The project uses Spec Kit 1.2.3 with PowerShell scripts. Features go through these skills in order:
+
+1. `/speckit-specify`
+2. `/speckit-clarify` (optional)
+3. `/speckit-plan`
+4. `/speckit-tasks`
+5. `/speckit-analyze`
+6. `/speckit-implement`
+
+`/speckit-checklist`, `/speckit-converge` and `/speckit-taskstoissues` are also installed.
+
+- Features are numbered sequentially under `specs/NNN-short-name/`. The current feature is recorded in `.specify/feature.json`, which is machine-local and gitignored.
+- Every plan must pass the constitution's Constitution Check, once before Phase 0 and again after Phase 1. Anything that departs from Principles III–VIII goes in the plan's Complexity Tracking table. Principles I and II can't be waived.
+- Change the constitution only through `/speckit-constitution`, and only when the user asks. The project owner must approve an amendment before anything relies on it.
+- Don't edit the files under `design-kit/`, `.specify/templates/`, `.specify/scripts/` or `.claude/skills/speckit-*`. Spec Kit manages them and tracks their hashes in `.specify/integrations/*.manifest.json`.
+
+## Stack
+
+The constitution fixes these points:
+- The front end runs in SharePoint Online, uses the Consultiv Utilities web design kit (not Fluent UI), and must work in the SharePoint mobile app.
+- A back end calls BrightHR on the server and authenticates every request with the caller's Entra ID identity.
+- Secrets live in Azure Key Vault.
+- Synced data stays in the company's Microsoft 365 or Azure tenant.
+
+Everything else is chosen in the first `/speckit-plan`, under Principle VIII (Keep It Simple). That includes the framework, the back-end host, sync storage, the test framework and the build commands. Add a **Build & run** section here once something can be built.
+
+| Service | Used for | Environment | Credentials | ToS / data review |
+|---|---|---|---|---|
+| BrightHR API | Employee, absence and sickness data (read-only) | Live access not confirmed. Mock mode only. | Key Vault (not set up yet) | Not done |
+| Microsoft 365 / Entra ID / SharePoint Online | Hosting, sign-in, authorization | Company production tenant. There is no separate dev tenant yet. | Not set up yet | Not applicable (already licensed) |
+
+## UI
+
+Follow [design-kit/DESIGN.md](design-kit/DESIGN.md) for all UI. Use the classes in `design-kit/css/components.css` and the tokens in `design-kit/css/tokens.css`, and never hard-code a colour. Open `design-kit/index.html` to see every component working.
+
+- **Colour causes most mistakes.** Text is navy, and teal is the only other text colour, used for links and the active state of a control. Every other brand colour goes on marks only: dots, bars, borders and tints. Never invent a shade. Ask before adding a new hue.
+- **No Fluent UI, Bootstrap or other component library.** Their classes clash with the kit's.
+- **Don't edit `design-kit/`.** It is a copy of `Projects\Consultiv-Utilities-Brand\cu-web-design-kit\cu-web-design-kit`. Make kit changes at the source and copy them across. Project styles go in a separate file, loaded after the kit, that uses the kit's tokens.
+- **Contain the styles.** The kit's CSS must not leak into the SharePoint page, and SharePoint's CSS must not restyle the dashboard. Decide how in the first plan.
+- **Use the kit's components.** Charts use the kit's series order and `.tone-*` classes. Forecasts still need a non-colour marker, such as a dashed line plus a "Forecast" label (constitution Principle V).
+
+## Hard constraints
+
+This project handles real employee records, including sickness reasons, which are special category health data.
+
+- **Never call the live BrightHR API** or point any code, script or test at it. All development uses mock mode with synthetic data. A human switches to live data.
+- **Never write to BrightHR.** The constitution allows only reads.
+- **No real employee data anywhere.** Never put it in prompts, fixtures, mocks, tests, screenshots, logs or docs. Use made-up names and records only. If real data turns up in a file or output, stop and tell the user.
+- **Secrets.** Never put a secret in code, config, web part properties, docs, tests or logs, and never ask for one to be pasted. Never read `.env` or local settings files that hold secrets, by any means including the shell. If a secret shows up in output, stop and tell the user to rotate it.
+- **No changes to shared systems.** Never deploy to SharePoint or upload to the app catalog. Never create or change Azure resources, Entra app registrations, API permissions or admin consent, and never change Key Vault contents. Write the code and the commands, and a human runs them.
+- **This file.** Keep `CLAUDE.md` current without being asked. When the project changes something it describes (status, stack, build commands, known gaps), update it in the same piece of work, in small, deliberate changes.
+
+## Git
+
+Every change, however small, goes through a branch:
+
+1. Start from an up-to-date `main` with a clean working tree. If the tree has changes you didn't make, stop and ask.
+2. Create a branch. For Spec Kit feature work, use the feature's `NNN-short-name`. For anything else, use a short kebab-case name that describes the change.
+3. Commit on the branch once the change is verified. Use plain-English, imperative subject lines that describe the effect.
+4. Merge back into `main` with `git merge --no-ff <branch>`, so each change stays visible as one unit in the history. Then delete the branch.
+5. Push `main` to `origin`.
+
+- Never force-push, rebase shared history or reset `main`. Don't create or merge PRs unless the user asks.
+- Never commit secrets, `.env` or local settings files, or anything containing real employee data. Check `git diff --staged` before every commit.
+- Commits are sometimes made outside a Claude session. Check `git log` and `git status` before branching or merging.
+- In Windows PowerShell 5.1, a commit message containing double quotes breaks `git commit -m`. Write the message to a file and use `git commit -F <file>` instead.
+
+## Testing standard
+
+The constitution's Principle VI and its Development Workflow & Quality Gates section define what "tested" means. Calculation tests are written first and seen to fail. They use synthetic fixtures with expected values worked out independently, and a fixed "today". Authorization rules for sickness data also need automated tests. Don't call a change done until those gates pass. If a gate couldn't be run, say so.
+
+## Known gaps
+
+- **No `.claude/settings.json`.** Nothing yet denies reads of secret files. Deny rules wouldn't cover shell reads or `@`-mentions anyway. The real safeguard is keeping secrets in Key Vault and out of the project folder.
+- **BrightHR API access is not confirmed.** Nobody has checked yet whether BrightHR offers a sandbox, its rate limits, its terms of service, or how it handles data sent to it.
+- **The access group doesn't exist yet.** The spec limits the dashboard to one Microsoft 365 group for HR and Senior Leadership. IT creates it; Claude must not (see Hard constraints). The business decides who counts as Senior Leadership.
+- **Unconfirmed spec assumptions.** The Sales department names in BrightHR haven't been checked (the spec starts with just "Sales"). Working days assume bank holidays in England and Wales.
+- **Code structure section is missing.** The company guidelines ask for a Code structure section copied from `CLAUDE.md.template`. The real template hasn't been provided: the file of that name in Downloads is a copy of the guidelines. Add the section when the real template arrives.
