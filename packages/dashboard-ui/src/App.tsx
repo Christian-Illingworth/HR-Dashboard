@@ -10,6 +10,15 @@ import { LastUpdated } from './components/LastUpdated';
 import { SalesList, SalesTabs, type SalesTab } from './components/SalesList';
 import { FreshnessNotice } from './components/FreshnessNotice';
 import { RefreshButton } from './components/RefreshButton';
+import { ChartSection } from './charts/ChartSection';
+import {
+  absenceModel,
+  absenceNotes,
+  leaveModel,
+  leaveNotes,
+  sicknessModel,
+  sicknessNotes,
+} from './components/trendCharts';
 
 export interface AppProps {
   client: DashboardClient;
@@ -77,7 +86,10 @@ export function App({ client, noAccessContact }: AppProps) {
         </div>
       )}
 
-      <Sections sections={problem && !data ? errorSections : sections} />
+      <Sections
+        sections={problem && !data ? errorSections : sections}
+        historyStartDate={data?.coverage.historyStartDate ?? null}
+      />
     </div>
   );
 }
@@ -92,7 +104,13 @@ const errorSections: DashboardResponse['sections'] = {
   salesAbsences: sectionError,
 };
 
-function Sections({ sections }: { sections: DashboardResponse['sections'] | undefined }) {
+function Sections({
+  sections,
+  historyStartDate,
+}: {
+  sections: DashboardResponse['sections'] | undefined;
+  historyStartDate: string | null;
+}) {
   const [salesTab, setSalesTab] = useState<SalesTab>('today');
   return (
     <>
@@ -105,21 +123,30 @@ function Sections({ sections }: { sections: DashboardResponse['sections'] | unde
         </SectionState>
       </section>
       <div className="hrd-grid">
-        <SectionCard id="hrd-leave" title="Annual leave">
-          <SectionState section={sections?.leave} emptyText="No leave data yet.">
-            {() => null}
-          </SectionState>
-        </SectionCard>
-        <SectionCard id="hrd-sickness" title="Sickness">
-          <SectionState section={sections?.sickness} emptyText="No sickness data yet.">
-            {() => null}
-          </SectionState>
-        </SectionCard>
-        <SectionCard id="hrd-absence" title="Absence by type">
-          <SectionState section={sections?.absence} emptyText="No absence data yet.">
-            {() => null}
-          </SectionState>
-        </SectionCard>
+        <ChartSection
+          id="hrd-leave"
+          title="Annual leave"
+          section={sections?.leave}
+          emptyText="No leave data yet."
+          toModel={(d) => leaveModel(d, historyStartDate)}
+          notes={(d) => leaveNotes(d, historyStartDate)}
+        />
+        <ChartSection
+          id="hrd-sickness"
+          title="Sickness"
+          section={sections?.sickness}
+          emptyText="No sickness data yet."
+          toModel={(d) => sicknessModel(d, historyStartDate)}
+          notes={(d) => sicknessNotes(d, historyStartDate)}
+        />
+        <ChartSection
+          id="hrd-absence"
+          title="Absence by type"
+          section={sections?.absence}
+          emptyText="No absence data yet."
+          toModel={(d) => absenceModel(d, historyStartDate)}
+          notes={(d) => absenceNotes(d, historyStartDate)}
+        />
         <SectionCard id="hrd-attrition" title="Staff attrition">
           <SectionState section={sections?.attrition} emptyText="No attrition data yet.">
             {() => null}

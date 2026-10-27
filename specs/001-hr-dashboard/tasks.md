@@ -325,18 +325,18 @@ same values.
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T067 [US5] Work out by hand the expected values for Jul 2026 – Jan 2027 at today 2026-10-27, in `fixtures/expected/leave.md` (M06), `fixtures/expected/sickness.md` (M07, M08) and `fixtures/expected/absence.md` (M09). Do the same for the sickness forecast (M13) in `fixtures/expected/forecast-sickness.md`, both with `historyStartDate` 2025-10-01 (12 basis months) and with 2026-07-29 (fewer than 3 full months → `notEnoughHistory`).
-- [ ] T068 [P] [US5] Write failing tests in `packages/core/test/metrics/m06-leave.test.ts`. Cover: split across months; half days; bank holidays; `toDate` includes leave booked for the rest of October; future months booked; `pendingDays` is `{value: null}`; partial-coverage months are marked.
-- [ ] T069 [P] [US5] Write failing tests in `packages/core/test/metrics/m07-sickness-days.test.ts` and `packages/core/test/metrics/m08-episodes.test.ts`. Cover: split; open-ended up to today; pregnancy-related **included**; an episode counted once, in its start month; merged absences counted once; future months come from M13.
-- [ ] T070 [P] [US5] Write failing tests in `packages/core/test/metrics/m09-absence-by-type.test.ts`. Cover: the four categories; annual leave and public holidays left out; unknown `$type` → `other`; TOIL → `other`; future months have booked compassionate, unpaid and other, plus forecast sickness, each with its own `kind`.
-- [ ] T071 [P] [US5] Write failing tests in `packages/core/test/forecast/m13-sickness.test.ts`. Quote: "basis months = the 12 months before the current month whose coverage (D4) is `full`". Cover: fewer than 3 → `null` + `notEnoughHistory`; `forecastBasisMonths` reported; group membership per basis month (D3); 1 decimal place.
+- [X] T067 [US5] Work out by hand the expected values for Jul 2026 – Jan 2027 at today 2026-10-27, in `fixtures/expected/leave.md` (M06), `fixtures/expected/sickness.md` (M07, M08) and `fixtures/expected/absence.md` (M09). Do the same for the sickness forecast (M13) in `fixtures/expected/forecast-sickness.md`, both with `historyStartDate` 2025-10-01 (12 basis months) and with 2026-07-29 (fewer than 3 full months → `notEnoughHistory`).
+- [X] T068 [P] [US5] Write failing tests in `packages/core/test/metrics/m06-leave.test.ts`. Cover: split across months; half days; bank holidays; `toDate` includes leave booked for the rest of October; future months booked; `pendingDays` is `{value: null}`; partial-coverage months are marked.
+- [X] T069 [P] [US5] Write failing tests in `packages/core/test/metrics/m07-sickness-days.test.ts` and `packages/core/test/metrics/m08-episodes.test.ts`. Cover: split; open-ended up to today; pregnancy-related **included**; an episode counted once, in its start month; merged absences counted once; future months come from M13.
+- [X] T070 [P] [US5] Write failing tests in `packages/core/test/metrics/m09-absence-by-type.test.ts`. Cover: the four categories; annual leave and public holidays left out; unknown `$type` → `other`; TOIL → `other`; future months have booked compassionate, unpaid and other, plus forecast sickness, each with its own `kind`.
+- [X] T071 [P] [US5] Write failing tests in `packages/core/test/forecast/m13-sickness.test.ts`. Quote: "basis months = the 12 months before the current month whose coverage (D4) is `full`". Cover: fewer than 3 → `null` + `notEnoughHistory`; `forecastBasisMonths` reported; group membership per basis month (D3); 1 decimal place.
 
 ### Implementation for User Story 5
 
-- [ ] T072 [P] [US5] Implement M06–M09 in `packages/core/src/metrics/leaveDays.ts`, `packages/core/src/metrics/sicknessDays.ts`, `packages/core/src/metrics/sicknessEpisodes.ts` and `packages/core/src/metrics/absenceByType.ts`, each with its `// Metric:` link.
-- [ ] T073 [P] [US5] Implement M13 in `packages/core/src/forecast/sickness.ts` (`// Metric: …#m13`).
-- [ ] T074 [US5] Fill the `leave`, `sickness` and `absence` sections in `packages/core/src/dashboard/buildDashboard.ts`, with `period`, `isSelected`, `isCurrent` and `coverage` per month. Extend `packages/core/test/buildDashboard.test.ts`.
-- [ ] T075 [P] [US5] Build the chart primitives in `packages/dashboard-ui/src/charts/`:
+- [X] T072 [P] [US5] Implement M06–M09 in `packages/core/src/metrics/leaveDays.ts`, `packages/core/src/metrics/sicknessDays.ts`, `packages/core/src/metrics/sicknessEpisodes.ts` and `packages/core/src/metrics/absenceByType.ts`, each with its `// Metric:` link.
+- [X] T073 [P] [US5] Implement M13 in `packages/core/src/forecast/sickness.ts` (`// Metric: …#m13`).
+- [X] T074 [US5] Fill the `leave`, `sickness` and `absence` sections in `packages/core/src/dashboard/buildDashboard.ts`, with `period`, `isSelected`, `isCurrent` and `coverage` per month. Extend `packages/core/test/buildDashboard.test.ts`.
+- [X] T075 [P] [US5] Build the chart primitives in `packages/dashboard-ui/src/charts/` *(as built: `model.ts` holds the scale and the chart model, `patterns.tsx` the patterns and swatches, `BarChart.tsx` the frame, roving focus and tooltip together, plus `Legend.tsx` and `ChartSection.tsx`)*:
   - `scale.ts`: one zero-based scale per chart;
   - `ChartFrame.tsx`: axes, the selected-month band, a bold label for the selected month, and "to date" under the current month;
   - `patterns.tsx`: an SVG hatch for forecasts, a tint for booked values, and one pattern per series using `--series-*` in kit order with `.tone-*` classes;
@@ -344,14 +344,14 @@ same values.
   - `ChartTooltip.tsx`: shown on hover, tap and focus, with the exact value, the month, and "Actual", "To date", "Booked", "Known" or "Forecast" (FR-017).
 
   Add the test `packages/dashboard-ui/test/charts.test.tsx`.
-- [ ] T076 [P] [US5] Build `ChartTable` in `packages/dashboard-ui/src/charts/ChartTable.tsx`: a "Show table" / "Show chart" toggle that renders a `.table` with the same values and kind labels, reachable by keyboard and screen reader (FR-018). Add the test `packages/dashboard-ui/test/ChartTable.test.tsx`.
-- [ ] T077 [US5] Build the chart components in `packages/dashboard-ui/src/charts/`: `ColumnChart.tsx`, `StackedColumnChart.tsx`, and `ComboChart.tsx` (columns plus a row of value labels, with no second axis). Then build the sections:
+- [X] T076 [P] [US5] Build `ChartTable` in `packages/dashboard-ui/src/charts/ChartTable.tsx`: a "Show table" / "Show chart" toggle that renders a `.table` with the same values and kind labels, reachable by keyboard and screen reader (FR-018). Add the test `packages/dashboard-ui/test/ChartTable.test.tsx`.
+- [X] T077 [US5] Build the chart components in `packages/dashboard-ui/src/charts/` *(as built: one `BarChart` covers column, stacked and combined charts, driven by models in `src/components/trendCharts.ts`)*: `ColumnChart.tsx`, `StackedColumnChart.tsx`, and `ComboChart.tsx` (columns plus a row of value labels, with no second axis). Then build the sections:
   - `packages/dashboard-ui/src/components/LeaveChart.tsx`: approved days, with the note "Pending: not available from BrightHR yet".
   - `packages/dashboard-ui/src/components/SicknessChart.tsx`: day columns, with episodes as a labelled row under each month.
   - `packages/dashboard-ui/src/components/AbsenceChart.tsx`: stacked sickness, compassionate, unpaid and other, in that order, with a legend.
 
   All three show "No absence data before <date>" on `partial`/`none` months, and "Not enough history to forecast" when `notEnoughHistory`. Forecast columns are hatched with a dashed outline and labelled "Forecast" on the axis. Colour is never the only cue (FR-015, Principle IV).
-- [ ] T078 [US5] Write the end-to-end test `packages/dashboard-ui/e2e/trends.spec.ts`. It checks the Jul 2026 – Jan 2027 axis, the October highlight and "to date", values against the expected files, "Forecast" labels, keyboard tooltips, the table view, the phone layout, and axe on each chart and table.
+- [X] T078 [US5] Write the end-to-end test `packages/dashboard-ui/e2e/trends.spec.ts`. It checks the Jul 2026 – Jan 2027 axis, the October highlight and "to date", values against the expected files, "Forecast" labels, keyboard tooltips, the table view, the phone layout, and axe on each chart and table.
 
 **Checkpoint**: US1, US3, US4 (UI) and US5 work on sample data.
 

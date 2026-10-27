@@ -11,6 +11,9 @@ export default defineConfig({
   outputDir: '../../../test-results',
   reporter: [['list'], ['html', { open: 'never', outputFolder: '../../../playwright-report' }]],
   fullyParallel: true,
+  // The mock data is calculated in the browser; under six parallel workers that can take longer
+  // than the default 5 s.
+  expect: { timeout: 10_000 },
   use: { baseURL: 'http://localhost:5173' },
   webServer: {
     command: 'npx vite --config vite.harness.config.ts',

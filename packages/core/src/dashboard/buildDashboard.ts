@@ -8,6 +8,7 @@ import type { DashboardRecords, Settings, SyncStatus } from '../records/types';
 import { pickableMonths } from '../window/picker';
 import { createContext, type DashboardContext } from './context';
 import { buildKpis } from './sections/kpis';
+import { buildAbsence, buildLeave, buildSickness } from './sections/trends';
 import { salesAbsences } from '../metrics/salesAbsences';
 import { freshness, nextAllowedRefresh } from '../metrics/freshness';
 import { ALL, type DashboardQuery, type DashboardResponse, type Section } from './types';
@@ -62,9 +63,9 @@ type SectionBuilders = {
 // Each user story replaces its placeholder here.
 const sections: SectionBuilders = {
   kpis: (ctx) => safeSection(() => buildKpis(ctx)),
-  leave: () => ({ status: 'empty' }),
-  sickness: () => ({ status: 'empty' }),
-  absence: () => ({ status: 'empty' }),
+  leave: (ctx) => safeSection(() => buildLeave(ctx)),
+  sickness: (ctx) => safeSection(() => buildSickness(ctx)),
+  absence: (ctx) => safeSection(() => buildAbsence(ctx)),
   attrition: () => ({ status: 'empty' }),
   salesAbsences: (ctx) => safeSection(() => salesAbsences(ctx)),
 };

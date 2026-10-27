@@ -5,6 +5,60 @@ import { BadRequestError, buildDashboard, safeSection } from '../src/dashboard/b
 import { round1 } from '../src/dashboard/round';
 import { sampleInput } from './sampleInput';
 
+// Rounded values from fixtures/expected/leave.md, sickness.md, absence.md, forecast-sickness.md.
+describe('trend sections (US5)', () => {
+  const res = buildDashboard(sampleInput());
+  const months = ['2026-07', '2026-08', '2026-09', '2026-10', '2026-11', '2026-12', '2027-01'];
+  const kindsLeave = ['actual', 'actual', 'actual', 'toDate', 'booked', 'booked', 'booked'];
+
+  it('leave: Jul 2026 – Jan 2027, October selected and current, approved days by kind', () => {
+    const leave = res.sections.leave.data!;
+    expect(leave.pendingAvailable).toBe(false);
+    expect(leave.months.map((m) => m.month)).toEqual(months);
+    expect(leave.months.map((m) => m.approvedDays.value)).toEqual([7, 7, 11, 9.5, 7, 12, 5]);
+    expect(leave.months.map((m) => m.approvedDays.kind)).toEqual(kindsLeave);
+    expect(leave.months.every((m) => m.pendingDays.value === null)).toBe(true);
+    expect(leave.months.filter((m) => m.isSelected).map((m) => m.month)).toEqual(['2026-10']);
+    expect(leave.months.map((m) => m.period)).toEqual(['actual', 'actual', 'actual', 'toDate', 'future', 'future', 'future']);
+    expect(leave.months.every((m) => m.coverage === 'full')).toBe(true);
+  });
+
+  it('sickness: actuals, then the forecast labelled as such', () => {
+    const s = res.sections.sickness.data!;
+    expect(s).toMatchObject({ forecastBasisMonths: 12, notEnoughHistory: false });
+    expect(s.months.map((m) => m.days.value)).toEqual([5, 2, 5, 6.5, 3.3, 3.3, 3.3]);
+    expect(s.months.map((m) => m.episodes.value)).toEqual([1, 1, 2, 2, 1.3, 1.3, 1.3]);
+    expect(s.months.map((m) => m.days.kind)).toEqual(['actual', 'actual', 'actual', 'toDate', 'forecast', 'forecast', 'forecast']);
+  });
+
+  it('absence by type: booked types and forecast sickness in future months', () => {
+    const a = res.sections.absence.data!.months;
+    expect(a.map((m) => [m.sickness.value, m.compassionate.value, m.unpaid.value, m.other.value])).toEqual([
+      [5, 0, 0, 1],
+      [2, 3, 0, 0],
+      [5, 0, 0, 0.5],
+      [6.5, 0, 0, 1],
+      [3.3, 0, 0, 10],
+      [3.3, 0, 2, 0],
+      [3.3, 0, 0, 0],
+    ]);
+    expect(a[4]!.sickness.kind).toBe('forecast');
+    expect(a[4]!.other.kind).toBe('booked');
+    expect(a[3]!.other.kind).toBe('toDate');
+  });
+
+  it('launch: coverage marked, and no forecast without 3 full months', () => {
+    const input = sampleInput();
+    input.status = { ...input.status, historyStartDate: '2026-07-29' };
+    const launch = buildDashboard(input);
+    const s = launch.sections.sickness.data!;
+    expect(s).toMatchObject({ notEnoughHistory: true, forecastBasisMonths: 2 });
+    expect(s.months.map((m) => m.coverage)).toEqual(['partial', 'full', 'full', 'full', 'full', 'full', 'full']);
+    expect(s.months[4]!.days).toEqual({ value: null, kind: 'forecast' });
+    expect(launch.sections.absence.data!.months[4]!.sickness).toEqual({ value: null, kind: 'forecast' });
+  });
+});
+
 describe('freshness and refresh (US4)', () => {
   it('reports the sample data as fresh at 10:30, with a refresh allowed now', () => {
     const res = buildDashboard(sampleInput());

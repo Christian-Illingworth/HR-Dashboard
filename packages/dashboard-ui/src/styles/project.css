@@ -50,6 +50,58 @@
 .hrd-skeleton-chart { height: 220px; border-radius: var(--r); }
 .hrd-state { min-height: 120px; }
 
+/* ── Charts (research R1) ──
+   Colour sits on marks only: bars, patterns, the line and its dots. Text stays navy. Every bar
+   has a --txt3 outline, so its edge meets the 3:1 contrast for graphics even when the series
+   colour is light (WCAG 1.4.11). Forecasts add a dashed edge and a hatch; booked values are a
+   tint with the series pattern; "known" values are dotted. */
+.hrd-chart { position: relative; }
+.hrd-chart svg { display: block; max-width: 100%; overflow: visible; font-family: var(--font); }
+.hrd-band { fill: var(--teal-bg); }
+.hrd-gridline { stroke: var(--bdr); stroke-width: 1; }
+.hrd-axis-tick { fill: var(--txt3); font-size: var(--fs-2xs); font-variant-numeric: tabular-nums; }
+.hrd-axis-label { fill: var(--txt2); font-size: var(--fs-xs); font-weight: var(--fw-medium); }
+.hrd-axis-label.is-selected { fill: var(--txt); font-weight: var(--fw-bold); }
+.hrd-axis-sub { fill: var(--txt3); font-size: var(--fs-2xs); font-weight: var(--fw-semibold); }
+.hrd-axis-extra { fill: var(--txt); font-size: var(--fs-xs); font-weight: var(--fw-semibold); font-variant-numeric: tabular-nums; }
+.hrd-value-label { fill: var(--txt); font-size: var(--fs-2xs); font-weight: var(--fw-semibold); font-variant-numeric: tabular-nums; }
+.hrd-bar { stroke: var(--txt3); stroke-width: 1; }
+.hrd-bar--forecast { stroke-dasharray: 4 3; stroke-width: 1.5; }
+.hrd-pat-fill { fill: var(--c); }
+.hrd-pat-tint { fill: var(--c-bg); }
+.hrd-pat-paper { fill: var(--surf); }
+.hrd-pat-mark-light { stroke: var(--surf); fill: var(--surf); stroke-width: 1.2; }
+.hrd-pat-mark { stroke: var(--c); fill: var(--c); stroke-width: 1.2; }
+.hrd-pat-hatch { stroke: var(--c); stroke-width: 2.4; }
+.hrd-line { fill: none; stroke: var(--c); stroke-width: 2; }
+.hrd-marker { fill: var(--surf); stroke: var(--c); stroke-width: 2; }
+.hrd-bracket path { fill: none; stroke: var(--txt3); stroke-width: 1; }
+.hrd-hit { fill: transparent; stroke: none; }
+.hrd-point { outline: none; }
+.hrd-point:hover .hrd-hit { fill: var(--tint-hover); }
+.hrd-point:focus-visible .hrd-hit { stroke: var(--teal); stroke-width: 2; }
+.hrd-tooltip {
+  position: absolute; z-index: var(--z-dropdown); transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 2px; min-width: 170px; max-width: 260px;
+  padding: var(--sp-2) var(--sp-3); background: var(--surf); border: 1px solid var(--bdr2);
+  border-radius: var(--rsm); box-shadow: var(--sh-md); font-size: var(--fs-xs); line-height: 1.45;
+  color: var(--txt); pointer-events: none;
+}
+.hrd-legend {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); margin: var(--sp-2) 0 0; padding: 0;
+  list-style: none; font-size: var(--fs-xs); color: var(--txt2);
+}
+.hrd-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.hrd-swatch { flex-shrink: 0; overflow: visible; }
+
+/* Row headers (the month in a chart's table) read like the first cell, not like the kit's
+   uppercase column headings. */
+.table tbody th[scope='row'] {
+  text-transform: none; letter-spacing: 0; font-size: inherit; font-weight: var(--fw-semibold);
+  color: var(--txt); background: none;
+}
+.table tr.is-active th[scope='row'] { background: none; }
+
 /* ── Tables that stack into cards in a narrow container (Sales list, chart tables) ──
    Each cell carries its column name in data-label, shown as a micro-label when stacked. */
 @container (max-width: 640px) {
@@ -63,6 +115,8 @@
     font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: 0.6px; text-transform: uppercase; color: var(--txt3);
   }
   .hrd-stack-table td.table-name::before { display: none; }
+  .hrd-stack-table th[scope='row'] { display: block; padding: 2px 0; border-bottom: none; }
+  .hrd-stack-table td.num { text-align: left; }
 }
 
 /* ── Small helpers ── */
