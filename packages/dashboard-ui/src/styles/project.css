@@ -1,0 +1,131 @@
+/* HR Dashboard project styles. Loaded after the design kit, inside the shadow root.
+   Kit tokens only: no colour literals (Stylelint enforces this), no new hues (DESIGN.md §2).
+   The selectors here start with .hrd- so they can't collide with the kit's. */
+
+/* The kit gives `body` (here .cu-root) a full-viewport height; inside a web part it must size
+   to its content. */
+.cu-root { min-height: 0; }
+
+/* ── Layout ── */
+.hrd-dashboard {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: var(--sp-4);
+  container-type: inline-size;
+}
+.hrd-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+@container (min-width: 900px) {
+  .hrd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hrd-span-2 { grid-column: 1 / -1; }
+}
+.hrd-header { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.hrd-header .title-xl { margin: 0; }
+.hrd-header-meta { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 200px; }
+.hrd-header-actions { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+
+/* A section card: heading row, body, then any notes. */
+.hrd-section { min-width: 0; }
+.hrd-section-head {
+  display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap;
+  margin-bottom: var(--sp-3);
+}
+.hrd-section-head .title-md { margin: 0; }
+.hrd-section-actions { margin-left: auto; display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.hrd-notes { display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-3); }
+.hrd-notes .caption { margin: 0; }
+
+/* ── KPI strip: five numbers ── */
+.kpi-strip.hrd-kpis { --cols: 5; }
+.hrd-kpis .kpi-value { overflow-wrap: anywhere; }
+.hrd-kpis .kpi-sub { min-height: 1em; }
+/* The kit switches the strip to two columns by viewport width; a web part needs the
+   container's width, because SharePoint columns are often much narrower than the screen. */
+@container (max-width: 760px) {
+  .kpi-strip.hrd-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hrd-kpis .kpi-mini { border-left: 1px solid var(--bdr); border-top: 1px solid var(--bdr); }
+  .hrd-kpis .kpi-mini:nth-child(odd) { border-left: none; }
+  .hrd-kpis .kpi-mini:nth-child(-n+2) { border-top: none; }
+}
+
+/* ── Section states ── */
+.hrd-skeleton-chart { height: 220px; border-radius: var(--r); }
+.hrd-state { min-height: 120px; }
+
+/* ── Charts (research R1) ──
+   Colour sits on marks only: bars, patterns, the line and its dots. Text stays navy. Every bar
+   has a --txt3 outline, so its edge meets the 3:1 contrast for graphics even when the series
+   colour is light (WCAG 1.4.11). Forecasts add a dashed edge and a hatch; booked values are a
+   tint with the series pattern; "known" values are dotted. */
+.hrd-chart { position: relative; }
+.hrd-chart svg { display: block; max-width: 100%; overflow: visible; font-family: var(--font); }
+.hrd-band { fill: var(--teal-bg); }
+.hrd-gridline { stroke: var(--bdr); stroke-width: 1; }
+.hrd-axis-tick { fill: var(--txt3); font-size: var(--fs-2xs); font-variant-numeric: tabular-nums; }
+.hrd-axis-label { fill: var(--txt2); font-size: var(--fs-xs); font-weight: var(--fw-medium); }
+.hrd-axis-label.is-selected { fill: var(--txt); font-weight: var(--fw-bold); }
+.hrd-axis-sub { fill: var(--txt3); font-size: var(--fs-2xs); font-weight: var(--fw-semibold); }
+.hrd-axis-extra { fill: var(--txt); font-size: var(--fs-xs); font-weight: var(--fw-semibold); font-variant-numeric: tabular-nums; }
+.hrd-value-label { fill: var(--txt); font-size: var(--fs-2xs); font-weight: var(--fw-semibold); font-variant-numeric: tabular-nums; }
+.hrd-bar { stroke: var(--txt3); stroke-width: 1; }
+.hrd-bar--forecast { stroke-dasharray: 4 3; stroke-width: 1.5; }
+.hrd-pat-fill { fill: var(--c); }
+.hrd-pat-tint { fill: var(--c-bg); }
+.hrd-pat-paper { fill: var(--surf); }
+.hrd-pat-mark-light { stroke: var(--surf); fill: var(--surf); stroke-width: 1.2; }
+.hrd-pat-mark { stroke: var(--c); fill: var(--c); stroke-width: 1.2; }
+.hrd-pat-hatch { stroke: var(--c); stroke-width: 2.4; }
+.hrd-line { fill: none; stroke: var(--c); stroke-width: 2; }
+.hrd-marker { fill: var(--surf); stroke: var(--c); stroke-width: 2; }
+.hrd-bracket path { fill: none; stroke: var(--txt3); stroke-width: 1; }
+.hrd-hit { fill: transparent; stroke: none; }
+.hrd-point { outline: none; }
+.hrd-point:hover .hrd-hit { fill: var(--tint-hover); }
+.hrd-point:focus-visible .hrd-hit { stroke: var(--teal); stroke-width: 2; }
+.hrd-tooltip {
+  position: absolute; z-index: var(--z-dropdown); transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 2px; min-width: 170px; max-width: 260px;
+  padding: var(--sp-2) var(--sp-3); background: var(--surf); border: 1px solid var(--bdr2);
+  border-radius: var(--rsm); box-shadow: var(--sh-md); font-size: var(--fs-xs); line-height: 1.45;
+  color: var(--txt); pointer-events: none;
+}
+.hrd-legend {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); margin: var(--sp-2) 0 0; padding: 0;
+  list-style: none; font-size: var(--fs-xs); color: var(--txt2);
+}
+.hrd-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.hrd-swatch { flex-shrink: 0; overflow: visible; }
+
+/* Row headers (the month in a chart's table) read like the first cell, not like the kit's
+   uppercase column headings. */
+.table tbody th[scope='row'] {
+  text-transform: none; letter-spacing: 0; font-size: inherit; font-weight: var(--fw-semibold);
+  color: var(--txt); background: none;
+}
+.table tr.is-active th[scope='row'] { background: none; }
+
+/* ── Tables that stack into cards in a narrow container (Sales list, chart tables) ──
+   Each cell carries its column name in data-label, shown as a micro-label when stacked. */
+@container (max-width: 640px) {
+  .hrd-stack-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .hrd-stack-table, .hrd-stack-table tbody, .hrd-stack-table tr, .hrd-stack-table td { display: block; width: 100%; }
+  .hrd-stack-table tr { padding: var(--sp-2) 0; border-bottom: 1px solid var(--bdr); }
+  .hrd-stack-table tr:last-child { border-bottom: none; }
+  .hrd-stack-table td { border-bottom: none; padding: 2px 0; }
+  .hrd-stack-table td::before {
+    content: attr(data-label); display: block;
+    font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: 0.6px; text-transform: uppercase; color: var(--txt3);
+  }
+  .hrd-stack-table td.table-name::before { display: none; }
+  .hrd-stack-table th[scope='row'] { display: block; padding: 2px 0; border-bottom: none; }
+  .hrd-stack-table td.num { text-align: left; }
+}
+
+/* ── Filters ── the kit's dropdown, as a listbox; the keyboard-active option gets the hover tint. */
+.hrd-filters { margin-bottom: 0; }
+.hrd-listbox:focus { outline: none; }
+.hrd-listbox .menu-item { cursor: pointer; }
+.hrd-listbox .menu-item.is-active { background: var(--bg); }
+.hrd-listbox:focus-visible .menu-item.is-active { box-shadow: inset 0 0 0 2px var(--teal); }
+
+/* ── Small helpers ── */
+.hrd-inline-list { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); align-items: center; }
+.hrd-sr-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

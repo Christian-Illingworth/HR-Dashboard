@@ -1,0 +1,34 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000215",
+        "employeeId": "e0000000-0000-4000-8000-000000000012",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-08-10"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-08-12"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 11,
+          "description": "Stress"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 2
+        },
+        "isPaid": true,
+        "paidDuration": null
+      }
+    ],
+    "continuationToken": null
+  }
+]

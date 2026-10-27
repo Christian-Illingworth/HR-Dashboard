@@ -1,0 +1,35 @@
+{
+  "name": "@hrd/dashboard-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HR Dashboard React UI on the Consultiv design kit, mounted in a shadow root.",
+  "main": "./dist/hrd-dashboard-ui.js",
+  "module": "./dist/hrd-dashboard-ui.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/hrd-dashboard-ui.js"
+    },
+    "./shadow.css": "./dist/shadow.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite --config vite.harness.config.ts",
+    "build:css": "node scripts/build-shadow-css.mjs",
+    "build": "node scripts/build-shadow-css.mjs && vite build",
+    "test": "vitest run",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "dependencies": {
+    "@hrd/core": "0.1.0"
+  }
+}

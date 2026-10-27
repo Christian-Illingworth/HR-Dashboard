@@ -1,0 +1,18 @@
+[
+  { "mail": "amelia.hart@consultiv.example", "userPrincipalName": "amelia.hart@consultiv.example", "department": "Sales" },
+  { "mail": "Ben.Okafor@consultiv.example", "userPrincipalName": "ben.okafor@consultiv.example", "department": "Sales" },
+  { "mail": "chloe.patel@consultiv.example", "userPrincipalName": "chloe.patel@consultiv.example", "department": "Sales" },
+  { "mail": "daniel.reyes@consultiv.example", "userPrincipalName": "daniel.reyes@consultiv.example", "department": "Sales" },
+  { "mail": "ella.novak@consultiv.example", "userPrincipalName": "ella.novak@consultiv.example", "department": "Pricing" },
+  { "mail": "finn.gallagher@consultiv.example", "userPrincipalName": "finn.gallagher@consultiv.example", "department": "Pricing" },
+  { "mail": "grace.lindqvist@consultiv.example", "userPrincipalName": "grace.lindqvist@consultiv.example", "department": "Analysis" },
+  { "mail": "harry.mensah@consultiv.example", "userPrincipalName": "harry.mensah@consultiv.example", "department": "Analysis" },
+  { "mail": "isla.moreau@consultiv.example", "userPrincipalName": "isla.moreau@consultiv.example", "department": "Analysis" },
+  { "mail": null, "userPrincipalName": "jacob.ferreira@consultiv.example", "department": "Operations" },
+  { "mail": "kara.whitfield@consultiv.example", "userPrincipalName": "kara.whitfield@consultiv.example", "department": "Operations" },
+  { "mail": "leo.brennan@consultiv.example", "userPrincipalName": "leo.brennan@consultiv.example", "department": "Analysis" },
+  { "mail": "noah.achebe@consultiv.example", "userPrincipalName": "noah.achebe@consultiv.example", "department": "" },
+  { "mail": "olivia.grant@consultiv.example", "userPrincipalName": "olivia.grant@consultiv.example", "department": "Pricing" },
+  { "mail": "quinn.adeyemi@consultiv.example", "userPrincipalName": "quinn.adeyemi@consultiv.example", "department": "Sales" },
+  { "mail": "visitor.account@consultiv.example", "userPrincipalName": "visitor.account@consultiv.example", "department": "Facilities" }
+]

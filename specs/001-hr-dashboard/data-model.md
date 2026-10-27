@@ -200,9 +200,18 @@ These are worked out in `packages/core` on each request and never stored.
 
 **D1. Working-day fractions.** For an absence with `startDate`…`endDate` (an open-ended
 sickness ends at today):
-- Every working day in the range counts 1.
-- If `startPart` or `endPart` is `FirstHalf` or `SecondHalf`, that boundary day counts 0.5.
-  If the absence starts and ends on the same day with a half part, it counts 0.5.
+- Every working day in the range counts 1, except at the boundaries. A boundary day counts
+  only the half it covers. `FirstHalf` is the morning and `SecondHalf` the afternoon.
+  - Start day: a `startPart` of `SecondHalf` counts 0.5 (the absence starts in the afternoon).
+    `FirstHalf`, `FullDay` and `LocalDate` count the whole day.
+  - End day: an `endPart` of `FirstHalf` counts 0.5 (the absence ends at midday, which is
+    also why the return date is that same day, M15). `SecondHalf`, `FullDay` and
+    `LocalDate` count the whole day.
+  - One-day absence: morning only (`FirstHalf` to `FirstHalf`) or afternoon only
+    (`SecondHalf` to `SecondHalf`) counts 0.5. `FirstHalf` to `SecondHalf` counts 1.
+  - *(Revised during implementation, 2026-10-27. The first draft counted any half part as
+    0.5, which made a multi-day absence starting "in the morning" lose half a day, and
+    contradicted the return-date rule.)*
 - If both parts are `Time` and the dates are the same, the day counts 0.5. A `Time` boundary
   on a multi-day absence counts its day as 1. *(Project rule, to confirm with HR; BrightHR
   gives no length for non-sickness types.)*
@@ -250,6 +259,10 @@ Categories: `annualLeave`, `publicHoliday` (left out of every metric), `sickness
 **D7. Status.** Every stored absence is **Approved**, because BrightHR lists only approved
 absences (R9). Pending values are `null` with `pendingAvailable: false` until BrightHR answers
 question B3.
+
+**D8. Rounding.** Calculations keep full precision. Values are rounded only in the API
+response, to 1 decimal place, half away from zero (3.75 → 3.8). Counts of people and episodes
+are whole numbers and aren't rounded.
 
 ### Metrics
 
@@ -424,8 +437,11 @@ and the edge cases. Every listed edge case needs a test (Principle VI).
 - **Formula**:
   - Sales = employees whose current `department` matches a `SalesDepartments` line, and who also
     match the role filter.
-  - Today = their absences (not `publicHoliday`) whose AbsenceSpan includes today. Upcoming =
-    those overlapping tomorrow … today + 14.
+  - Today = their absences (not `publicHoliday`) whose dates contain today. Upcoming = those
+    whose dates overlap tomorrow … today + 14. An open-ended absence counts as still running, so
+    it appears in both. (Revised during implementation, 2026-10-27: the first draft used day
+    spans, which stop at today for open-ended sickness and would have left it out of Upcoming.)
+  - Sales employees who left before today aren't listed.
   - Each entry has: name; role; type label (`displayName`); sickness reason, if a reason is
     stored; start (date and part); end (date and part, or "Not yet known"); return date;
     status "Approved" (D7). Sorted by start date, then family name.
@@ -444,11 +460,17 @@ and the edge cases. Every listed edge case needs a test (Principle VI).
   - `noDataYet` if `lastSuccessAt` is null.
   - Otherwise stale if any of these is true:
     - `lastAttemptOutcome` = `Failed` (`staleReason: lastAttemptFailed`);
-    - `now` is within sync hours (working day, 07:00–19:59) and `now − lastSuccessAt` is more
-      than the threshold: 2 hours, or 3 hours when `SYNC_DAYTIME_INTERVAL_HOURS` = 2 (FR-024)
-      (`olderThanThreshold`);
-    - `now` is outside sync hours and `lastSuccessAt` is before the most recent 02:00 run that
-      is at least 30 minutes ago (`overnightMissed`).
+    - `lastSuccessAt` is before the most recent 02:00 run that is at least 30 minutes ago,
+      whether or not `now` is in sync hours (`overnightMissed`);
+    - `now` is within sync hours (working day, 07:00–19:59) and the daytime age is more than
+      the threshold: 2 hours, or 3 hours when `SYNC_DAYTIME_INTERVAL_HOURS` = 2 (FR-024)
+      (`olderThanThreshold`). The daytime age is `now` minus the later of `lastSuccessAt` and
+      07:00 today, so the day's first runs have time to happen.
+  - *(Revised during implementation, 2026-10-27: measuring age only from `lastSuccessAt` made
+    07:00 on every working day stale, which contradicted the edge case below. The overnight
+    check now also applies in the day, so a missed overnight run still shows.)*
+  - `refresh.nextAllowedAt` = `lastManualRefreshAt` + 15 minutes if that is later than `now`,
+    otherwise `now` (FR-025).
 - **Edge cases**: 07:00 on Monday after a good overnight run → fresh. 02:10 while the overnight
   run is in progress → judged against the previous night. A run still going (`Running`) isn't
   counted as failed.

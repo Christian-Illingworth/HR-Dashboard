@@ -1,0 +1,34 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000212",
+        "employeeId": "e0000000-0000-4000-8000-000000000104",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-05-18"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-05-18"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 3,
+          "description": "Cold or flu"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 1
+        },
+        "isPaid": true,
+        "paidDuration": null
+      }
+    ],
+    "continuationToken": null
+  }
+]

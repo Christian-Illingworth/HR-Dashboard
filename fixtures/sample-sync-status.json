@@ -1,0 +1,12 @@
+{
+  "lastAttemptStartedAt": "2026-10-27T08:58:00Z",
+  "lastAttemptFinishedAt": "2026-10-27T09:00:00Z",
+  "lastAttemptOutcome": "Succeeded",
+  "lastFailureCode": null,
+  "lastSuccessAt": "2026-10-27T09:00:00Z",
+  "runningSince": null,
+  "lastManualRefreshAt": null,
+  "dataMode": "Sample",
+  "historyStartDate": "2025-10-01",
+  "warnings": { "departmentNotSet": 2, "skippedRecords": 0, "bankHolidaysEndOn": "2028-12-26" }
+}

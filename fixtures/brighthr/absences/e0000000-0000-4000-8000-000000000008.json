@@ -1,0 +1,78 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000201",
+        "employeeId": "e0000000-0000-4000-8000-000000000008",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2025-10-14"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2025-10-15"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 3,
+          "description": "Cold or flu"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 2
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000219",
+        "employeeId": "e0000000-0000-4000-8000-000000000008",
+        "start": {
+          "$type": "LocalDatePart",
+          "date": "2026-10-27",
+          "datePart": "SecondHalf"
+        },
+        "end": {
+          "$type": "LocalDatePart",
+          "date": "2026-10-27",
+          "datePart": "SecondHalf"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 7,
+          "description": "Migraine"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 0.5
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000113",
+        "employeeId": "e0000000-0000-4000-8000-000000000008",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2027-01-11"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2027-01-15"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

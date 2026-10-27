@@ -1,0 +1,49 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000211",
+        "employeeId": "e0000000-0000-4000-8000-000000000009",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-05-11"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-05-13"
+        },
+        "displayName": "Sickness",
+        "note": "Fit note received",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 12,
+          "description": "Pregnancy-related illness"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 3
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000105",
+        "employeeId": "e0000000-0000-4000-8000-000000000009",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-09-21"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-09-25"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

@@ -21,10 +21,13 @@ The BrightHR client refuses anything not in this table. A unit test proves this.
 
 ## Behaviour the mock must copy
 
-- Paging: a response has `continuationToken`. Its absence or a null value means the last page.
-  `pageSize` must be 100 or less.
-- `absences/v1/query`: a missing `filters.employeeId` → 400. A `from` more than 90 days before
-  today (UTC) → 400. `from`/`to` default to today. Only approved absences are returned.
+- Paging: a response is `{ items, continuationToken }`. A null or missing token means the last
+  page. `pageSize` must be 1 to 100 (default 100).
+- `absences/v1/query`: a missing `filters.employeeId` → 422. A `from` more than 90 days before
+  today (UTC) → 422. Validation failures are `application/problem+json` with
+  `type: https://docs.bright.hr/problems#field-validation` and an `errors` map. `from`/`to`
+  default to today. Only approved absences are returned.
+- 401 is `#token-expired`, and 403 is `#forbidden`, both as `application/problem+json`.
 - The token endpoint returns `access_token` and `expires_in`. Tokens are cached until 60
   seconds before expiry.
 - 401 → `BRIGHTHR_AUTH`. 429 → retry after `Retry-After` (exponential backoff with jitter if
@@ -36,19 +39,26 @@ The BrightHR client refuses anything not in this table. A unit test proves this.
 Only these are read; everything else is dropped by the normaliser. See data-model.md §1 for
 which are stored.
 
+Shapes are from the published OpenAPI file (v1.0.373554, read 2026-10-27). TypeScript
+versions are in `packages/core/src/brighthr/types.ts`.
+
 ```text
 EmployeeDto
   id
   name.givenName, name.familyName
   email
-  employment.jobTitle, employment.start, employment.end
+  employment.jobTitle (nullable), employment.start (nullable), employment.end (nullable)
 
 AbsenceDto  ($type discriminator: Holiday | Sickness | Toil | Other)
   id, employeeId, $type, displayName
-  start, end             LocalDate | LocalDateTime | LocalDatePart{date, datePart: FirstHalf|SecondHalf|FullDay}
+  start          AbsenceBoundaryDto
+  end            AbsenceBoundaryDto | null
+                 { $type: "LocalDate", date }
+                 { $type: "LocalDateTime", date, time }
+                 { $type: "LocalDatePart", date, datePart: FirstHalf | SecondHalf | FullDay }
   Sickness only:
-    duration             { unit: Days|Minutes, value }   (exact shape to confirm with a contract test)
-    reason.description
+    duration     { $type: "Days", days } | { $type: "Minutes", minutes } | null
+    reason       { id, description }   (only description is used)
 ```
 
 **Never read**: `note`, `reason.id`, `isCertified`, `estimatedReturn`, `isPaid`, `paidDuration`,

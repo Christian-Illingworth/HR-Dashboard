@@ -62,15 +62,15 @@ These follow [plan.md § Project Structure](plan.md#project-structure):
 
 **Purpose**: Repository tooling and empty projects.
 
-- [ ] T001 Create the root `package.json` with npm workspaces `["packages/core", "packages/dashboard-ui", "apps/sync-function"]`, `"engines": { "node": ">=22 <23" }`, and placeholder scripts `test`, `dev:harness`, `test:e2e`, `sync:mock`, `build:webpart`. Create `.nvmrc` (`22`) and `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`, ES2022, module `NodeNext`) at the repo root.
-- [ ] T002 [P] Extend `.gitignore` with `node_modules/`, `dist/`, `.local-data/`, `**/local.settings.json`, `apps/webpart/lib/`, `apps/webpart/temp/`, `apps/webpart/release/`, `apps/webpart/sharepoint/solution/`, `playwright-report/` and `test-results/`.
-- [ ] T003 [P] Scaffold `packages/core`. Add `package.json` (name `@hrd/core`, `"type": "module"`, **no runtime dependencies**), `tsconfig.json` extending the base, `vitest.config.ts` and `src/index.ts`.
-- [ ] T004 [P] Scaffold `packages/dashboard-ui`. Add `package.json` (name `@hrd/dashboard-ui`, `react` and `react-dom` as **peer** dependencies, Vite as the library build to `dist/`, Vitest with jsdom and React Testing Library), `tsconfig.json`, `vite.config.ts`, `src/index.ts`, `harness/index.html` and `harness/main.tsx`.
-- [ ] T005 [P] Add ESLint (flat config, typescript-eslint) and Prettier at the root in `eslint.config.js` and `.prettierrc`. Add a `no-restricted-imports` rule banning `@fluentui/*`, `office-ui-fabric-react`, `bootstrap`, `recharts`, `chart.js`, `echarts`, `d3*` and `@pnp/*` everywhere. For `packages/core/src/**`, add a `no-restricted-syntax` rule banning `Date.now()`, argument-less `new Date()`, `fetch` and `node:` imports.
-- [ ] T006 [P] Add Stylelint for `packages/dashboard-ui/src/styles/**/*.css` in `.stylelintrc.json`. It forbids colour literals: `color-no-hex: true`, `color-named: "never"`, and `function-disallowed-list` for `rgb`, `rgba`, `hsl`, `hsla`, `hwb`, `lab`, `lch` and `color`. Add an npm script `lint:css`.
-- [ ] T007 [P] Add `vitest.workspace.ts` at the root, so `npm test` runs every workspace's tests.
+- [X] T001 Create the root `package.json` with npm workspaces `["packages/core", "packages/dashboard-ui"]` (`apps/sync-function` is added by T096 when it exists; npm fails on a missing workspace folder), `"engines": { "node": ">=22 <23" }`, and placeholder scripts `test`, `dev:harness`, `test:e2e`, `sync:mock`, `build:webpart`. Create `.nvmrc` (`22`) and `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`, ES2022, module `NodeNext`) at the repo root.
+- [X] T002 [P] Extend `.gitignore` with `node_modules/`, `dist/`, `.local-data/`, `**/local.settings.json`, `apps/webpart/lib/`, `apps/webpart/temp/`, `apps/webpart/release/`, `apps/webpart/sharepoint/solution/`, `playwright-report/` and `test-results/`.
+- [X] T003 [P] Scaffold `packages/core`. Add `package.json` (name `@hrd/core`, `"type": "module"`, **no runtime dependencies**), `tsconfig.json` extending the base, `vitest.config.ts` and `src/index.ts`.
+- [X] T004 [P] Scaffold `packages/dashboard-ui`. Add `package.json` (name `@hrd/dashboard-ui`, `react` and `react-dom` as **peer** dependencies, Vite as the library build to `dist/`, Vitest with jsdom and React Testing Library), `tsconfig.json`, `vite.config.ts`, `src/index.ts`, `harness/index.html` and `harness/main.tsx`.
+- [X] T005 [P] Add ESLint (flat config, typescript-eslint) and Prettier at the root in `eslint.config.js` and `.prettierrc`. Add a `no-restricted-imports` rule banning `@fluentui/*`, `office-ui-fabric-react`, `bootstrap`, `recharts`, `chart.js`, `echarts`, `d3*` and `@pnp/*` everywhere. For `packages/core/src/**`, add a `no-restricted-syntax` rule banning `Date.now()`, argument-less `new Date()`, `fetch` and `node:` imports.
+- [X] T006 [P] Add Stylelint for `packages/dashboard-ui/src/styles/**/*.css` in `.stylelintrc.json`. It forbids colour literals: `color-no-hex: true`, `color-named: "never"`, and `function-disallowed-list` for `rgb`, `rgba`, `hsl`, `hsla`, `hwb`, `lab`, `lch` and `color`. Add an npm script `lint:css`.
+- [X] T007 [P] Add a root `vitest.config.ts` with `test.projects: ['packages/*']` (the current Vitest replacement for `vitest.workspace.ts`), so `npm test` runs every workspace's tests.
 - [ ] T008 Scaffold the SPFx solution in `apps/webpart` with the latest **GA** SharePoint Framework generator. Use a React web part named `HrDashboard`, and don't use Fluent UI components in its code. Keep it **outside** the npm workspaces, with its own `package-lock.json`. Record the SPFx, React, TypeScript and Node versions in `apps/webpart/README.md`, and set the `react`/`react-dom` peer range in `packages/dashboard-ui/package.json` to the React version SPFx ships (research R18).
-- [ ] T009 [P] Write `fixtures/README.md` with the rules: synthetic data only, made-up names, the spec's roles (Energy Analyst, Senior Energy Analyst, Senior Pricing Specialist, Sales Team Manager), a Sales department, a fixed "today" of 2026-10-27, and expected values worked out by hand in `fixtures/expected/`.
+- [X] T009 [P] Write `fixtures/README.md` with the rules: synthetic data only, made-up names, the spec's roles (Energy Analyst, Senior Energy Analyst, Senior Pricing Specialist, Sales Team Manager), a Sales department, a fixed "today" of 2026-10-27, and expected values worked out by hand in `fixtures/expected/`.
 
 ---
 
@@ -83,12 +83,12 @@ shell, the sample-data client and the SPFx shell. Every story needs these.
 
 ### Living documents
 
-- [ ] T010 [P] Copy [data-model.md §4](data-model.md#4-metric-catalogue) to `docs/metric-catalogue.md`, with explicit anchors `<a id="d1">` … `<a id="d6">` and `<a id="m01">` … `<a id="m16">`. Copy [data-model.md §5](data-model.md#5-data-inventory-draft) to `docs/data-inventory.md`. Add a line to each saying this is the file to keep up to date (constitution Principles II and V).
+- [X] T010 [P] Copy [data-model.md §4](data-model.md#4-metric-catalogue) to `docs/metric-catalogue.md`, with explicit anchors `<a id="d1">` … `<a id="d6">` and `<a id="m01">` … `<a id="m16">`. Copy [data-model.md §5](data-model.md#5-data-inventory-draft) to `docs/data-inventory.md`. Add a line to each saying this is the file to keep up to date (constitution Principles II and V).
 
 ### Types and fixtures
 
-- [ ] T011 [P] Define the BrightHR DTO types exactly as in [contracts/brighthr-consumed.md](contracts/brighthr-consumed.md) in `packages/core/src/brighthr/types.ts`: `EmployeeDto`, an `AbsenceDto` union discriminated by `$type` (`Holiday | Sickness | Toil | Other` plus unknown strings), the boundary types `LocalDate | LocalDateTime | LocalDatePart{date, datePart: FirstHalf|SecondHalf|FullDay}`, sickness `duration` (`Days | Minutes`) and `reason.description`, and the paged response wrapper with `continuationToken`.
-- [ ] T012 [P] Define the stored record types from [data-model.md §2](data-model.md#2-stored-entities) in `packages/core/src/records/types.ts`: `EmployeeRecord`, `EmployeeHistoryRow`, `AbsenceRecord`, `SicknessReasonRecord`, `SyncStatus` and `Settings`. Put these constraints in doc comments, word for word:
+- [X] T011 [P] Define the BrightHR DTO types exactly as in [contracts/brighthr-consumed.md](contracts/brighthr-consumed.md) in `packages/core/src/brighthr/types.ts`: `EmployeeDto`, an `AbsenceDto` union discriminated by `$type` (`Holiday | Sickness | Toil | Other` plus unknown strings), the boundary types `LocalDate | LocalDateTime | LocalDatePart{date, datePart: FirstHalf|SecondHalf|FullDay}`, sickness `duration` (`Days | Minutes`) and `reason.description`, and the paged response wrapper with `continuationToken`.
+- [X] T012 [P] Define the stored record types from [data-model.md §2](data-model.md#2-stored-entities) in `packages/core/src/records/types.ts`: `EmployeeRecord`, `EmployeeHistoryRow`, `AbsenceRecord`, `SicknessReasonRecord`, `SyncStatus` and `Settings`. Put these constraints in doc comments, word for word:
   - `jobTitle`: "Blank → 'Not set'".
   - `department`: "No match or blank → 'Not set'".
   - `givenName`/`familyName`: "Set only while `department` is in `SalesDepartments`; cleared otherwise".
@@ -96,12 +96,12 @@ shell, the sample-data client and the SPFx shell. Every story needs these.
   - `endDate`: "`endDate` ≥ `startDate` when set".
   - `historyStartDate`: "Never moves after it is set".
   - `lastFailureCode`: "A fixed code (research R7), never personal data".
-- [ ] T013 [P] Define the `DashboardResponse` types mirroring [contracts/dashboard-api.openapi.yaml](contracts/dashboard-api.openapi.yaml) in `packages/core/src/dashboard/types.ts`:
+- [X] T013 [P] Define the `DashboardResponse` types mirroring [contracts/dashboard-api.openapi.yaml](contracts/dashboard-api.openapi.yaml) in `packages/core/src/dashboard/types.ts`:
   - `Value.kind`: `actual | toDate | booked | known | forecast`.
   - `SectionStatus`: `ok | empty | error`.
   - `staleReason`: `lastAttemptFailed | olderThanThreshold | overnightMissed`.
   - `MonthBase.coverage`: `full | partial | none`.
-- [ ] T014 Create the synthetic BrightHR fixtures:
+- [X] T014 Create the synthetic BrightHR fixtures:
   - `fixtures/brighthr/employees-current.json` and `fixtures/brighthr/employees-terminated.json`, as `EmployeeDto` pages of at most 100 with `continuationToken`.
   - `fixtures/brighthr/absences/<employeeId>.json`, as `AbsenceDto` pages.
 
@@ -122,47 +122,47 @@ shell, the sample-data client and the SPFx shell. Every story needs these.
   - Sales absences today, in 10 days and in 20 days;
   - a Sales absence ending with `FirstHalf`;
   - a `note` field on several absences, which must be dropped.
-- [ ] T015 [P] Create `fixtures/entra/users.json` with made-up users (`mail`, `userPrincipalName`, `department`). Departments are Sales, Pricing, Analysis and Operations. Include one employee with no Entra match and one with a blank department.
-- [ ] T016 [P] Create `fixtures/settings.json` with the defaults from [data-model.md §2.6](data-model.md#26-settings-hrd-settings-keyvalue-items-edited-by-named-administrators): `SalesDepartments: "Sales"` and `StandardDayHours: "7.5"`. Add `AbsenceTypeMap` lines `Bank holiday => publicHoliday`, `Compassionate leave => compassionate` and `Unpaid leave => unpaid`, and one `PregnancyRelatedReasons` line matching the fixture reason.
-- [ ] T017 [P] Create `fixtures/sample-sync-status.json`: `lastSuccessAt` 2026-10-27T09:00:00Z, outcome `Succeeded`, `dataMode` `Sample`, `historyStartDate` 2025-10-01. Create `fixtures/sample-history.json` with one `HRD Employee History` row per employee per month from 2025-10 to 2026-10, including one employee who moved from Analysis to Sales in 2026-08. Also create `fixtures/launch-sync-status.json` with `historyStartDate` 2026-07-29, for the launch scenario.
+- [X] T015 [P] Create `fixtures/entra/users.json` with made-up users (`mail`, `userPrincipalName`, `department`). Departments are Sales, Pricing, Analysis and Operations. Include one employee with no Entra match and one with a blank department.
+- [X] T016 [P] Create `fixtures/settings.json` with the defaults from [data-model.md §2.6](data-model.md#26-settings-hrd-settings-keyvalue-items-edited-by-named-administrators): `SalesDepartments: "Sales"` and `StandardDayHours: "7.5"`. Add `AbsenceTypeMap` lines `Bank holiday => publicHoliday`, `Compassionate leave => compassionate` and `Unpaid leave => unpaid`, and one `PregnancyRelatedReasons` line matching the fixture reason.
+- [X] T017 [P] Create `fixtures/sample-sync-status.json`: `lastSuccessAt` 2026-10-27T09:00:00Z, outcome `Succeeded`, `dataMode` `Sample`, `historyStartDate` 2025-10-01. Create `fixtures/sample-history.json` with one `HRD Employee History` row per employee per month from 2025-10 to 2026-10, including one employee who moved from Analysis to Sales in 2026-08. Also create `fixtures/launch-sync-status.json` with `historyStartDate` 2026-07-29, for the launch scenario.
 
 ### Calendar (tests first)
 
-- [ ] T018 [P] Add the bundled gov.uk bank holidays (`england-and-wales` division) as `packages/core/src/calendar/bank-holidays.england-and-wales.json`. Record the source URL `https://www.gov.uk/bank-holidays.json` and the download date in `packages/core/src/calendar/README.md`.
-- [ ] T019 [P] Write failing tests in `packages/core/test/calendar.test.ts` for:
+- [X] T018 [P] Add the bundled gov.uk bank holidays (`england-and-wales` division) as `packages/core/src/calendar/bank-holidays.england-and-wales.json`. Record the source URL `https://www.gov.uk/bank-holidays.json` and the download date in `packages/core/src/calendar/README.md`.
+- [X] T019 [P] Write failing tests in `packages/core/test/calendar.test.ts` for:
   - `isWorkingDay` (weekends; 2026-12-25 and 2026-12-28, the Boxing Day substitute);
   - `workingDaysBetween` (inclusive);
   - `nextWorkingDay` (over a weekend and over Christmas);
   - `bankHolidaysCoverUntil`;
   - `toLondonDate`/`londonHour` across the BST to GMT change on 2026-10-25 01:00 UTC.
-- [ ] T020 Implement `packages/core/src/calendar/workingDays.ts` and `packages/core/src/calendar/london.ts` (using `Intl.DateTimeFormat` with `Europe/London`) to pass T019. Neither may read the system clock.
+- [X] T020 Implement `packages/core/src/calendar/workingDays.ts` and `packages/core/src/calendar/london.ts` (using `Intl.DateTimeFormat` with `Europe/London`) to pass T019. Neither may read the system clock.
 
 ### Absence rules D1, D2, D5 (tests first)
 
-- [ ] T021 [P] Write failing tests in `packages/core/test/absences.test.ts` covering D5 and D1 from `docs/metric-catalogue.md`.
+- [X] T021 [P] Write failing tests in `packages/core/test/absences.test.ts` covering D5 and D1 from `docs/metric-catalogue.md`.
   - **D5**: `Sickness` → `sickness`. First matching `AbsenceTypeMap` line wins, ignoring case. Defaults: `Holiday` → `annualLeave`, `Toil` → `other`, `Other` → `other`, unknown → `other`.
   - **D1**: test each rule, quoted word for word:
-    - "If `startPart` or `endPart` is `FirstHalf` or `SecondHalf`, that boundary day counts 0.5"
+    - "A boundary day counts only the half it covers. `FirstHalf` is the morning and `SecondHalf` the afternoon" (D1 as revised on 2026-10-27: a `SecondHalf` start or `FirstHalf` end counts 0.5; a `FirstHalf` start or `SecondHalf` end counts the whole day)
     - "If both parts are `Time` and the dates are the same, the day counts 0.5"
     - "durationMinutes ÷ (StandardDayHours × 60)"
     - "Each working day's fraction is scaled so the fractions add up to that total"
     - "For an open-ended absence the duration is ignored and the calendar count is used"
     - "Weekends and bank holidays count 0"
-- [ ] T022 [P] Write failing tests for D2 in `packages/core/test/episodes.test.ts`. Quote: "two sickness absences of the same employee are merged when there is no working day between the end of one and the start of the next". Test a Friday plus Monday merge, a Friday plus Tuesday non-merge, merges across a bank holiday, and that `pregnancyRelated` is true if any part is.
-- [ ] T023 Implement `packages/core/src/absences/category.ts`, `packages/core/src/absences/spans.ts` and `packages/core/src/absences/episodes.ts` to pass T021 and T022. Head each file with a `// Metric: docs/metric-catalogue.md#d1` (or `#d2`/`#d5`) comment.
+- [X] T022 [P] Write failing tests for D2 in `packages/core/test/episodes.test.ts`. Quote: "two sickness absences of the same employee are merged when there is no working day between the end of one and the start of the next". Test a Friday plus Monday merge, a Friday plus Tuesday non-merge, merges across a bank holiday, and that `pregnancyRelated` is true if any part is.
+- [X] T023 Implement `packages/core/src/absences/category.ts`, `packages/core/src/absences/spans.ts` and `packages/core/src/absences/episodes.ts` to pass T021 and T022. Head each file with a `// Metric: docs/metric-catalogue.md#d1` (or `#d2`/`#d5`) comment.
 
 ### Window, membership and headcount D3, D4, D6 (tests first)
 
-- [ ] T024 [P] Write failing tests in `packages/core/test/window.test.ts` for D4:
+- [X] T024 [P] Write failing tests in `packages/core/test/window.test.ts` for D4:
   - for `s` = 2026-10: window Jul 2026 – Jan 2027, `period` `actual | toDate | future`;
   - coverage `full | partial | none` against `historyStartDate`;
   - the picker offers months "from current − 9 to current where `s−3` is on or after `historyStartDate`'s month. The current month is always offered". With `historyStartDate` 2026-07-29, only 2026-10 is offered. With 2025-10-01, 2026-01 … 2026-10 are offered.
-- [ ] T025 [P] Write failing tests in `packages/core/test/membership.test.ts` for D3 (current values for today and the future; a history row for a past month; the earliest row before the first row; current values with no rows; `departmentHistoryStartMonth`) and D6 (a leaver on their `endDate` is counted; a future starter isn't).
-- [ ] T026 Implement `packages/core/src/window/window.ts`, `packages/core/src/window/coverage.ts`, `packages/core/src/window/picker.ts`, `packages/core/src/metrics/membership.ts` and `packages/core/src/metrics/headcountAt.ts` to pass T024 and T025.
+- [X] T025 [P] Write failing tests in `packages/core/test/membership.test.ts` for D3 (current values for today and the future; a history row for a past month; the earliest row before the first row; current values with no rows; `departmentHistoryStartMonth`) and D6 (a leaver on their `endDate` is counted; a future starter isn't).
+- [X] T026 Implement `packages/core/src/window/window.ts`, `packages/core/src/window/coverage.ts`, `packages/core/src/window/picker.ts`, `packages/core/src/metrics/membership.ts` and `packages/core/src/metrics/headcountAt.ts` to pass T024 and T025.
 
 ### Records from BrightHR-shaped data (tests first)
 
-- [ ] T027 [P] Write failing tests in `packages/core/test/records.test.ts` for the normaliser and records builder:
+- [X] T027 [P] Write failing tests in `packages/core/test/records.test.ts` for the normaliser and records builder:
   - output never contains `note`, `reason.id`, `isCertified`, `estimatedReturn`, `isPaid`, `paidDuration`, `email`, `externalReference` or `payrollNumber`;
   - names are kept only for Sales-department employees;
   - an absence failing "`endDate` ≥ `startDate` when set" is skipped and counted in `warnings.skippedRecords`;
@@ -170,31 +170,31 @@ shell, the sample-data client and the SPFx shell. Every story needs these.
   - `departmentNotSet` counts unmatched and blank departments;
   - `pregnancyRelated` comes from `PregnancyRelatedReasons`;
   - `LocalDateTime` boundaries become part `Time` with the time dropped.
-- [ ] T028 [P] Write failing tests in `packages/core/test/settings.test.ts` for parsing `HRD Settings` values: line splitting, trimming, `=>` mapping, unknown category names, `StandardDayHours` that isn't a positive number, and that any parse failure gives `SETTINGS_INVALID`.
-- [ ] T029 Implement `packages/core/src/brighthr/normalise.ts` (allow-list), `packages/core/src/records/settings.ts` and `packages/core/src/sync/buildRecords.ts`. `buildRecords({employees, absencesByEmployee, entraUsers, settings, today})` returns `{employees, absences, warnings}`, matching email to Entra `mail` or `userPrincipalName` ignoring case. Pass T027 and T028.
+- [X] T028 [P] Write failing tests in `packages/core/test/settings.test.ts` for parsing `HRD Settings` values: line splitting, trimming, `=>` mapping, unknown category names, `StandardDayHours` that isn't a positive number, and that any parse failure gives `SETTINGS_INVALID`.
+- [X] T029 Implement `packages/core/src/brighthr/normalise.ts` (allow-list), `packages/core/src/records/settings.ts` and `packages/core/src/sync/buildRecords.ts`. `buildRecords({employees, absencesByEmployee, entraUsers, settings, today})` returns `{employees, absences, warnings}`, matching email to Entra `mail` or `userPrincipalName` ignoring case. Pass T027 and T028.
 
 ### Dashboard skeleton
 
-- [ ] T030 Write failing tests, then implement `buildDashboard({records, history, reasons, status, settings, query, today, now, syncIntervalHours})` in `packages/core/src/dashboard/buildDashboard.ts`, with tests in `packages/core/test/buildDashboard.test.ts`. It returns `meta` (`dataMode` from the status), `filters` (applied values and options: `"All"` first, departments A–Z including "Not set", roles, picker months newest first) and `coverage`. Every section is a placeholder `{status: "empty"}`. Each section builder runs in its own try/catch, so one throwing gives that section `{status: "error", message}` and leaves the others alone (FR-026). An unoffered `month`, `department` or `role` throws `BadRequestError`.
+- [X] T030 Write failing tests, then implement `buildDashboard({records, history, reasons, status, settings, query, today, now, syncIntervalHours})` in `packages/core/src/dashboard/buildDashboard.ts`, with tests in `packages/core/test/buildDashboard.test.ts`. It returns `meta` (`dataMode` from the status), `filters` (applied values and options: `"All"` first, departments A–Z including "Not set", roles, picker months newest first) and `coverage`. Every section is a placeholder `{status: "empty"}`. Each section builder runs in its own try/catch, so one throwing gives that section `{status: "error", message}` and leaves the others alone (FR-026). An unoffered `month`, `department` or `role` throws `BadRequestError`.
 
 ### UI foundation
 
-- [ ] T031 [P] Write `packages/dashboard-ui/scripts/build-shadow-css.mjs` (PostCSS), per research R2. It reads `design-kit/css/tokens.css`, `design-kit/css/base.css` and `design-kit/css/components.css` (read-only) plus `packages/dashboard-ui/src/styles/project.css`, rewrites `:root` → `:host` and `html`/`body` → `.cu-root`, puts `:host { all: initial; }` first, and writes `packages/dashboard-ui/dist/shadow.css`. Add a test, `packages/dashboard-ui/test/shadow-css.test.ts`, asserting the output has no `:root`, `html` or `body` selectors and that the `design-kit/` files are unchanged (hash comparison).
-- [ ] T032 [P] Create `packages/dashboard-ui/src/styles/project.css`, using kit tokens only (`var(--…)`), with no colour literals (Stylelint, T006). It holds the chart patterns, the selected-month band, the forecast hatch and dashed outline, the booked tint and the focus ring.
-- [ ] T033 [P] Define the `DashboardClient` interface in `packages/dashboard-ui/src/data/DashboardClient.ts`:
+- [X] T031 [P] Write `packages/dashboard-ui/scripts/build-shadow-css.mjs` (PostCSS), per research R2. It reads `design-kit/css/tokens.css`, `design-kit/css/base.css` and `design-kit/css/components.css` (read-only) plus `packages/dashboard-ui/src/styles/project.css`, rewrites `:root` → `:host` and `html`/`body` → `.cu-root`, puts `:host { all: initial; }` first, and writes `packages/dashboard-ui/dist/shadow.css`. Add a test, `packages/dashboard-ui/test/shadow-css.test.ts`, asserting the output has no `:root`, `html` or `body` selectors and that the `design-kit/` files are unchanged (hash comparison).
+- [X] T032 [P] Create `packages/dashboard-ui/src/styles/project.css`, using kit tokens only (`var(--…)`), with no colour literals (Stylelint, T006). It holds the chart patterns, the selected-month band, the forecast hatch and dashed outline, the booked tint and the focus ring.
+- [X] T033 [P] Define the `DashboardClient` interface in `packages/dashboard-ui/src/data/DashboardClient.ts`:
   - `getDashboard(query)` → `{kind: "ok", data: DashboardResponse} | {kind: "forbidden"} | {kind: "unauthenticated"} | {kind: "badRequest"} | {kind: "unavailable"}`;
   - `requestRefresh()` → `{kind: "queued" | "alreadyRunning", nextAllowedAt} | {kind: "tooSoon", nextAllowedAt} | {kind: "forbidden"}`.
-- [ ] T034 Implement `SampleDashboardClient` in `packages/dashboard-ui/src/data/SampleDashboardClient.ts`. It loads the fixtures and `@hrd/core` only through dynamic `import()`, so they are a separate chunk. It builds records with `buildRecords`, uses `fixtures/sample-sync-status.json` and `fixtures/sample-history.json`, and calls `buildDashboard` with `today` from its options (default `2026-10-27`) and `now` fixed at that date's 10:30 Europe/London, never the real clock, so the sample data reads as fresh in demos. `meta.dataMode` is always `sample`. `requestRefresh` simulates the 15-minute limit in memory.
-- [ ] T035 Build the app shell in `packages/dashboard-ui/src/App.tsx`, with `packages/dashboard-ui/src/components/SectionState.tsx` and `packages/dashboard-ui/src/components/MockDataNotice.tsx`. It has a header slot, a filters slot and six independent section slots. Each section shows a loading skeleton (`.skeleton`, never blank or zeros), an empty state (`.empty-state`) or an error state (`.notice`) from its own `status`. A "Mock data" `.notice` shows on every view when `meta.dataMode` is `sample` (FR-029). The app uses kit classes only. Add the test `packages/dashboard-ui/test/App.test.tsx`.
-- [ ] T036 Implement `mountDashboard(host, {client, noAccessContact, fontBaseUrl})` in `packages/dashboard-ui/src/mount.tsx`. It attaches an **open** shadow root to `host`, adds `dist/shadow.css` inside it, renders `<App>` inside `.cu-root`, and calls `ensureFonts(fontBaseUrl)`. That adds the Poppins `@font-face` rules (400–800) to `document.head` once. Menus, tooltips and modals must render inside the shadow root. Don't use `kit.js`.
-- [ ] T037 Build the Vite harness in `packages/dashboard-ui/harness/main.tsx`. It mounts with `SampleDashboardClient`, reads `?today=YYYY-MM-DD`, and reads `?state=loading|noData|staleFailed|staleThreshold|staleOvernight|sectionError|forbidden|unavailable`, which a `StateSimulatingClient` wrapper in `packages/dashboard-ui/harness/StateSimulatingClient.ts` turns into simulated states. Wire the root script `dev:harness`. Harness code must never be imported from `src/`.
-- [ ] T038 Set up Playwright and axe in `packages/dashboard-ui/e2e/playwright.config.ts`. Projects: desktop (1280×800) and phone (360×740, touch), in Chromium and WebKit, with the harness as `webServer`. Add `packages/dashboard-ui/e2e/a11y.spec.ts`, asserting `@axe-core/playwright` (WCAG 2.1 A/AA tags) reports no violations, and no horizontal scroll at 360 px. Wire the root script `test:e2e`.
+- [X] T034 Implement `SampleDashboardClient` in `packages/dashboard-ui/src/data/SampleDashboardClient.ts`. It loads the fixtures and `@hrd/core` only through dynamic `import()`, so they are a separate chunk. It builds records with `buildRecords`, uses `fixtures/sample-sync-status.json` and `fixtures/sample-history.json`, and calls `buildDashboard` with `today` from its options (default `2026-10-27`) and `now` fixed at that date's 10:30 Europe/London, never the real clock, so the sample data reads as fresh in demos. `meta.dataMode` is always `sample`. `requestRefresh` simulates the 15-minute limit in memory.
+- [X] T035 Build the app shell in `packages/dashboard-ui/src/App.tsx`, with `packages/dashboard-ui/src/components/SectionState.tsx` and `packages/dashboard-ui/src/components/MockDataNotice.tsx`. It has a header slot, a filters slot and six independent section slots. Each section shows a loading skeleton (`.skeleton`, never blank or zeros), an empty state (`.empty-state`) or an error state (`.notice`) from its own `status`. A "Mock data" `.notice` shows on every view when `meta.dataMode` is `sample` (FR-029). The app uses kit classes only. Add the test `packages/dashboard-ui/test/App.test.tsx`.
+- [X] T036 Implement `mountDashboard(host, {client, noAccessContact, fontBaseUrl})` in `packages/dashboard-ui/src/mount.tsx`. It attaches an **open** shadow root to `host`, adds `dist/shadow.css` inside it, renders `<App>` inside `.cu-root`, and calls `ensureFonts(fontBaseUrl)`. That adds the Poppins `@font-face` rules (400–800) to `document.head` once. Menus, tooltips and modals must render inside the shadow root. Don't use `kit.js`.
+- [X] T037 Build the Vite harness in `packages/dashboard-ui/harness/main.tsx`. It mounts with `SampleDashboardClient`, reads `?today=YYYY-MM-DD`, and reads `?state=loading|noData|staleFailed|staleThreshold|staleOvernight|sectionError|forbidden|unavailable`, which a `StateSimulatingClient` wrapper in `packages/dashboard-ui/harness/StateSimulatingClient.ts` turns into simulated states. Wire the root script `dev:harness`. Harness code must never be imported from `src/`.
+- [X] T038 Set up Playwright and axe in `packages/dashboard-ui/e2e/playwright.config.ts`. Projects: desktop (1280×800) and phone (360×740, touch), in Chromium and WebKit, with the harness as `webServer`. Add `packages/dashboard-ui/e2e/a11y.spec.ts`, asserting `@axe-core/playwright` (WCAG 2.1 A/AA tags) reports no violations, and no horizontal scroll at 360 px. Wire the root script `test:e2e`.
 
 ### SPFx shell
 
 - [ ] T039 Implement `apps/webpart/src/webparts/hrDashboard/HrDashboardWebPart.ts`. Properties: `dataSource` (`sample` | `api`, default `sample`), `sampleToday` (default `2026-10-27`), `apiBaseUrl`, `apiAppIdUri` and `noAccessContact`, all edited through the property pane. `render()` calls `mountDashboard` with `SampleDashboardClient` when `dataSource` is `sample`. Use `@hrd/dashboard-ui` through a `file:` dependency on `packages/dashboard-ui` (built `dist`). Copy `design-kit/fonts/*.woff2` and the logos into the web part's assets at build time (a build step, not by editing `design-kit/`), and pass their URL as `fontBaseUrl`.
 - [ ] T040 Wire the root script `build:webpart`. It builds `packages/dashboard-ui` (library and `shadow.css`), then runs the SPFx production bundle and package in `apps/webpart`, producing `apps/webpart/sharepoint/solution/*.sppkg`.
-- [ ] T041 Add a **Build & run** section to `CLAUDE.md` listing `npm ci`, `npm test`, `npm run dev:harness`, `npm run test:e2e` and `npm run build:webpart`, with the Node version. Update the status line to say implementation has started.
+- [X] T041 Add a **Build & run** section to `CLAUDE.md` listing `npm ci`, `npm test`, `npm run dev:harness`, `npm run test:e2e` and `npm run build:webpart`, with the Node version. Update the status line to say implementation has started.
 
 **Checkpoint**: `npm test` passes, and the harness shows the sample-data shell with six empty
 sections.
@@ -212,20 +212,20 @@ matches `fixtures/expected/kpis.md`, and "Last updated" shows 27 Oct 2026 09:00.
 
 ### Tests for User Story 1 ⚠️ write first, see them fail
 
-- [ ] T042 [US1] Work out by hand the expected M01–M05 values at today 2026-10-27, with the workings, in `fixtures/expected/kpis.md`. Do this for: All; department Sales; role Senior Energy Analyst; and a group with no staff. For M04, list the 13 headcount dates (2026-10-27, 2026-09-27 … 2025-10-27).
-- [ ] T043 [P] [US1] Write failing tests `packages/core/test/metrics/m01-headcount.test.ts`, `m02-on-leave-today.test.ts` and `m03-off-sick-today.test.ts`, using kpis.md and the M01–M03 edge cases: a leaver with `endDate` = today counts; a future starter doesn't; a morning-only leave counts; two overlapping records count once; public holidays don't count; today being a weekend or bank holiday gives 0; open-ended sickness counts; pregnancy-related sickness counts in M03.
-- [ ] T044 [P] [US1] Write failing tests in `packages/core/test/metrics/m04-attrition-12m.test.ts`, using kpis.md and the M04 edge cases: H̄ = 0 → `noStaff`; someone who started and left inside P counts as a leaver; a future `endDate` isn't a leaver; today 2028-02-29 uses 2027-02-28.
-- [ ] T045 [P] [US1] Write failing tests in `packages/core/test/metrics/m05-bradford.test.ts`, using kpis.md and the M05 edge cases: no employees → `noStaff`; a basis shorter than 364 days → `basisIsPartial` with `basisStartDate`; an episode starting before B counts in S, but only its days inside B count in D; open-ended counts up to today; a starter part-way through; pregnancy-related left out; a merged episode counts once.
+- [X] T042 [US1] Work out by hand the expected M01–M05 values at today 2026-10-27, with the workings, in `fixtures/expected/kpis.md`. Do this for: All; department Sales; role Senior Energy Analyst; and a group with no staff. For M04, list the 13 headcount dates (2026-10-27, 2026-09-27 … 2025-10-27).
+- [X] T043 [P] [US1] Write failing tests `packages/core/test/metrics/m01-headcount.test.ts`, `m02-on-leave-today.test.ts` and `m03-off-sick-today.test.ts`, using kpis.md and the M01–M03 edge cases: a leaver with `endDate` = today counts; a future starter doesn't; a morning-only leave counts; two overlapping records count once; public holidays don't count; today being a weekend or bank holiday gives 0; open-ended sickness counts; pregnancy-related sickness counts in M03.
+- [X] T044 [P] [US1] Write failing tests in `packages/core/test/metrics/m04-attrition-12m.test.ts`, using kpis.md and the M04 edge cases: H̄ = 0 → `noStaff`; someone who started and left inside P counts as a leaver; a future `endDate` isn't a leaver; today 2028-02-29 uses 2027-02-28.
+- [X] T045 [P] [US1] Write failing tests in `packages/core/test/metrics/m05-bradford.test.ts`, using kpis.md and the M05 edge cases: no employees → `noStaff`; a basis shorter than 364 days → `basisIsPartial` with `basisStartDate`; an episode starting before B counts in S, but only its days inside B count in D; open-ended counts up to today; a starter part-way through; pregnancy-related left out; a merged episode counts once.
 
 ### Implementation for User Story 1
 
-- [ ] T046 [P] [US1] Implement M01–M03 in `packages/core/src/metrics/headcount.ts`, `packages/core/src/metrics/onLeaveToday.ts` and `packages/core/src/metrics/offSickToday.ts`. Head each with `// Metric: docs/metric-catalogue.md#m01` (and `#m02`, `#m03`).
-- [ ] T047 [P] [US1] Implement M04 in `packages/core/src/metrics/attrition12m.ts` (`// Metric: …#m04`). Keep values unrounded inside the calculation, and round to 1 decimal place only in the response.
-- [ ] T048 [P] [US1] Implement M05 in `packages/core/src/metrics/bradford.ts` (`// Metric: …#m05`).
-- [ ] T049 [US1] Fill the `kpis` section in `packages/core/src/dashboard/buildDashboard.ts` from T046–T048. Extend `packages/core/test/buildDashboard.test.ts` to check that the section matches kpis.md for each filter.
-- [ ] T050 [P] [US1] Build `KpiRow` in `packages/dashboard-ui/src/components/KpiRow.tsx` with `.kpi-strip` and `.kpi-mini`. It has five tiles with labels. An attrition or Bradford value with `noStaff` shows "No staff in this group". `basisIsPartial` shows "Based on data since <date>". Numbers use tabular figures. Add the test `packages/dashboard-ui/test/KpiRow.test.tsx`.
-- [ ] T051 [P] [US1] Build `LastUpdated` in `packages/dashboard-ui/src/components/LastUpdated.tsx`. It shows "Last updated <d MMM yyyy, HH:mm>" in Europe/London time from `freshness.lastSuccessAt`, in the header on every view (FR-023). Add the test `packages/dashboard-ui/test/LastUpdated.test.tsx`.
-- [ ] T052 [US1] Write the end-to-end test `packages/dashboard-ui/e2e/kpis.spec.ts`. With the harness at `?today=2026-10-27`, the KPI values equal kpis.md, "Last updated" is shown, and axe reports no violations.
+- [X] T046 [P] [US1] Implement M01–M03 in `packages/core/src/metrics/headcount.ts`, `packages/core/src/metrics/onLeaveToday.ts` and `packages/core/src/metrics/offSickToday.ts`. Head each with `// Metric: docs/metric-catalogue.md#m01` (and `#m02`, `#m03`).
+- [X] T047 [P] [US1] Implement M04 in `packages/core/src/metrics/attrition12m.ts` (`// Metric: …#m04`). Keep values unrounded inside the calculation, and round to 1 decimal place only in the response.
+- [X] T048 [P] [US1] Implement M05 in `packages/core/src/metrics/bradford.ts` (`// Metric: …#m05`).
+- [X] T049 [US1] Fill the `kpis` section in `packages/core/src/dashboard/buildDashboard.ts` from T046–T048. Extend `packages/core/test/buildDashboard.test.ts` to check that the section matches kpis.md for each filter.
+- [X] T050 [P] [US1] Build `KpiRow` in `packages/dashboard-ui/src/components/KpiRow.tsx` with `.kpi-strip` and `.kpi-mini`. It has five tiles with labels. An attrition or Bradford value with `noStaff` shows "No staff in this group". `basisIsPartial` shows "Based on data since <date>". Numbers use tabular figures. Add the test `packages/dashboard-ui/test/KpiRow.test.tsx`.
+- [X] T051 [P] [US1] Build `LastUpdated` in `packages/dashboard-ui/src/components/LastUpdated.tsx`. It shows "Last updated <d MMM yyyy, HH:mm>" in Europe/London time from `freshness.lastSuccessAt`, in the header on every view (FR-023). Add the test `packages/dashboard-ui/test/LastUpdated.test.tsx`.
+- [X] T052 [US1] Write the end-to-end test `packages/dashboard-ui/e2e/kpis.spec.ts`. With the harness at `?today=2026-10-27`, the KPI values equal kpis.md, "Last updated" is shown, and axe reports no violations.
 
 **Checkpoint**: US1 works in the harness and in the SPFx web part in sample mode.
 
@@ -241,8 +241,8 @@ the 20-day absence isn't listed (spec US3).
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T053 [US3] Work out by hand the expected Today and Upcoming entries at 2026-10-27 in `fixtures/expected/sales.md`: name, role, type, reason, start, end, return date, status and order. Include the "Not yet known" and `FirstHalf` return-date cases, `departmentsNotFound` with a settings line `Sales Ops`, and `outsideFilter` with department Pricing.
-- [ ] T054 [P] [US3] Write failing tests in `packages/core/test/metrics/m15-sales.test.ts`, using sales.md:
+- [X] T053 [US3] Work out by hand the expected Today and Upcoming entries at 2026-10-27 in `fixtures/expected/sales.md`: name, role, type, reason, start, end, return date, status and order. Include the "Not yet known" and `FirstHalf` return-date cases, `departmentsNotFound` with a settings line `Sales Ops`, and `outsideFilter` with department Pricing.
+- [X] T054 [P] [US3] Write failing tests in `packages/core/test/metrics/m15-sales.test.ts`, using sales.md:
   - Today vs Upcoming (tomorrow … today + 14) and the 20-day exclusion;
   - `publicHoliday` left out;
   - return date `nextWorkingDay(endDate)`, except "If `endPart` = `FirstHalf`, the return date is `endDate`";
@@ -251,14 +251,14 @@ the 20-day absence isn't listed (spec US3).
   - role filter applied;
   - `departmentsNotFound`, `outsideFilter`, status `Approved` and `pendingAvailable: false`;
   - someone off today and tomorrow appears in both tabs.
-- [ ] T055 [P] [US3] Write failing tests in `packages/core/test/sync/sickness-reasons.test.ts` for which reasons are kept. Quote: "A sickness absence of a current Sales-department employee that overlaps today to today + 14 days, or is open-ended". Reasons outside that rule are dropped.
+- [X] T055 [P] [US3] Write failing tests in `packages/core/test/sync/sickness-reasons.test.ts` for which reasons are kept. Quote: "A sickness absence of a current Sales-department employee that overlaps today to today + 14 days, or is open-ended". Reasons outside that rule are dropped.
 
 ### Implementation for User Story 3
 
-- [ ] T056 [P] [US3] Implement M15 in `packages/core/src/metrics/salesAbsences.ts` (`// Metric: …#m15`).
-- [ ] T057 [P] [US3] Implement `selectSicknessReasons(records, rawSicknessAbsences, settings, today)` in `packages/core/src/sync/sicknessReasons.ts`, and use it in `SampleDashboardClient` to build the sample reasons.
-- [ ] T058 [US3] Fill the `salesAbsences` section in `packages/core/src/dashboard/buildDashboard.ts`. It always uses today, whatever month is picked (FR-022). Sickness reasons appear **only** in this section (FR-006). Add a test asserting no other section's JSON contains any fixture reason text.
-- [ ] T059 [US3] Build `SalesList` in `packages/dashboard-ui/src/components/SalesList.tsx`:
+- [X] T056 [P] [US3] Implement M15 in `packages/core/src/metrics/salesAbsences.ts` (`// Metric: …#m15`).
+- [X] T057 [P] [US3] Implement `selectSicknessReasons(records, rawSicknessAbsences, settings, today)` in `packages/core/src/sync/sicknessReasons.ts`, and use it in `SampleDashboardClient` to build the sample reasons.
+- [X] T058 [US3] Fill the `salesAbsences` section in `packages/core/src/dashboard/buildDashboard.ts`. It always uses today, whatever month is picked (FR-022). Sickness reasons appear **only** in this section (FR-006). Add a test asserting no other section's JSON contains any fixture reason text.
+- [X] T059 [US3] Build `SalesList` in `packages/dashboard-ui/src/components/SalesList.tsx`:
   - a `.seg` Today/Upcoming switch (`aria-pressed`, keyboard operable);
   - a `.table` with columns Name, Role, Absence type (with the reason where present), Start, End, Return date and Status, and half-day parts shown as "(morning)"/"(afternoon)";
   - "Nobody in Sales is off" instead of an empty table;
@@ -268,7 +268,7 @@ the 20-day absence isn't listed (spec US3).
   - stacked rows on narrow screens.
 
   Add the test `packages/dashboard-ui/test/SalesList.test.tsx`.
-- [ ] T060 [US3] Write the end-to-end test `packages/dashboard-ui/e2e/sales.spec.ts`. The list matches sales.md, the switch works by keyboard and touch, and axe reports no violations.
+- [X] T060 [US3] Write the end-to-end test `packages/dashboard-ui/e2e/sales.spec.ts`. The list matches sales.md, the switch works by keyboard and touch, and axe reports no violations.
 
 **Checkpoint**: US1 and US3 both work on their own.
 
@@ -286,7 +286,7 @@ available.
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T061 [US4] Work out by hand the M16 cases in `fixtures/expected/freshness.md`:
+- [X] T061 [US4] Work out by hand the M16 cases in `fixtures/expected/freshness.md`:
   - Monday 07:00 after a good 02:00 run → fresh;
   - 02:10 while the overnight run is still going → judged against the previous night;
   - last attempt `Failed` → `lastAttemptFailed`;
@@ -294,20 +294,20 @@ available.
   - the same with an interval of 2 → fresh, because the threshold is 3 hours;
   - 21:00 with no successful 02:00 run → `overnightMissed`;
   - `lastSuccessAt` null → `noDataYet`.
-- [ ] T062 [P] [US4] Write failing tests in `packages/core/test/metrics/m16-freshness.test.ts`, using freshness.md. `syncIntervalHours` (1 or 2) is a parameter, never read from the environment.
+- [X] T062 [P] [US4] Write failing tests in `packages/core/test/metrics/m16-freshness.test.ts`, using freshness.md. `syncIntervalHours` (1 or 2) is a parameter, never read from the environment.
 
 ### Implementation for User Story 4
 
-- [ ] T063 [US4] Implement M16 in `packages/core/src/metrics/freshness.ts` (`// Metric: …#m16`). Fill `freshness` and `refresh.nextAllowedAt` in `packages/core/src/dashboard/buildDashboard.ts`.
-- [ ] T064 [P] [US4] Build `FreshnessNotice` in `packages/dashboard-ui/src/components/FreshnessNotice.tsx` (`.notice`):
+- [X] T063 [US4] Implement M16 in `packages/core/src/metrics/freshness.ts` (`// Metric: …#m16`). Fill `freshness` and `refresh.nextAllowedAt` in `packages/core/src/dashboard/buildDashboard.ts`.
+- [X] T064 [P] [US4] Build `FreshnessNotice` in `packages/dashboard-ui/src/components/FreshnessNotice.tsx` (`.notice`):
   - "No data yet" (with no zeros shown);
   - "The latest BrightHR update failed. Data last updated <time>.";
   - "Data may be out of date. Last updated <time>.";
   - "Last night's update didn't complete. Data last updated <time>.".
 
   Sections keep showing the most recent good data. Add the test `packages/dashboard-ui/test/FreshnessNotice.test.tsx`.
-- [ ] T065 [P] [US4] Build `RefreshButton` in `packages/dashboard-ui/src/components/RefreshButton.tsx`. It calls `client.requestRefresh()`. On `tooSoon` it shows "Next refresh available at HH:mm". On `queued` it shows a busy `.pill.is-busy`, polls `getDashboard` every 15 s for up to 10 minutes until `freshness.lastSuccessAt` changes, then reloads every section (research R8). Add a test with fake timers, `packages/dashboard-ui/test/RefreshButton.test.tsx`.
-- [ ] T066 [US4] Write the end-to-end test `packages/dashboard-ui/e2e/states.spec.ts`. It covers every harness `?state=` value plus a single-section error with the other sections still rendered (FR-026). Run axe on each state.
+- [X] T065 [P] [US4] Build `RefreshButton` in `packages/dashboard-ui/src/components/RefreshButton.tsx`. It calls `client.requestRefresh()`. On `tooSoon` it shows "Next refresh available at HH:mm". On `queued` it shows a busy `.pill.is-busy`, polls `getDashboard` every 15 s for up to 10 minutes until `freshness.lastSuccessAt` changes, then reloads every section (research R8). Add a test with fake timers, `packages/dashboard-ui/test/RefreshButton.test.tsx`.
+- [X] T066 [US4] Write the end-to-end test `packages/dashboard-ui/e2e/states.spec.ts`. It covers every harness `?state=` value plus a single-section error with the other sections still rendered (FR-026). Run axe on each state.
 
 **Checkpoint**: US4's UI behaviour is demonstrable on sample data.
 
@@ -325,18 +325,18 @@ same values.
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T067 [US5] Work out by hand the expected values for Jul 2026 – Jan 2027 at today 2026-10-27, in `fixtures/expected/leave.md` (M06), `fixtures/expected/sickness.md` (M07, M08) and `fixtures/expected/absence.md` (M09). Do the same for the sickness forecast (M13) in `fixtures/expected/forecast-sickness.md`, both with `historyStartDate` 2025-10-01 (12 basis months) and with 2026-07-29 (fewer than 3 full months → `notEnoughHistory`).
-- [ ] T068 [P] [US5] Write failing tests in `packages/core/test/metrics/m06-leave.test.ts`. Cover: split across months; half days; bank holidays; `toDate` includes leave booked for the rest of October; future months booked; `pendingDays` is `{value: null}`; partial-coverage months are marked.
-- [ ] T069 [P] [US5] Write failing tests in `packages/core/test/metrics/m07-sickness-days.test.ts` and `packages/core/test/metrics/m08-episodes.test.ts`. Cover: split; open-ended up to today; pregnancy-related **included**; an episode counted once, in its start month; merged absences counted once; future months come from M13.
-- [ ] T070 [P] [US5] Write failing tests in `packages/core/test/metrics/m09-absence-by-type.test.ts`. Cover: the four categories; annual leave and public holidays left out; unknown `$type` → `other`; TOIL → `other`; future months have booked compassionate, unpaid and other, plus forecast sickness, each with its own `kind`.
-- [ ] T071 [P] [US5] Write failing tests in `packages/core/test/forecast/m13-sickness.test.ts`. Quote: "basis months = the 12 months before the current month whose coverage (D4) is `full`". Cover: fewer than 3 → `null` + `notEnoughHistory`; `forecastBasisMonths` reported; group membership per basis month (D3); 1 decimal place.
+- [X] T067 [US5] Work out by hand the expected values for Jul 2026 – Jan 2027 at today 2026-10-27, in `fixtures/expected/leave.md` (M06), `fixtures/expected/sickness.md` (M07, M08) and `fixtures/expected/absence.md` (M09). Do the same for the sickness forecast (M13) in `fixtures/expected/forecast-sickness.md`, both with `historyStartDate` 2025-10-01 (12 basis months) and with 2026-07-29 (fewer than 3 full months → `notEnoughHistory`).
+- [X] T068 [P] [US5] Write failing tests in `packages/core/test/metrics/m06-leave.test.ts`. Cover: split across months; half days; bank holidays; `toDate` includes leave booked for the rest of October; future months booked; `pendingDays` is `{value: null}`; partial-coverage months are marked.
+- [X] T069 [P] [US5] Write failing tests in `packages/core/test/metrics/m07-sickness-days.test.ts` and `packages/core/test/metrics/m08-episodes.test.ts`. Cover: split; open-ended up to today; pregnancy-related **included**; an episode counted once, in its start month; merged absences counted once; future months come from M13.
+- [X] T070 [P] [US5] Write failing tests in `packages/core/test/metrics/m09-absence-by-type.test.ts`. Cover: the four categories; annual leave and public holidays left out; unknown `$type` → `other`; TOIL → `other`; future months have booked compassionate, unpaid and other, plus forecast sickness, each with its own `kind`.
+- [X] T071 [P] [US5] Write failing tests in `packages/core/test/forecast/m13-sickness.test.ts`. Quote: "basis months = the 12 months before the current month whose coverage (D4) is `full`". Cover: fewer than 3 → `null` + `notEnoughHistory`; `forecastBasisMonths` reported; group membership per basis month (D3); 1 decimal place.
 
 ### Implementation for User Story 5
 
-- [ ] T072 [P] [US5] Implement M06–M09 in `packages/core/src/metrics/leaveDays.ts`, `packages/core/src/metrics/sicknessDays.ts`, `packages/core/src/metrics/sicknessEpisodes.ts` and `packages/core/src/metrics/absenceByType.ts`, each with its `// Metric:` link.
-- [ ] T073 [P] [US5] Implement M13 in `packages/core/src/forecast/sickness.ts` (`// Metric: …#m13`).
-- [ ] T074 [US5] Fill the `leave`, `sickness` and `absence` sections in `packages/core/src/dashboard/buildDashboard.ts`, with `period`, `isSelected`, `isCurrent` and `coverage` per month. Extend `packages/core/test/buildDashboard.test.ts`.
-- [ ] T075 [P] [US5] Build the chart primitives in `packages/dashboard-ui/src/charts/`:
+- [X] T072 [P] [US5] Implement M06–M09 in `packages/core/src/metrics/leaveDays.ts`, `packages/core/src/metrics/sicknessDays.ts`, `packages/core/src/metrics/sicknessEpisodes.ts` and `packages/core/src/metrics/absenceByType.ts`, each with its `// Metric:` link.
+- [X] T073 [P] [US5] Implement M13 in `packages/core/src/forecast/sickness.ts` (`// Metric: …#m13`).
+- [X] T074 [US5] Fill the `leave`, `sickness` and `absence` sections in `packages/core/src/dashboard/buildDashboard.ts`, with `period`, `isSelected`, `isCurrent` and `coverage` per month. Extend `packages/core/test/buildDashboard.test.ts`.
+- [X] T075 [P] [US5] Build the chart primitives in `packages/dashboard-ui/src/charts/` *(as built: `model.ts` holds the scale and the chart model, `patterns.tsx` the patterns and swatches, `BarChart.tsx` the frame, roving focus and tooltip together, plus `Legend.tsx` and `ChartSection.tsx`)*:
   - `scale.ts`: one zero-based scale per chart;
   - `ChartFrame.tsx`: axes, the selected-month band, a bold label for the selected month, and "to date" under the current month;
   - `patterns.tsx`: an SVG hatch for forecasts, a tint for booked values, and one pattern per series using `--series-*` in kit order with `.tone-*` classes;
@@ -344,14 +344,14 @@ same values.
   - `ChartTooltip.tsx`: shown on hover, tap and focus, with the exact value, the month, and "Actual", "To date", "Booked", "Known" or "Forecast" (FR-017).
 
   Add the test `packages/dashboard-ui/test/charts.test.tsx`.
-- [ ] T076 [P] [US5] Build `ChartTable` in `packages/dashboard-ui/src/charts/ChartTable.tsx`: a "Show table" / "Show chart" toggle that renders a `.table` with the same values and kind labels, reachable by keyboard and screen reader (FR-018). Add the test `packages/dashboard-ui/test/ChartTable.test.tsx`.
-- [ ] T077 [US5] Build the chart components in `packages/dashboard-ui/src/charts/`: `ColumnChart.tsx`, `StackedColumnChart.tsx`, and `ComboChart.tsx` (columns plus a row of value labels, with no second axis). Then build the sections:
+- [X] T076 [P] [US5] Build `ChartTable` in `packages/dashboard-ui/src/charts/ChartTable.tsx`: a "Show table" / "Show chart" toggle that renders a `.table` with the same values and kind labels, reachable by keyboard and screen reader (FR-018). Add the test `packages/dashboard-ui/test/ChartTable.test.tsx`.
+- [X] T077 [US5] Build the chart components in `packages/dashboard-ui/src/charts/` *(as built: one `BarChart` covers column, stacked and combined charts, driven by models in `src/components/trendCharts.ts`)*: `ColumnChart.tsx`, `StackedColumnChart.tsx`, and `ComboChart.tsx` (columns plus a row of value labels, with no second axis). Then build the sections:
   - `packages/dashboard-ui/src/components/LeaveChart.tsx`: approved days, with the note "Pending: not available from BrightHR yet".
   - `packages/dashboard-ui/src/components/SicknessChart.tsx`: day columns, with episodes as a labelled row under each month.
   - `packages/dashboard-ui/src/components/AbsenceChart.tsx`: stacked sickness, compassionate, unpaid and other, in that order, with a legend.
 
   All three show "No absence data before <date>" on `partial`/`none` months, and "Not enough history to forecast" when `notEnoughHistory`. Forecast columns are hatched with a dashed outline and labelled "Forecast" on the axis. Colour is never the only cue (FR-015, Principle IV).
-- [ ] T078 [US5] Write the end-to-end test `packages/dashboard-ui/e2e/trends.spec.ts`. It checks the Jul 2026 – Jan 2027 axis, the October highlight and "to date", values against the expected files, "Forecast" labels, keyboard tooltips, the table view, the phone layout, and axe on each chart and table.
+- [X] T078 [US5] Write the end-to-end test `packages/dashboard-ui/e2e/trends.spec.ts`. It checks the Jul 2026 – Jan 2027 axis, the October highlight and "to date", values against the expected files, "Forecast" labels, keyboard tooltips, the table view, the phone layout, and axe on each chart and table.
 
 **Checkpoint**: US1, US3, US4 (UI) and US5 work on sample data.
 
@@ -368,17 +368,17 @@ forecast. Forecast values are labelled "Forecast". Past monthly rates match
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T079 [US6] Work out by hand the expected M10–M12 and M14 values for Jul 2026 – Jan 2027 at 2026-10-27, in `fixtures/expected/attrition.md`. Include the known December leaver, a future starter, the current month's "to date" rate, and further leavers = max(0, avg − known).
-- [ ] T080 [P] [US6] Write failing tests in `packages/core/test/metrics/m10-leavers.test.ts`, `m11-starters.test.ts` and `m12-monthly-attrition.test.ts`. Cover: `actual` vs `known`, with both in the current month; a leaver counted in headcount up to `endDate`; a denominator of 0 → `null` + `noStaff`; future rate `null`; the `toDate` rate uses D6(today).
-- [ ] T081 [P] [US6] Write failing tests in `packages/core/test/forecast/m14-leavers.test.ts`. Quote: "basis months = the 12 months before the current month in which the group's headcount at the start of the month was more than 0". Cover: fewer than 3 → `null` + `notEnoughHistory`; known leavers above the average → 0; not limited by `historyStartDate`.
+- [X] T079 [US6] Work out by hand the expected M10–M12 and M14 values for Jul 2026 – Jan 2027 at 2026-10-27, in `fixtures/expected/attrition.md`. Include the known December leaver, a future starter, the current month's "to date" rate, and further leavers = max(0, avg − known).
+- [X] T080 [P] [US6] Write failing tests in `packages/core/test/metrics/m10-leavers.test.ts`, `m11-starters.test.ts` and `m12-monthly-attrition.test.ts`. Cover: `actual` vs `known`, with both in the current month; a leaver counted in headcount up to `endDate`; a denominator of 0 → `null` + `noStaff`; future rate `null`; the `toDate` rate uses D6(today).
+- [X] T081 [P] [US6] Write failing tests in `packages/core/test/forecast/m14-leavers.test.ts`. Quote: "basis months = the 12 months before the current month in which the group's headcount at the start of the month was more than 0". Cover: fewer than 3 → `null` + `notEnoughHistory`; known leavers above the average → 0; not limited by `historyStartDate`.
 
 ### Implementation for User Story 6
 
-- [ ] T082 [P] [US6] Implement M10–M12 in `packages/core/src/metrics/leavers.ts`, `packages/core/src/metrics/starters.ts` and `packages/core/src/metrics/monthlyAttrition.ts`, each with its `// Metric:` link.
-- [ ] T083 [P] [US6] Implement M14 in `packages/core/src/forecast/leavers.ts` (`// Metric: …#m14`).
-- [ ] T084 [US6] Fill the `attrition` section in `packages/core/src/dashboard/buildDashboard.ts`. Extend `packages/core/test/buildDashboard.test.ts`.
-- [ ] T085 [US6] Build `AttritionChart` in `packages/dashboard-ui/src/components/AttritionChart.tsx`, using the T075 primitives. Leavers and starters are side-by-side column groups: actual solid, known with a distinct pattern and the label "Known", forecast hatched with the label "Forecast". The rate % is a line with dot markers, shown for past months and the current month only. It has a legend and a table view. Add the test `packages/dashboard-ui/test/AttritionChart.test.tsx`.
-- [ ] T086 [US6] Write the end-to-end test `packages/dashboard-ui/e2e/attrition.spec.ts`: values against attrition.md, the known December leaver apart from the forecast, labels, keyboard access and axe.
+- [X] T082 [P] [US6] Implement M10–M12 in `packages/core/src/metrics/leavers.ts`, `packages/core/src/metrics/starters.ts` and `packages/core/src/metrics/monthlyAttrition.ts`, each with its `// Metric:` link.
+- [X] T083 [P] [US6] Implement M14 in `packages/core/src/forecast/leavers.ts` (`// Metric: …#m14`).
+- [X] T084 [US6] Fill the `attrition` section in `packages/core/src/dashboard/buildDashboard.ts`. Extend `packages/core/test/buildDashboard.test.ts`.
+- [X] T085 [US6] Build `AttritionChart` in `packages/dashboard-ui/src/components/AttritionChart.tsx`, using the T075 primitives *(as built: the model is `src/components/attritionChart.ts`, drawn by `BarChart` with a whole-number axis)*. Leavers and starters are side-by-side column groups: actual solid, known with a distinct pattern and the label "Known", forecast hatched with the label "Forecast". The rate % is a line with dot markers, shown for past months and the current month only. It has a legend and a table view. Add the test `packages/dashboard-ui/test/AttritionChart.test.tsx`.
+- [X] T086 [US6] Write the end-to-end test `packages/dashboard-ui/e2e/attrition.spec.ts`: values against attrition.md, the known December leaver apart from the forecast, labels, keyboard access and axe.
 
 **Checkpoint**: every chart works on sample data.
 
@@ -394,14 +394,14 @@ actuals with May highlighted, while the today KPIs and the Sales list stay the s
 
 ### Tests for User Story 7 ⚠️
 
-- [ ] T087 [US7] Work out by hand the expected values for role Senior Energy Analyst, department Pricing, month 2026-05, and the employee who moved from Analysis to Sales in 2026-08 (past months under Analysis, current under Sales), in `fixtures/expected/filters.md`.
-- [ ] T088 [P] [US7] Write failing tests in `packages/core/test/filters.test.ts`, using filters.md. Every section respects department and role (D3 for past months). Month 2026-05 gives a Feb–Aug window, all `actual`, with no forecasts (FR-021). Today's KPIs and the Sales list don't change with the month (FR-022). An unoffered option gives `BadRequestError`.
+- [X] T087 [US7] Work out by hand the expected values for role Senior Energy Analyst, department Pricing, month 2026-05, and the employee who moved from Analysis to Sales in 2026-08 (past months under Analysis, current under Sales), in `fixtures/expected/filters.md`.
+- [X] T088 [P] [US7] Write failing tests in `packages/core/test/filters.test.ts`, using filters.md. Every section respects department and role (D3 for past months). Month 2026-05 gives a Feb–Aug window, all `actual`, with no forecasts (FR-021). Today's KPIs and the Sales list don't change with the month (FR-022). An unoffered option gives `BadRequestError`.
 
 ### Implementation for User Story 7
 
-- [ ] T089 [US7] Apply the department, role and month query throughout `packages/core/src/dashboard/buildDashboard.ts`, so T088 passes.
-- [ ] T090 [US7] Build `Filters` in `packages/dashboard-ui/src/components/Filters.tsx`. It has three `.select-trigger` + `.menu` dropdowns (Department, Role, Month), rebuilt in React with a listbox pattern: Enter, Space and the arrow keys open and move, Escape closes, focus returns to the trigger, and `aria-expanded` and `aria-activedescendant` are set. Use `.is-filtered` when not "All". Show the note "Departments and roles before <month> use the earliest values known" when relevant. Keep the previous data visible while the new data loads. Add the test `packages/dashboard-ui/test/Filters.test.tsx`.
-- [ ] T091 [US7] Write the end-to-end test `packages/dashboard-ui/e2e/filters.spec.ts`: the three filter scenarios above, keyboard-only use, the phone layout and axe.
+- [X] T089 [US7] Apply the department, role and month query throughout `packages/core/src/dashboard/buildDashboard.ts`, so T088 passes.
+- [X] T090 [US7] Build `Filters` in `packages/dashboard-ui/src/components/Filters.tsx`. It has three `.select-trigger` + `.menu` dropdowns (Department, Role, Month), rebuilt in React with a listbox pattern: Enter, Space and the arrow keys open and move, Escape closes, focus returns to the trigger, and `aria-expanded` and `aria-activedescendant` are set. Use `.is-filtered` when not "All". Show the note "Departments and roles before <month> use the earliest values known" when relevant. Keep the previous data visible while the new data loads. Add the test `packages/dashboard-ui/test/Filters.test.tsx`.
+- [X] T091 [US7] Write the end-to-end test `packages/dashboard-ui/e2e/filters.spec.ts`: the three filter scenarios above, keyboard-only use, the phone layout and axe.
 
 **Checkpoint**: the whole dashboard works on sample data in the harness.
 
@@ -411,9 +411,9 @@ actuals with May highlighted, while the today KPIs and the Sales list stay the s
 
 **Purpose**: Package the sample-data web part for a demo in SharePoint, and record the checks.
 
-- [ ] T092 Write `scripts/check-bundle.mjs` and wire it into `build:webpart`. It scans the `.sppkg` and the SPFx release JavaScript and **fails** on: `api.bright.hr`, `login.brighthr.com`, `@Microsoft.KeyVault`, `client_secret`, strings that look like secrets (long base64 or hex blobs next to `secret`/`key`/`password`), or `StateSimulatingClient`/`harness`. It checks that the fixtures appear **only** in the lazily loaded sample-data chunk, not in the main web part bundle.
-- [ ] T093 [P] Write the demo runbook `docs/runbooks/demo-sample-webpart.md`, for a human to follow. Build the package, then upload the `.sppkg` to the app catalog (a SharePoint admin). Add the web part to a test page with `dataSource = sample`, and check the "Mock data" label. It says no BrightHR, Azure or Entra setup is needed.
-- [ ] T094 [P] Create `docs/checks/manual-checks.md` from quickstart Q6 and Q9. It has rows for: keyboard-only, NVDA or Narrator on Windows, VoiceOver on iOS, the SharePoint app on iOS and Android, and the SharePoint page's own styling unchanged. Each row has columns for date, tester and result, for a human to fill in after the demo deployment.
+- [X] T092 Write `scripts/check-bundle.mjs` and wire it into `build:webpart`. It scans the `.sppkg` and the SPFx release JavaScript and **fails** on: `api.bright.hr`, `login.brighthr.com`, `@Microsoft.KeyVault`, `client_secret`, strings that look like secrets (long base64 or hex blobs next to `secret`/`key`/`password`), or `StateSimulatingClient`/`harness`. It checks that the fixtures appear **only** in the lazily loaded sample-data chunk, not in the main web part bundle.
+- [X] T093 [P] Write the demo runbook `docs/runbooks/demo-sample-webpart.md`, for a human to follow. Build the package, then upload the `.sppkg` to the app catalog (a SharePoint admin). Add the web part to a test page with `dataSource = sample`, and check the "Mock data" label. It says no BrightHR, Azure or Entra setup is needed.
+- [X] T094 [P] Create `docs/checks/manual-checks.md` from quickstart Q6 and Q9. It has rows for: keyboard-only, NVDA or Narrator on Windows, VoiceOver on iOS, the SharePoint app on iOS and Android, and the SharePoint page's own styling unchanged. Each row has columns for date, tester and result, for a human to fill in after the demo deployment.
 - [ ] T095 Run `npm test`, `npm run lint:css`, `npm run test:e2e` and `npm run build:webpart`. Fix any failures. Update `CLAUDE.md` (status: milestone 1 complete; Build & run) and `docs/metric-catalogue.md` for any rule clarified during implementation.
 
 **Checkpoint (Milestone 1)**: the sample-data web part can be demoed in SharePoint without
@@ -442,7 +442,7 @@ it off.
   - an unknown value fails start-up;
   - config values are never logged, and there is **no** auth-disable setting.
 - [ ] T098 [P] Write failing tests, then implement `apps/sync-function/src/log.ts`, with tests in `apps/sync-function/test/unit/log.test.ts`. Its typed logger accepts only fixed event names, failure codes (`BRIGHTHR_AUTH`, `BRIGHTHR_RATE_LIMIT`, `BRIGHTHR_UNAVAILABLE`, `GRAPH_WRITE`, `STORE_SCHEMA`, `SETTINGS_INVALID`, `UNKNOWN`) and numeric counts. It has no free-text or object parameters, so names, reasons and payloads can't be logged.
-- [ ] T099 Define the `BrightHrClient` interface (`queryEmployees({isTerminated, continuationToken})`, `queryAbsences({employeeId, from, to, continuationToken})`) in `apps/sync-function/src/brighthr/BrightHrClient.ts`. Write failing tests, then implement `MockBrightHrClient` in `apps/sync-function/src/brighthr/mockClient.ts`, with tests in `apps/sync-function/test/unit/mock-client.test.ts`. It serves `fixtures/brighthr/` and copies the documented behaviour in [contracts/brighthr-consumed.md](contracts/brighthr-consumed.md): paging with `pageSize` ≤ 100, a 400 for a missing `employeeId`, a 400 when `from` is more than 90 days before today (UTC), defaults of today, and approved absences only. "Today" comes from an injected clock.
+- [ ] T099 Define the `BrightHrClient` interface (`queryEmployees({isTerminated, continuationToken})`, `queryAbsences({employeeId, from, to, continuationToken})`) in `apps/sync-function/src/brighthr/BrightHrClient.ts`. Write failing tests, then implement `MockBrightHrClient` in `apps/sync-function/src/brighthr/mockClient.ts`, with tests in `apps/sync-function/test/unit/mock-client.test.ts`. It serves `fixtures/brighthr/` and copies the documented behaviour in [contracts/brighthr-consumed.md](contracts/brighthr-consumed.md): paging with `pageSize` ≤ 100, a 422 problem response for a missing `employeeId`, a 422 when `from` is more than 90 days before today (UTC), defaults of today, and approved absences only. "Today" comes from an injected clock.
 - [ ] T100 [P] Define the `DirectoryClient` interface (`listUsers()` → `{mail, userPrincipalName, department}[]`) in `apps/sync-function/src/graph/DirectoryClient.ts`. Implement `MockDirectoryClient` in `apps/sync-function/src/graph/mockDirectory.ts`, serving `fixtures/entra/users.json`.
 - [ ] T101 Define the `Store` interface in `apps/sync-function/src/store/Store.ts`. Methods: `readAll()`, `upsertEmployees`/`upsertAbsences`/`upsertHistory`/`replaceReasons` (each skips items whose `contentHash` is unchanged), `delete…`, `getStatus()` and `putStatus(status, etag)` (throws `PreconditionFailed` on an ETag mismatch), and `getSettings()`. Write failing tests, then implement `FileStore` in `apps/sync-function/src/store/fileStore.ts` (one JSON file per list under `LOCAL_DATA_DIR`, default `.local-data/`), with tests in `apps/sync-function/test/unit/file-store.test.ts`.
 - [ ] T102 [P] Write failing tests in `packages/core/test/sync/reconcile.test.ts` and `packages/core/test/sync/retention.test.ts`, then implement `packages/core/src/sync/reconcile.ts`, `packages/core/src/sync/retention.ts` and `packages/core/src/sync/history.ts` (research R11, data-model §2 state transitions). Test these rules, quoted word for word:

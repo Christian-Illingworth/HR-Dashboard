@@ -1,0 +1,27 @@
+[
+  {
+    "items": [
+      { "id": "e0000000-0000-4000-8000-000000000001", "name": { "givenName": "Amelia", "familyName": "Hart" }, "employment": { "jobTitle": "Sales Team Manager", "start": "2019-03-04", "end": null, "payrollNumber": null }, "email": "amelia.hart@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000002", "name": { "givenName": "Ben", "familyName": "Okafor" }, "employment": { "jobTitle": "Energy Analyst", "start": "2021-06-01", "end": null, "payrollNumber": null }, "email": "ben.okafor@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000003", "name": { "givenName": "Chloe", "familyName": "Patel" }, "employment": { "jobTitle": "Senior Energy Analyst", "start": "2020-09-14", "end": null, "payrollNumber": null }, "email": "chloe.patel@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000004", "name": { "givenName": "Daniel", "familyName": "Reyes" }, "employment": { "jobTitle": "Energy Analyst", "start": "2024-01-08", "end": null, "payrollNumber": null }, "email": "daniel.reyes@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000005", "name": { "givenName": "Ella", "familyName": "Novak" }, "employment": { "jobTitle": "Senior Pricing Specialist", "start": "2018-05-21", "end": null, "payrollNumber": null }, "email": "ella.novak@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000006", "name": { "givenName": "Finn", "familyName": "Gallagher" }, "employment": { "jobTitle": "Senior Pricing Specialist", "start": "2022-02-01", "end": null, "payrollNumber": null }, "email": "finn.gallagher@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000007", "name": { "givenName": "Grace", "familyName": "Lindqvist" }, "employment": { "jobTitle": "Senior Energy Analyst", "start": "2017-11-06", "end": null, "payrollNumber": null }, "email": "grace.lindqvist@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000008", "name": { "givenName": "Harry", "familyName": "Mensah" }, "employment": { "jobTitle": "Energy Analyst", "start": "2023-04-03", "end": null, "payrollNumber": null }, "email": "harry.mensah@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000009", "name": { "givenName": "Isla", "familyName": "Moreau" }, "employment": { "jobTitle": "Energy Analyst", "start": "2025-02-10", "end": null, "payrollNumber": null }, "email": "isla.moreau@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000010", "name": { "givenName": "Jacob", "familyName": "Ferreira" }, "employment": { "jobTitle": "Energy Analyst", "start": "2022-08-15", "end": null, "payrollNumber": null }, "email": "jacob.ferreira@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } }
+    ],
+    "continuationToken": "page-2"
+  },
+  {
+    "items": [
+      { "id": "e0000000-0000-4000-8000-000000000011", "name": { "givenName": "Kara", "familyName": "Whitfield" }, "employment": { "jobTitle": "Senior Energy Analyst", "start": "2016-01-11", "end": "2026-12-18", "payrollNumber": null }, "email": "kara.whitfield@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000012", "name": { "givenName": "Leo", "familyName": "Brennan" }, "employment": { "jobTitle": "Energy Analyst", "start": "2024-09-02", "end": "2026-10-27", "payrollNumber": null }, "email": "leo.brennan@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000013", "name": { "givenName": "Maya", "familyName": "Sorensen" }, "employment": { "jobTitle": "Energy Analyst", "start": "2023-10-02", "end": null, "payrollNumber": null }, "email": "maya.sorensen@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000014", "name": { "givenName": "Noah", "familyName": "Achebe" }, "employment": { "jobTitle": "Senior Energy Analyst", "start": "2021-01-04", "end": null, "payrollNumber": null }, "email": "noah.achebe@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } },
+      { "id": "e0000000-0000-4000-8000-000000000015", "name": { "givenName": "Olivia", "familyName": "Grant" }, "employment": { "jobTitle": "Energy Analyst", "start": "2026-11-16", "end": null, "payrollNumber": null }, "email": "olivia.grant@consultiv.example", "externalReference": null, "_metadata": { "isRegistered": true, "isTerminated": false } }
+    ],
+    "continuationToken": null
+  }
+]

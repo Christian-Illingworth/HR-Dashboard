@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Tests load fixture folders with Vite's import.meta.glob; src never uses it.
+    "types": ["vite/client"]
+  },
+  "include": ["src", "test"]
+}

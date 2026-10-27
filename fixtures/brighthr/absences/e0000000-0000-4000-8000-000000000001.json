@@ -1,0 +1,61 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000210",
+        "employeeId": "e0000000-0000-4000-8000-000000000001",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-04-02"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-04-07"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 3,
+          "description": "Cold or flu"
+        },
+        "duration": null,
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000102",
+        "employeeId": "e0000000-0000-4000-8000-000000000001",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-07-30"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-08-04"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000111",
+        "employeeId": "e0000000-0000-4000-8000-000000000001",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-11-16"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-11-20"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]
