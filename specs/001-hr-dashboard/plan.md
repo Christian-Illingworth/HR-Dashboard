@@ -96,9 +96,9 @@ Checked against constitution v2.0.0.
 | **II. Data Protection by Design** | ⚠️ Authorization would rest on list permissions with no automated tests. | ✅ Sickness reasons go only to role holders, in the Sales list only (FR-006, M15). `authorize()` has unit tests (quickstart Q2). Sync is allow-listed, and `note` is never read (data-model §1). There's a draft data inventory (data-model §5). Small-group inference doesn't apply: every user is entitled to everything. Revisit if restricted access is added. |
 | **III. SharePoint-Hosted, Consultiv-Branded** | ❌ Fluent UI and Fluent UI React Charting are forbidden. | ✅ Design kit only, with hand-built SVG charts (R1). Shadow-root isolation (R2). No `design-kit/` edits. A project stylesheet uses tokens only (Stylelint). Mobile app checks (Q9). The SPFx property pane is SharePoint's own UI, not the dashboard's. |
 | **IV. Accessible** | — | ✅ Charts have focusable points, tooltips by keyboard, mouse and touch, table views, and patterns plus labels (R1). axe and manual checks (Q6). |
-| **V. Honest Data** | — | ✅ Forecasts are hatched, dashed and labelled. Booked and to-date are labelled. Freshness is M16. History gaps are marked (D4, R11). The metric catalogue is data-model §4, moving to `docs/` in implementation. Sample data is labelled (R14). |
+| **V. Honest Data** | — | ✅ Forecasts are hatched, dashed and labelled. Booked and to-date are labelled. Freshness is M16. History gaps are marked (D4, R11). The metric catalogue is data-model §4, moving to `docs/` in implementation. Mock data is labelled "Mock data" (R14). |
 | **VI. Test-First Calculations** | ✅ The input already asked for unit-tested calculations. | ✅ Calculations are pure in `packages/core`, with "today" passed in. Expected values are worked out by hand in `fixtures/expected/`. Edge cases are listed per metric (Q1). |
-| **VII. Mock-First Development** | ⚠️ The mock sat in the web part. | ✅ Mocking happens at the Function's BrightHR client, switched by configuration (`BRIGHTHR_MODE`, default `mock`). It has the same shape and the documented API behaviour. Contract tests are ready for live access (R14). |
+| **VII. Mock-First Development** | ⚠️ The mock sat in the web part. | ✅ In `api` mode, mocking happens at the Function's BrightHR client, switched by configuration (`BRIGHTHR_MODE`, default `mock`), with the same shape and the documented API behaviour. Before the Function exists, the web part's `dataSource = sample` property (also configuration) runs the same calculations on the same BrightHR-shaped fixtures, labelled "Mock data". Contract tests are ready for live access (R14). |
 | **VIII. Keep It Simple** | ⚠️ A Power Automate premium fallback and a per-filter metrics list. | ✅ Uses licensed Azure and M365 only. No chart or UI library. Figures are worked out per request instead of being stored (R15). The fallback is dropped (R16). New infrastructure is justified below. |
 | **Security & Data Handling** | ⚠️ The access group could read the synced lists. | ✅ The data site is reachable only by the Function and named admins (R6). HTTPS throughout. Logs carry fixed failure codes and counts only (R7, R19). No writes to BrightHR. |
 
@@ -184,23 +184,23 @@ Keeping it free of I/O is what makes the calculations testable (Principle VI).
 
 ## Spec follow-ups
 
-These come from the BrightHR API findings. They need spec changes (through `/speckit-clarify`
-or a spec edit) before or during `/speckit-tasks`. Until then, the plan implements the
-behaviour in the right-hand column.
+All the follow-ups from the BrightHR API findings are now in the spec.
 
-| Spec item | Problem | Plan behaviour until the spec changes |
-|---|---|---|
-| FR-011, US5 scenario 2 | No pending absences in the API | Approved only. "Pending: not available from BrightHR yet" (R9, B3). |
-| FR-019, US3 scenario 2 | No Pending status | Every entry is "Approved". |
-| Assumption: "Leave and absence days use the lengths recorded in BrightHR" | Only sickness has a length | Calendar count, half-day rules, sickness `duration` (D1). Part-timers over-counted. |
-| Edge case: "Employee changes department or role" | No history before the first sync | Earliest known values before the first sync, flagged in the UI (D3). |
-| Key entity "Employee": "working pattern" | Not in the API | No working pattern (D1). |
+- **Resolved by `/speckit-clarify` on 2026-10-27**: the department source (Entra ID, FR-019),
+  known leavers (a future end date, FR-014), the 90-day lookback (FR-016 and the "First months
+  after launch" edge case), average headcount (FR-008), data administrators (FR-028) and the
+  2-hourly sync fallback (FR-024).
+- **Resolved after `/speckit-analyze` on 2026-10-27**:
+  - pending leave shown as "not available" until BrightHR provides it (FR-011, FR-019; US3 and
+    US5 scenario 2 blocked on B3);
+  - calendar day counting, with part-timers over-counted as an accepted limit (Assumptions, D1);
+  - department and role before the first sync (edge case, D3);
+  - removal from the group taking effect within 90 minutes (FR-003, US2 scenario 4);
+  - pregnancy-related reasons from settings (Assumptions, R13);
+  - the half-day return date, the Upcoming range, the picker limits and the meaning of "sync
+    hours" (FR-020, FR-019, FR-021, FR-024).
 
-Resolved by `/speckit-clarify` on 2026-10-27: the department source (Entra ID, FR-019), known
-leavers (a future end date, FR-014), the 90-day lookback (FR-016 and the "First months after
-launch" edge case), average headcount (FR-008), data administrators (FR-028) and the 2-hourly
-sync fallback (FR-024).
-| Assumption: pregnancy-related sickness | No flag in the API | Matched on reason text from settings (R13, B9). |
+**Still open, waiting on BrightHR**: pending absences (B3), which would reopen FR-011 and FR-019.
 
 ## Complexity Tracking
 

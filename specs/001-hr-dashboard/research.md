@@ -88,7 +88,10 @@ real devices in quickstart scenario Q9.
 `AadHttpClient`, which gets a token for the API's Entra app registration on behalf of the
 signed-in user. The Function checks the token and the access-group app role on every request,
 reads the synced data, works out the dashboard figures for the requested filters, and returns
-them. The web part never reads SharePoint lists itself. PnPjs is not used.
+them. The web part never reads SharePoint lists itself. PnPjs is not used. This applies to the
+web part's `dataSource = api` mode. In `dataSource = sample` mode, the web part contacts no back
+end at all and works out figures from bundled synthetic fixtures (R14), which is how it can be
+demoed before the Function exists.
 
 **Rationale**: the project owner chose this on 2026-10-27. It meets the constitution word for
 word:
@@ -126,8 +129,10 @@ authorization check is SharePoint permissions, which can't be unit-tested.
   property.
 
 **Rationale**: app roles put the authorization fact in the token, so no Graph call is needed
-per request, and removing someone from the group takes effect on their next token (FR-003,
-spec US2 scenario 4). Checking in code instead of relying on App Service Authentication
+per request, and removing someone from the group takes effect on their next token. Access
+tokens last about 60–90 minutes, which meets FR-003's 90-minute limit for removals (accepted by
+the project owner on 2026-10-27; spec US2 scenario 4). A tenant token-lifetime policy longer
+than 90 minutes would break this, so the access-control runbook checks for one. Checking in code instead of relying on App Service Authentication
 alone makes the rule testable (Principle II).
 
 **Alternatives considered**: a `groups` claim (fails above 200 groups and is harder to read);
@@ -396,7 +401,7 @@ API allows it.
 - `STORE_MODE` app setting: `sharepoint` (in Azure) or `file` (local development, a JSON file
   per list under `.local-data/`, which is gitignored).
 - Every stored sync result carries `DataMode` (`Sample` or `Live`). The API returns it, and
-  the UI shows a "Sample data" `.notice` on every view when it is `Sample` (FR-029,
+  the UI shows a "Mock data" `.notice` on every view when it is `Sample` (FR-029,
   Principle VII).
 - **The web part's sample-data mode** (revised 2026-10-27 for the delivery order in
   tasks.md). The web part property `dataSource` is `sample` or `api`, which is configuration
