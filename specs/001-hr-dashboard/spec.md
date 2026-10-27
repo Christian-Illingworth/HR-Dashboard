@@ -52,6 +52,15 @@
 - Q: If BrightHR's API rate limits turn out too tight for an hourly sync, what should the
   dashboard do instead? → A: Sync every 2 hours from 07:00 to 19:00 on working days, plus
   overnight, and move the "out of date" threshold from 2 hours to 3 hours.
+- Q: BrightHR's API lists only approved absences. What should the dashboard show for pending
+  leave? → A: Approved only, with "Pending: not available from BrightHR yet" where pending
+  would appear, until BrightHR provides pending absences. Then FR-011 and FR-019 are revisited.
+- Q: BrightHR records a length only for sickness and has no working pattern. How are leave
+  and absence days counted? → A: Working days between the start and end dates (Monday to
+  Friday, excluding England and Wales bank holidays, half days 0.5), using BrightHR's length
+  for sickness where present. Part-time staff's leave is over-counted, and that is accepted.
+- Q: How quickly must someone removed from the access group lose access? → A: Within 90
+  minutes of removal.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -103,8 +112,9 @@ the data directly rather than through the page.
    is sent to their device.
 3. **Given** a user outside the access group, **When** they request dashboard data directly,
    without going through the page, **Then** the request is refused and no data is returned.
-4. **Given** a user has been removed from the access group, **When** they next open the
-   dashboard, **Then** they are treated as outside the group.
+4. **Given** a user has been removed from the access group, **When** they open the dashboard
+   or request its data 90 minutes or more after the removal, **Then** they are treated as
+   outside the group.
 
 ---
 
@@ -127,7 +137,9 @@ days, check that "Today" shows only today's absences, "Upcoming" shows the next 
    user selects "Today", **Then** the entry shows their name, role, absence type, start date, end
    date, return date (the next working day after the end date), and "Approved".
 2. **Given** a Sales employee has pending leave starting in 10 days, **When** the user selects
-   "Upcoming", **Then** the entry is listed with status "Pending".
+   "Upcoming", **Then** the entry is listed with status "Pending". *(Blocked until BrightHR
+   provides pending absences. Until then the list shows "Pending: not available from BrightHR
+   yet"; see FR-019.)*
 3. **Given** a Sales employee has leave starting in 20 days, **When** the user selects
    "Upcoming", **Then** the entry is not listed.
 4. **Given** nobody in Sales is off in the selected period, **When** the list loads, **Then** it
@@ -181,7 +193,9 @@ future sickness is labelled "Forecast".
    January 2027, with October 2026 highlighted.
 2. **Given** booked annual leave in December, some approved and some pending, **When** the user
    views the leave chart, **Then** December shows approved and pending days as separate parts,
-   told apart by label or pattern as well as colour.
+   told apart by label or pattern as well as colour. *(Blocked until BrightHR provides pending
+   absences. Until then the chart shows approved days and the note "Pending: not available
+   from BrightHR yet"; see FR-011.)*
 3. **Given** future months on the sickness chart, **When** the user views it, **Then** those
    months are labelled "Forecast" and styled differently from actual months.
 4. **Given** any chart, **When** the user hovers over, taps, or moves keyboard focus to a data
@@ -246,7 +260,9 @@ sample data, and check that every section shows the right values for that group 
   for "today" figures.
 - **Weekends and bank holidays**: are not counted as leave or absence days.
 - **Employee changes department or role**: past months use the department and role the employee
-  had at the time; current and future months use their current ones.
+  had at the time; current and future months use their current ones. No history exists before
+  the dashboard's first sync, so months before it use the earliest department and role known,
+  and the dashboard says so.
 - **Leaver part-way through the window**: is included in headcount up to their leaving date and
   in leavers for the month they leave.
 - **Starter with a future start date**: is not in headcount until their start date, and appears
@@ -276,7 +292,7 @@ sample data, and check that every section shows the right values for that group 
 - **First sync has not happened yet**: the dashboard shows a "No data yet" state, not zeros.
 - **BrightHR returns an absence type the dashboard does not recognise**: it is counted under
   "Other".
-- **Sample data mode is on**: every view shows a clear "Sample data" label.
+- **Mock data mode is on**: every view shows a clear "Mock data" label.
 
 ## Requirements *(mandatory)*
 
@@ -290,7 +306,8 @@ sample data, and check that every section shows the right values for that group 
   use the dashboard. Every member sees everything, including individual sickness reasons.
 - **FR-003**: HR or IT MUST manage the access group's membership in Microsoft 365, outside the
   dashboard. The same group MUST control both who can open the dashboard page and who can
-  receive its data, so access is granted or removed in one place.
+  receive its data, so access is granted or removed in one place. Removing someone from the
+  group MUST stop them receiving dashboard data within 90 minutes.
 - **FR-004**: Page permissions alone MUST NOT be relied on. Every request for dashboard data
   MUST check that the user is in the access group, and requests from anyone else MUST be refused
   with no data returned.
@@ -320,7 +337,9 @@ sample data, and check that every section shows the right values for that group 
   month, the selected month (visually highlighted), and the 3 months after. The selected month
   MUST default to the current month and move forward on the first day of each month.
 - **FR-011**: The leave chart MUST show annual leave days per month, with approved and pending
-  days shown separately. Past months show leave taken; future months show leave booked.
+  days shown separately. Past months show leave taken; future months show leave booked. While
+  BrightHR does not provide pending absences, the chart MUST show approved days only, with the
+  note "Pending: not available from BrightHR yet".
 - **FR-012**: The sickness chart MUST show sickness days and the number of sickness episodes per
   month. Past months and the current month to date show actuals; future months show a forecast.
 - **FR-013**: The absence chart MUST show absence days per month by type: sickness,
@@ -334,12 +353,12 @@ sample data, and check that every section shows the right values for that group 
 - **FR-015**: Every forecast value MUST be labelled "Forecast" and styled differently from actual
   values in a way that does not rely on colour alone.
 - **FR-016**: Each future month's forecast MUST be the monthly average over the last 12
-  complete months, the same for every future month in the window. For sickness days and
-  sickness episodes, only complete months for which the dashboard holds full sickness data
-  count; a month only partly covered by synced history is left out. This applies to sickness
-  days, sickness episodes, and leavers. For leavers, the forecast of further leavers MUST be
-  that average minus the known leavers for the month, never below zero. The method MUST be
-  recorded in the metric catalogue.
+  complete months, the same for every future month in the window. This applies to sickness
+  days, sickness episodes, and leavers. For sickness days and sickness episodes, only complete
+  months for which the dashboard holds full sickness data count; a month only partly covered by
+  synced history is left out. For leavers, the forecast of further leavers MUST be that average
+  minus the known leavers for the month, never below zero. The method MUST be recorded in the
+  metric catalogue.
 - **FR-017**: Every chart MUST show tooltips with the exact value, the month, and whether the
   value is actual, booked, or forecast. Tooltips MUST work with mouse, touch, and keyboard.
 - **FR-018**: Every chart MUST have an equivalent table view that keyboard and screen reader
@@ -348,20 +367,25 @@ sample data, and check that every section shows the right values for that group 
 **Who's off in Sales**
 
 - **FR-019**: "Sales" MUST mean every employee whose Entra ID department is in a list of
-  department names held in settings, starting with just "Sales". The data administrators (FR-028) MUST be able to change the list
-  without code changes. The
-  dashboard MUST list Sales employees who are absent today
-  ("Today") or at any point in the next 14 calendar days ("Upcoming"), with name, role, absence
-  type (with the sickness reason where recorded), start date, end date, return date, and status
-  (Approved or Pending). Users MUST be able to switch between "Today" and "Upcoming".
-- **FR-020**: Return date MUST be the employee's next working day after the absence ends.
+  department names held in settings, starting with just "Sales". The data administrators
+  (FR-028) MUST be able to change the list without code changes. The dashboard MUST list Sales
+  employees who are absent today ("Today") or on any day from tomorrow to 14 calendar days from
+  today ("Upcoming"), with name, role, absence type (with the sickness reason where recorded),
+  start date, end date, return date, and status (Approved or Pending). While BrightHR does not
+  provide pending absences, every entry is "Approved" and the list notes "Pending: not available
+  from BrightHR yet". Users MUST be able to switch between "Today" and "Upcoming". Someone off
+  both today and later appears in both.
+- **FR-020**: Return date MUST be the employee's next working day after the absence ends. If the
+  absence ends with a morning-only half day, the return date is that same day.
 
 **Filters**
 
 - **FR-021**: Users MUST be able to filter by department, role, and month, and every KPI, chart,
   and list MUST update to match. Picking a month MUST move every trend chart's window so the
   picked month is in the centre. Users MUST be able to pick any month from 9 months before the
-  current month up to the current month. Months before the current month show actuals only;
+  current month up to the current month, as long as kept history covers that month's whole
+  window; the current month can always be picked (see the edge cases on kept history and the
+  first months after launch). Months before the current month show actuals only;
   forecasts appear only for months after the current month.
 - **FR-022**: "Today" KPIs and the "Who's off in Sales" list MUST always be relative to today,
   whatever month is picked.
@@ -370,7 +394,8 @@ sample data, and check that every section shows the right values for that group 
 
 - **FR-023**: Every view MUST show when data was last successfully updated from BrightHR.
 - **FR-024**: Data MUST be updated from BrightHR automatically every hour from 07:00 to 19:00
-  UK time on working days ("sync hours"), plus once overnight. The dashboard MUST say the data
+  UK time on working days, plus once overnight. "Sync hours" means 07:00 to 19:59 UK time on
+  working days. The dashboard MUST say the data
   is out of date, and keep showing the most recent good data, when: the last attempt failed; or,
   during sync hours, the last successful update is more than 2 hours old; or, outside sync
   hours, the overnight update has not succeeded. If BrightHR's rate limits can't support an
@@ -391,7 +416,7 @@ sample data, and check that every section shows the right values for that group 
   delegate) and one IT administrator, MUST be able to open the stored copy or change the
   dashboard's settings. Members of the access group see the data only through the dashboard.
 - **FR-029**: The dashboard MUST be able to run on synthetic sample data in the same shape as
-  BrightHR data, with a clear "Sample data" label on every view. The sample data MUST use the
+  BrightHR data, with a clear "Mock data" label on every view. The sample data MUST use the
   roles Energy Analyst, Senior Energy Analyst, Senior Pricing Specialist, and Sales Team Manager,
   and MUST include a Sales department.
 - **FR-030**: The dashboard MUST follow the Consultiv Utilities web design kit
@@ -402,12 +427,13 @@ sample data, and check that every section shows the right values for that group 
 ### Key Entities *(include if feature involves data)*
 
 - **Employee**: a person in BrightHR. Key attributes: name, department (from Entra ID), role,
-  start date, leaving date (if any; a leaving date after today means they are serving notice),
-  and working pattern (to tell working days from non-working days). Department and role history is needed to report past months
-  correctly.
+  start date, and leaving date (if any; a leaving date after today means they are serving
+  notice). BrightHR has no working pattern. Department and role history is needed to report
+  past months correctly.
 - **Absence**: a period an employee is away. Key attributes: employee, type (annual leave,
-  sickness, compassionate, unpaid, or other), start and end date, half-day flags, length in days,
-  and status (approved or pending). Sickness absences may also have a reason, which is special
+  sickness, compassionate, unpaid, or other), start and end date, half-day flags, length in days
+  (recorded by BrightHR for sickness only), and status (approved or pending; BrightHR currently
+  provides approved absences only). Sickness absences may also have a reason, which is special
   category health data.
 - **Sickness episode**: one continuous sickness absence, used for episode counts and the
   Bradford Factor.
@@ -459,11 +485,14 @@ sample data, and check that every section shows the right values for that group 
 - **Headcount** counts people, not full-time equivalents.
 - **Monthly attrition rate** is leavers in the month (as defined in FR-008) divided by the
   average of the headcount at the start and end of the month, times 100.
-- **Bradford Factor** counts sickness absences only. If BrightHR marks a sickness absence as
-  pregnancy-related, it is left out, because UK law treats it separately. Only the average is
-  shown, never individual scores.
-- **Leave and absence days** use the lengths recorded in BrightHR, which already take account of
-  working patterns and bank holidays.
+- **Bradford Factor** counts sickness absences only. Pregnancy-related sickness is left out,
+  because UK law treats it separately. BrightHR has no pregnancy flag, so a sickness absence
+  counts as pregnancy-related when its BrightHR sickness reason is in a list of reasons held in
+  settings. Only the average is shown, never individual scores.
+- **Leave and absence days** are counted as working days between the start and end dates, with
+  half days as 0.5, because BrightHR records a length only for sickness. Sickness uses
+  BrightHR's recorded length where present. BrightHR has no working pattern, so leave of
+  part-time staff is over-counted. This is an accepted, documented limit (decided 2026-10-27).
 - **"On leave today"** counts approved annual leave only. Pending leave and other absence types
   are not included.
 - **"Other" absence type** covers every type that is not annual leave, sickness, compassionate,

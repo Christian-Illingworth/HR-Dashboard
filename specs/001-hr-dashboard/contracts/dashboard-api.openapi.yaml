@@ -122,7 +122,7 @@ components:
           type: object
           required: [dataMode, today, generatedAt]
           properties:
-            dataMode: { type: string, enum: [sample, live], description: '"sample" → the UI shows "Sample data" on every view (FR-029).' }
+            dataMode: { type: string, enum: [sample, live], description: '"sample" → the UI shows "Mock data" on every view (FR-029).' }
             today: { type: string, format: date, description: Europe/London date used for every calculation. }
             generatedAt: { type: string, format: date-time }
         freshness:
