@@ -135,7 +135,7 @@ components:
             lastAttemptAt: { type: [string, 'null'], format: date-time }
             lastAttemptOutcome: { type: [string, 'null'], enum: [Running, Succeeded, Failed, null] }
             isStale: { type: boolean }
-            staleReason: { type: [string, 'null'], enum: [lastAttemptFailed, olderThan2Hours, overnightMissed, null] }
+            staleReason: { type: [string, 'null'], enum: [lastAttemptFailed, olderThanThreshold, overnightMissed, null] }
         refresh:
           type: object
           required: [nextAllowedAt]
