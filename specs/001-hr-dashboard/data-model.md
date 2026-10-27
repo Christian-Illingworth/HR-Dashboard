@@ -1,0 +1,480 @@
+# Data Model: HR Dashboard (feature 001)
+
+**Date**: 2026-10-27 | **Plan**: [plan.md](plan.md) | **Research**: [research.md](research.md)
+
+This file has five parts:
+
+1. [Source data](#1-source-data-brighthr-and-entra-id): the BrightHR and Entra ID fields read.
+2. [Stored entities](#2-stored-entities): what the sync keeps (column-level schema in
+   [contracts/sharepoint-lists.md](contracts/sharepoint-lists.md)).
+3. [Derived entities](#3-derived-entities): what is worked out in memory per request.
+4. [Metric catalogue](#4-metric-catalogue): every metric, its BrightHR sources, formula and
+   edge cases (constitution Principle V).
+5. [Data inventory](#5-data-inventory-draft): every synced field, its purpose, who can see it,
+   and how long it is kept (Principle II, FR-028).
+
+During implementation, parts 4 and 5 are copied to `docs/metric-catalogue.md` and
+`docs/data-inventory.md`, which become the files that are kept up to date. Calculation code
+links to entries there by ID, for example `// Metric: docs/metric-catalogue.md#m04`.
+
+**Conventions**: dates are `YYYY-MM-DD` in Europe/London. Months are `YYYY-MM`. "Today" is
+always passed in and never read from the clock. All BrightHR field names are exactly as in the
+Customer API v1.
+
+---
+
+## 1. Source data: BrightHR and Entra ID
+
+Only the fields below are read. Every other field in the response is dropped by the
+normaliser, which uses an allow-list.
+
+### 1.1 BrightHR `EmployeeDto` (`POST /employees/v1/query`)
+
+| Field | Kept? | Used for |
+|---|---|---|
+| `id` | Stored | Employee key. |
+| `name.givenName`, `name.familyName` | Stored **only for employees currently in a Sales department** | "Who's off in Sales" (FR-019). |
+| `email` | **Not stored.** Used during sync only | Matching to Entra ID for the department (R10). |
+| `employment.jobTitle` | Stored | Role filter, Sales list role. |
+| `employment.start` | Stored | Headcount, starters. |
+| `employment.end` | Stored | Headcount, leavers, known leavers. |
+| `_metadata.isTerminated` | Used as a query filter only | Fetch current and past employees. |
+| `externalReference`, `employment.payrollNumber`, `_metadata.isRegistered` | Not read | — |
+
+### 1.2 BrightHR `AbsenceDto` (`POST /absences/v1/query`)
+
+| Field | Kept? | Used for |
+|---|---|---|
+| `id` | Stored | Absence key, reconciliation. |
+| `employeeId` | Stored | Link to employee. |
+| `$type` (`Holiday`, `Sickness`, `Toil`, `Other`) | Stored | Category (D5). |
+| `displayName` | Stored | Category mapping (D5), type label in the Sales list. |
+| `start`, `end` (`LocalDate` / `LocalDateTime` / `LocalDatePart` + `datePart`) | Stored as date + part (D1) | Day counts, today figures, Sales list. Times are dropped. |
+| `duration` (Sickness: `Days` or `Minutes`) | Stored | Sickness days (D1). |
+| `reason.description` (Sickness) | Stored in `HRD Sickness Reasons` **only while in the Sales list's range** (R13) | Sickness reason in the Sales list. Also checked at sync time against `PregnancyRelatedReasons`. |
+| `reason.id` | Not stored | — |
+| `note` | **Never read** | Free text that could hold health details. |
+| `isCertified`, `estimatedReturn`, `isPaid`, `paidDuration` | Not read | — |
+
+### 1.3 Entra ID user (`GET /users`, Graph)
+
+| Field | Kept? | Used for |
+|---|---|---|
+| `mail`, `userPrincipalName` | Not stored. Used during sync for matching | Matching BrightHR `email`. |
+| `department` | Stored on the employee | Department filter, Sales membership (R10). |
+
+---
+
+## 2. Stored entities
+
+All stored entities live in the "HR Dashboard Data" site, which only the Function's managed
+identity and named administrators can reach (research R6).
+
+### 2.1 Employee (`HRD Employees`)
+
+| Field | Type | Source | Rules |
+|---|---|---|---|
+| `employeeId` | string | `EmployeeDto.id` | Unique. |
+| `startDate` | date | `employment.start` | Required. An employee with no start date is skipped and counted in the sync's warnings. |
+| `endDate` | date \| null | `employment.end` | Last day of employment. |
+| `jobTitle` | string | `employment.jobTitle` | Blank → "Not set". |
+| `department` | string | Entra `department` | No match or blank → "Not set". |
+| `givenName`, `familyName` | string \| null | `name.*` | Set only while `department` is in `SalesDepartments`; cleared otherwise. |
+| `contentHash` | string | computed | Skips unchanged writes. |
+
+**Retention**: deleted 13 months after `endDate`, along with their history rows.
+
+### 2.2 Employee history (`HRD Employee History`)
+
+One row per employee per month, from the first sync onwards.
+
+| Field | Type | Rules |
+|---|---|---|
+| `employeeId` | string | |
+| `month` | `YYYY-MM` | Unique with `employeeId`. |
+| `department`, `jobTitle` | string | Upserted on every sync during the month; frozen when the month ends. |
+
+**Retention**: rows for months more than 13 months before the current month are deleted.
+
+### 2.3 Absence (`HRD Absences`)
+
+| Field | Type | Source | Rules |
+|---|---|---|---|
+| `absenceId` | string | `id` | Unique. |
+| `employeeId` | string | `employeeId` | |
+| `brightHrType` | `Holiday` \| `Sickness` \| `Toil` \| `Other` \| string | `$type` | Unknown values are stored as they are and categorised `other`. |
+| `displayName` | string | `displayName` | |
+| `startDate` | date | `start` | |
+| `startPart` | `FullDay` \| `FirstHalf` \| `SecondHalf` \| `Time` | `start` | `LocalDate` → `FullDay`. `LocalDateTime` → `Time`. |
+| `endDate` | date \| null | `end` | Null = open-ended (sickness only). |
+| `endPart` | as `startPart` \| null | `end` | |
+| `durationDays` | number \| null | `duration` (Days) | Sickness only. |
+| `durationMinutes` | number \| null | `duration` (Minutes) | Sickness only. |
+| `pregnancyRelated` | boolean | derived at sync | True when `reason.description` is in `PregnancyRelatedReasons`. Sickness only. **Special category data.** |
+| `contentHash` | string | computed | |
+
+**Validation**: `endDate` ≥ `startDate` when set. A record that fails is skipped and counted in
+the sync's warnings; the rest of the sync goes ahead.
+**Retention**: deleted when `endDate` is more than 13 months before today. Open-ended records
+are kept.
+
+### 2.4 Sickness reason (`HRD Sickness Reasons`)
+
+| Field | Type | Rules |
+|---|---|---|
+| `absenceId` | string | Unique. A sickness absence of a current Sales-department employee that overlaps today to today + 14 days, or is open-ended. |
+| `reason` | string | `reason.description`. **Special category data.** |
+
+**Retention**: deleted at the first sync after the absence stops meeting the rule above.
+
+### 2.5 Sync status (`HRD Sync Status`, a single item)
+
+| Field | Type | Meaning |
+|---|---|---|
+| `lastAttemptStartedAt`, `lastAttemptFinishedAt` | datetime (UTC) | |
+| `lastAttemptOutcome` | `Running` \| `Succeeded` \| `Failed` | |
+| `lastFailureCode` | string \| null | A fixed code (research R7), never personal data. |
+| `lastSuccessAt` | datetime \| null | Null = no sync has succeeded yet ("No data yet"). |
+| `runningSince` | datetime \| null | The sync lock. Stale after 30 minutes. |
+| `lastManualRefreshAt` | datetime \| null | The 15-minute refresh limit (FR-025). |
+| `dataMode` | `Sample` \| `Live` | The BrightHR mode of the last successful sync. |
+| `historyStartDate` | date \| null | First successful sync's date − 90 days. Never moves after it is set. |
+| `warnings` | string (JSON) | Counts only. For example `{"departmentNotSet": 3, "skippedRecords": 0, "bankHolidaysEndOn": "2027-12-27"}`. |
+
+### 2.6 Settings (`HRD Settings`, key/value items edited by named administrators)
+
+| Key | Default | Meaning |
+|---|---|---|
+| `SalesDepartments` | `Sales` | One Entra department name per line (FR-019, R10). Matched ignoring case and surrounding spaces. |
+| `AbsenceTypeMap` | empty | Lines of `<displayName> => <category>` (D5). |
+| `PregnancyRelatedReasons` | empty | One sickness `reason.description` per line (R13). |
+| `StandardDayHours` | `7.5` | Converts sickness `duration` in minutes to days (D1). |
+
+A settings value that fails to parse makes the sync fail with `SETTINGS_INVALID`. The last good
+data stays on show.
+
+### State transitions
+
+**Sync attempt**
+
+```text
+(idle) --queue message--> lock taken? --no--> Running --success--> Succeeded
+                                 |                  \--error--> Failed (lastFailureCode set)
+                                 \--yes (fresh lock)--> message dropped
+Running with runningSince older than 30 minutes = stale lock: the next attempt takes it over.
+```
+
+**Stored absence**
+
+```text
+first seen in fetched window --> Stored
+Stored --seen again, fields changed--> Stored (updated)
+Stored --overlaps fetched window but not returned--> Deleted (cancelled or rejected)
+Stored --ends before fetched window--> Frozen (can no longer be checked)
+Frozen or Stored --endDate more than 13 months ago--> Deleted (retention)
+```
+
+---
+
+## 3. Derived entities
+
+These are worked out in `packages/core` on each request and never stored.
+
+- **WorkingDayCalendar**: `isWorkingDay(date)`, `workingDaysBetween(a, b)` and
+  `nextWorkingDay(date)` over Monday to Friday minus England and Wales bank holidays (D1).
+- **AbsenceSpan**: an absence turned into `{date, fraction}` working-day entries (D1). This is
+  the basis for every day count and "today" check.
+- **SicknessEpisode**: one or more sickness absences of one employee merged by D2. It has
+  `startDate`, `endDate | null`, `spans` and `pregnancyRelated` (true if any part is).
+- **GroupMembership**: an employee's `department` and `jobTitle` at a date (D3).
+- **MonthWindow**: the selected month `s`, months `s−3 … s+3`, each with `kind`
+  (`actual` \| `toDate` \| `future`) and `coverage` (`full` \| `partial` \| `none`) (D4).
+- **DashboardResponse**: the API response, defined in
+  [contracts/dashboard-api.openapi.yaml](contracts/dashboard-api.openapi.yaml).
+
+---
+
+## 4. Metric catalogue
+
+### Shared definitions
+
+**D1. Working-day fractions.** For an absence with `startDate`…`endDate` (an open-ended
+sickness ends at today):
+- Every working day in the range counts 1.
+- If `startPart` or `endPart` is `FirstHalf` or `SecondHalf`, that boundary day counts 0.5.
+  If the absence starts and ends on the same day with a half part, it counts 0.5.
+- If both parts are `Time` and the dates are the same, the day counts 0.5. A `Time` boundary
+  on a multi-day absence counts its day as 1. *(Project rule, to confirm with HR; BrightHR
+  gives no length for non-sickness types.)*
+- **Sickness with a `duration`**: total days = `durationDays`, or `durationMinutes` ÷
+  (`StandardDayHours` × 60). Each working day's fraction is scaled so the fractions add up to
+  that total. For an open-ended absence the duration is ignored and the calendar count is used.
+- Weekends and bank holidays count 0 (spec edge case).
+- **Known limitation**: there is no working pattern in BrightHR, so part-time staff's
+  non-sickness days are over-counted (R9 point 4).
+
+**D2. Sickness episode.** Each sickness absence is an episode, except that two sickness
+absences of the same employee are merged when there is no working day between the end of one
+and the start of the next. An example is sick on Friday and again on Monday. An episode
+counts in the month it starts (spec edge case).
+
+**D3. Group membership.** A filter (department, role, or "All") is applied to each employee
+**as at the date being measured**:
+- today and future dates: the employee's current `department` and `jobTitle`;
+- a past date: the `HRD Employee History` row for that month; if there is no row (before the
+  first sync), the employee's earliest row; if there are no rows, the current values.
+
+The response states `departmentHistoryStartMonth`, so the UI can say "Departments and roles
+before <month> use the earliest values known".
+
+**D4. Month kinds and coverage.**
+- `actual` = months before the current month. `toDate` = the current month, labelled "to date".
+  `future` = months after it.
+- `coverage` compares the month with `historyStartDate`: `full` if the month starts on or after
+  it, `partial` if it contains it, and `none` if it ends before it. Coverage affects absence
+  metrics (M06–M09, M13) but not employment-date metrics (M01, M04, M10–M12, M14).
+- **Window**: the selected month `s` (default: the current month), and months `s−3` to `s+3`.
+  The **month picker** offers months `s` from current − 9 to current where `s−3` is on or
+  after `historyStartDate`'s month. The current month is always offered (FR-021, spec edge
+  case).
+
+**D5. Absence category.** `Sickness` → `sickness`. Otherwise the first line of
+`AbsenceTypeMap` whose `displayName` matches, ignoring case, decides. Without a match:
+`Holiday` → `annualLeave`, `Toil` → `other`, `Other` → `other`, and anything else → `other`.
+Categories: `annualLeave`, `publicHoliday` (left out of every metric), `sickness`,
+`compassionate`, `unpaid`, `other`.
+
+**D6. Headcount at a date `d`.** The number of employees with `startDate` ≤ `d` and
+(`endDate` is null or `endDate` ≥ `d`), within the filter group (D3). People, not FTE.
+
+**D7. Status.** Every stored absence is **Approved**, because BrightHR lists only approved
+absences (R9). Pending values are `null` with `pendingAvailable: false` until BrightHR answers
+question B3.
+
+### Metrics
+
+Each entry gives the ID that code links to, the definition, the BrightHR sources, the formula
+and the edge cases. Every listed edge case needs a test (Principle VI).
+
+#### M01. Headcount (KPI)
+
+- **Definition**: people employed today in the filter group.
+- **Sources**: `employment.start`, `employment.end`; Entra `department`; `employment.jobTitle`.
+- **Formula**: D6 with `d` = today.
+- **Edge cases**: a leaver whose `endDate` = today counts. A starter with a future
+  `startDate` doesn't. An empty group → 0, shown as "0" (headcount 0 is a real answer).
+
+#### M02. On leave today (KPI)
+
+- **Definition**: distinct people in the group with approved **annual leave** covering today,
+  including half days (spec US1 scenario 3; assumption "On leave today").
+- **Sources**: `$type`, `displayName`, `start`, `end`, `datePart`.
+- **Formula**: count of distinct `employeeId` with a `annualLeave` absence whose AbsenceSpan
+  includes today with fraction > 0.
+- **Edge cases**: a morning-only absence counts. Today is a weekend or bank holiday → 0.
+  Two overlapping records for one person count once. Public holidays don't count.
+
+#### M03. Off sick today (KPI)
+
+- **Definition**: distinct people in the group with a sickness absence covering today.
+- **Sources**: `$type`, `start`, `end`, `datePart`.
+- **Formula**: as M02, for category `sickness`. Open-ended sickness with `startDate` ≤ today
+  counts. Pregnancy-related sickness counts (it is excluded only from the Bradford Factor).
+- **Edge cases**: a half day counts. A sickness starting tomorrow doesn't. Today is not a
+  working day → 0.
+
+#### M04. Rolling 12-month attrition % (KPI)
+
+- **Definition**: leavers in the last 12 months ÷ average headcount over those months × 100
+  (FR-008). All leavers, whatever the reason.
+- **Sources**: `employment.start`, `employment.end`.
+- **Formula**:
+  - Period P = (today − 12 months, today], meaning from the day after
+    "today − 12 months" to today inclusive.
+  - L = employees in the group (D3, at their `endDate`) with `endDate` in P.
+  - H̄ = mean of D6 at the 13 dates `today − k months` for k = 0…12. If the day of the month
+    doesn't exist, use the last day of that month.
+  - Attrition = L ÷ H̄ × 100. Displayed to 1 decimal place. Unrounded internally.
+- **Edge cases**: H̄ = 0 → "No staff in this group" (spec edge case), not 0 or an error.
+  Someone who started and left inside P counts as a leaver. A future `endDate` is not a leaver
+  yet. Leap days: today = 2028-02-29 → the dates use 2027-02-28 and so on.
+
+#### M05. Average Bradford Factor (KPI)
+
+- **Definition**: the mean of each current employee's Bradford Factor S² × D over the last
+  52 weeks, including zeros (FR-009). Only the average is shown.
+- **Sources**: `$type: Sickness`, `start`, `end`, `datePart`, `duration`; `PregnancyRelated`
+  (from `reason.description`); employee dates.
+- **Formula**:
+  - Basis period B = the 364 days ending today (today − 363 … today), or
+    `historyStartDate` … today if that is shorter.
+  - For each employee in the group today (M01): S = sickness episodes (D2) not marked
+    pregnancy-related that have at least one day in B. D = sum of their working-day fractions
+    (D1) falling in B.
+  - Average = Σ(S² × D) ÷ the number of employees. Displayed to 1 decimal place.
+- **Edge cases**: no employees → "No staff in this group". B shorter than 364 days → the KPI
+  says "Based on data since <date>". An episode that started before B counts in S, but only its
+  days inside B count in D. An open-ended episode counts up to today. A starter part-way
+  through B is included, using only their own days. Pregnancy-related episodes are left out of
+  S and D. A merged episode (D2) counts once in S.
+
+#### M06. Annual leave days per month (leave chart)
+
+- **Definition**: working days of approved annual leave in each month of the window (FR-011).
+- **Sources**: `$type`, `displayName`, `start`, `end`, `datePart`.
+- **Formula**: Σ D1 fractions for category `annualLeave`, for employees in the group at each
+  day (D3), split by month.
+  - `actual` months: days taken. `toDate`: taken to today plus booked for the rest of the
+    month. `future`: booked.
+  - `approvedDays` = that total. `pendingDays` = `null` (D7).
+- **Edge cases**: leave spanning two months is split. Half days count 0.5. Bank holidays count
+  0. Partial-coverage months are marked (D4). A future month with no bookings shows 0, not
+  "no data", if B5 confirms that future dates are returned.
+
+#### M07. Sickness days per month (sickness chart)
+
+- **Definition**: working days lost to sickness per month (FR-012).
+- **Sources**: `$type: Sickness`, `start`, `end`, `datePart`, `duration`.
+- **Formula**: Σ D1 fractions for category `sickness` per month, for employees in the group at
+  each day. Pregnancy-related sickness **is** included (it is left out only of M05).
+  `actual`/`toDate` months: actual values, with `toDate` counting up to today. `future`: the
+  forecast (M13).
+- **Edge cases**: spans two months → split. Open-ended → up to today. `none`/`partial`
+  coverage → value shown with "No absence data before <date>".
+
+#### M08. Sickness episodes per month (sickness chart)
+
+- **Definition**: episodes (D2) **starting** in each month (spec edge case), for employees in
+  the group on the episode's start date.
+- **Sources**: as M07.
+- **Formula**: count. `future` months: the forecast (M13).
+- **Edge cases**: an episode spanning two months counts once, in its start month. Merged
+  absences (D2) count once.
+
+#### M09. Absence days by type per month (absence chart)
+
+- **Definition**: working days per month for `sickness`, `compassionate`, `unpaid` and `other`.
+  Annual leave and public holidays are left out (FR-013).
+- **Sources**: `$type`, `displayName`, `start`, `end`, `datePart`, `duration`.
+- **Formula**: Σ D1 fractions by category and month. `future` months: booked days for
+  `compassionate`/`unpaid`/`other`, and the M13 forecast for `sickness`, each with its own
+  `kind`.
+- **Edge cases**: unknown `$type` → `other`. A mapping change re-categorises history at the
+  next request. TOIL counts as `other` unless mapped.
+
+#### M10. Leavers per month (attrition chart)
+
+- **Definition**: employees whose employment ended in the month, whatever the reason (FR-014).
+- **Sources**: `employment.end`.
+- **Formula**: count of employees in the group (D3 at `endDate`) with `endDate` in the month.
+  Leavers with `endDate` ≤ today are `actual`. Leavers with `endDate` > today are `known`
+  ("known leaver", serving notice; R9 point 6). The current month can have both.
+- **Edge cases**: a leaver part-way through a month counts in headcount up to `endDate` (D6) and
+  as a leaver that month. Known leavers are shown apart from the forecast.
+
+#### M11. Starters per month (attrition chart)
+
+- **Definition**: employees whose employment started in the month.
+- **Sources**: `employment.start`.
+- **Formula**: count with `startDate` in the month (D3 at `startDate`). `startDate` ≤ today →
+  `actual`. Later → `known`.
+- **Edge cases**: a future starter isn't in headcount until their start date.
+
+#### M12. Monthly attrition rate % (attrition chart)
+
+- **Definition**: leavers in the month ÷ the average of headcount at the start and end of the
+  month × 100 (spec assumption).
+- **Sources**: as M01 and M10.
+- **Formula**: `actual` months: L ÷ ((D6(first day) + D6(last day)) ÷ 2) × 100. `toDate`: actual
+  leavers to today ÷ ((D6(first day) + D6(today)) ÷ 2) × 100, labelled "to date". `future`: not
+  shown (`null`). The chart shows known and forecast leavers instead.
+- **Edge cases**: a denominator of 0 → `null` with "No staff in this group".
+
+#### M13. Forecast: sickness days and episodes
+
+- **Definition**: for each `future` month, the mean of the monthly value over the last 12
+  complete months, the same for every future month (FR-016).
+- **Sources**: as M07 and M08.
+- **Formula**: basis months = the 12 months before the current month whose coverage (D4) is
+  `full`. If there are 3 or more, forecast = mean of M07 (or M08) over them, to 1 decimal place.
+  With fewer than 3: `null`, with "Not enough history to forecast" (spec edge case). The
+  response states how many basis months were used.
+- **Edge cases**: at launch there will be fewer than 3 full months, so there is no forecast
+  until enough history exists (R11). The forecast for a filter group uses D3 membership in each
+  basis month.
+
+#### M14. Forecast: further leavers
+
+- **Definition**: for each `future` month, the mean of monthly leavers over the last 12
+  complete months, minus that month's known leavers, never below zero (FR-016).
+- **Sources**: as M10.
+- **Formula**: basis months = the 12 months before the current month in which the group's
+  headcount at the start of the month was more than 0. If there are 3 or more:
+  avg = mean of M10 (`actual`) over them, and furtherLeavers(m) = max(0, avg − known(m)).
+  With fewer than 3: `null` with "Not enough history to forecast".
+- **Edge cases**: known leavers above the average → 0. A new department with under 3 months →
+  no forecast. Not limited by the 90-day absence window, if BrightHR answers B7 yes.
+
+#### M15. Who's off in Sales (list) and return date
+
+- **Definition**: Sales employees absent today ("Today"), or at any point from tomorrow to
+  today + 14 calendar days ("Upcoming") (FR-019, FR-020).
+- **Sources**: `name.*`, `employment.jobTitle`, Entra `department`, absence fields,
+  `reason.description`.
+- **Formula**:
+  - Sales = employees whose current `department` matches a `SalesDepartments` line, and who also
+    match the role filter.
+  - Today = their absences (not `publicHoliday`) whose AbsenceSpan includes today. Upcoming =
+    those overlapping tomorrow … today + 14.
+  - Each entry has: name; role; type label (`displayName`); sickness reason, if a reason is
+    stored; start (date and part); end (date and part, or "Not yet known"); return date;
+    status "Approved" (D7). Sorted by start date, then family name.
+  - **Return date**: `nextWorkingDay(endDate)`. If `endPart` = `FirstHalf`, the return date is
+    `endDate`, because the employee is back that afternoon. Open-ended → "Not yet known".
+- **Edge cases**: nobody off → "Nobody in Sales is off". The department filter excludes all
+  Sales departments → `outsideFilter: true` ("Sales is outside the current filter"). A
+  `SalesDepartments` line that matches no current employee → listed in
+  `departmentsNotFound`. Someone off today and tomorrow appears in both tabs.
+
+#### M16. Freshness
+
+- **Definition**: whether the shown data is out of date (FR-023, FR-024).
+- **Sources**: `HRD Sync Status`.
+- **Formula** (with `now` passed in, in Europe/London):
+  - `noDataYet` if `lastSuccessAt` is null.
+  - Otherwise stale if any of these is true:
+    - `lastAttemptOutcome` = `Failed` (`staleReason: lastAttemptFailed`);
+    - `now` is within sync hours (working day, 07:00–19:59) and `now − lastSuccessAt` > 2 hours
+      (`olderThan2Hours`);
+    - `now` is outside sync hours and `lastSuccessAt` is before the most recent 02:00 run that
+      is at least 30 minutes ago (`overnightMissed`).
+- **Edge cases**: 07:00 on Monday after a good overnight run → fresh. 02:10 while the overnight
+  run is in progress → judged against the previous night. A run still going (`Running`) isn't
+  counted as failed.
+
+---
+
+## 5. Data inventory (draft)
+
+"Who can see it": **Function** = the Function's managed identity. **Admins** = the named
+administrators of the data site. **Access group** = HR and Senior Leadership, through the API
+only.
+
+| Data | Source | Purpose | Stored in | Who can see it | Kept for |
+|---|---|---|---|---|---|
+| Employee ID | `EmployeeDto.id` | Key | HRD Employees, History, Absences | Function, Admins | Until 13 months after leaving |
+| Given and family name | `name.givenName`, `name.familyName` | Sales list | HRD Employees (Sales staff only) | Function, Admins, Access group (Sales list) | While in a Sales department |
+| Email | `EmployeeDto.email` | Department matching | Not stored (sync memory only) | Function | Duration of a sync |
+| Job title | `employment.jobTitle` | Role filter, Sales list | HRD Employees, History | Function, Admins, Access group | As employee / history |
+| Start and end dates | `employment.start`, `employment.end` | Headcount, starters, leavers | HRD Employees | Function, Admins; Access group as totals | Until 13 months after leaving |
+| Department | Entra `department` | Filters, Sales membership | HRD Employees, History | Function, Admins, Access group | As employee / history |
+| Absence ID, employee ID, type, display name | `AbsenceDto` | All absence metrics | HRD Absences | Function, Admins; Access group as totals and the Sales list | 13 months after the absence ends |
+| Absence start and end dates and parts | `start`, `end`, `datePart` | Day counts, Sales list | HRD Absences | As above | As above |
+| Sickness duration | `duration` | Sickness days | HRD Absences | Function, Admins; Access group as totals | As above |
+| Pregnancy-related flag (**special category**) | Derived from `reason.description` | Bradford Factor exclusion | HRD Absences | Function, Admins | As above |
+| Sickness reason (**special category**) | `reason.description` | Sales list (FR-006) | HRD Sickness Reasons | Function, Admins, Access group (Sales list only) | While in the Sales list's range (today to today + 14, or open-ended) |
+| Sync status and warnings | Generated | Freshness, refresh limit | HRD Sync Status | Function, Admins; Access group as freshness | Overwritten each sync |
+| Settings | Admin-entered | Sales departments, type mapping | HRD Settings | Function, Admins | Until changed |
+
+**Not synced**: `note`, `reason.id`, `isCertified`, `estimatedReturn`, `isPaid`,
+`paidDuration`, `externalReference`, `payrollNumber`, reason for leaving, and clocking data.
