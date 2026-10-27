@@ -167,7 +167,8 @@ Container Apps (more to run); Power Automate (see R16).
 
 **Decision**: SharePoint Online lists in a **dedicated data site**, "HR Dashboard Data",
 written and read only by the Function through Microsoft Graph. The site's permissions are its
-owners (named administrators) plus the Function's managed identity, granted `write` on this site
+owners, the two named data administrators (the HR data owner and one IT administrator, FR-028),
+plus the Function's managed identity, granted `write` on this site
 only through **`Sites.Selected`**. The access group gets **no** access to the data site. The
 dashboard page lives on a separate site that the access group can open.
 
@@ -204,6 +205,9 @@ stores a hash of its fields).
   the London hour is 07 to 19 inclusive (13 runs), or (b) the London hour is 02, on every day
   of the week (the overnight run). This handles BST without the time-zone app setting. On
   Flex Consumption that setting isn't available on Linux anyway.
+- `SYNC_DAYTIME_INTERVAL_HOURS` app setting: `1` (default) or `2`. Set to `2`, daytime syncs
+  run at 07, 09 … 19, and the freshness threshold (M16) becomes 3 hours (FR-024 fallback,
+  clarified 2026-10-27).
 - `syncRun` takes a lock first. It sets `RunningSince` on the `HRD Sync Status` item with an
   ETag `If-Match`. A lock older than 30 minutes counts as stale. If the lock is held, the
   message is dropped, because the running sync will produce fresh data.
@@ -228,8 +232,9 @@ work keeps HTTP requests short and stops overlapping runs.
 
 **Rate limits are unknown**: about 14 runs a day × (number of employees + employee pages)
 requests. With 150 employees that's about 2,200 BrightHR requests a day. If BrightHR's limits
-are lower, the first lever is reducing daytime runs to "changed employees only". That needs an
-"updated since" filter, which BrightHR doesn't document (see the questions for BrightHR).
+are lower, the first lever is the spec's fallback: `SYNC_DAYTIME_INTERVAL_HOURS=2`, which
+roughly halves daily requests. The next lever is fetching only changed employees, which needs an
+"updated since" filter that BrightHR doesn't document (see the questions for BrightHR).
 
 ## R8. Manual refresh and its 15-minute limit
 

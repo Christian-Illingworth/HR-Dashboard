@@ -444,8 +444,9 @@ and the edge cases. Every listed edge case needs a test (Principle VI).
   - `noDataYet` if `lastSuccessAt` is null.
   - Otherwise stale if any of these is true:
     - `lastAttemptOutcome` = `Failed` (`staleReason: lastAttemptFailed`);
-    - `now` is within sync hours (working day, 07:00–19:59) and `now − lastSuccessAt` > 2 hours
-      (`olderThan2Hours`);
+    - `now` is within sync hours (working day, 07:00–19:59) and `now − lastSuccessAt` is more
+      than the threshold: 2 hours, or 3 hours when `SYNC_DAYTIME_INTERVAL_HOURS` = 2 (FR-024)
+      (`olderThanThreshold`);
     - `now` is outside sync hours and `lastSuccessAt` is before the most recent 02:00 run that
       is at least 30 minutes ago (`overnightMissed`).
 - **Edge cases**: 07:00 on Monday after a good overnight run → fresh. 02:10 while the overnight
@@ -456,8 +457,8 @@ and the edge cases. Every listed edge case needs a test (Principle VI).
 
 ## 5. Data inventory (draft)
 
-"Who can see it": **Function** = the Function's managed identity. **Admins** = the named
-administrators of the data site. **Access group** = HR and Senior Leadership, through the API
+"Who can see it": **Function** = the Function's managed identity. **Admins** = the two named
+data administrators: the HR data owner and one IT administrator (FR-028). **Access group** = HR and Senior Leadership, through the API
 only.
 
 | Data | Source | Purpose | Stored in | Who can see it | Kept for |

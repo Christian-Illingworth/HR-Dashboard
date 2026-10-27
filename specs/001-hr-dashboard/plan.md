@@ -190,11 +190,14 @@ behaviour in the right-hand column.
 |---|---|---|
 | FR-011, US5 scenario 2 | No pending absences in the API | Approved only. "Pending: not available from BrightHR yet" (R9, B3). |
 | FR-019, US3 scenario 2 | No Pending status | Every entry is "Approved". |
-| FR-019 | "BrightHR department names" | Entra ID department names (R10). |
 | Assumption: "Leave and absence days use the lengths recorded in BrightHR" | Only sickness has a length | Calendar count, half-day rules, sickness `duration` (D1). Part-timers over-counted. |
 | Edge case: "Employee changes department or role" | No history before the first sync | Earliest known values before the first sync, flagged in the UI (D3). |
-| Retention, FR-021, forecasts | 90-day lookback | History builds from the first sync. Coverage is marked, and forecasts wait for 3 full months (R11, M13). |
-| Key entity "Employee": "whether they are serving notice", "working pattern" | Not in the API | A future `employment.end` means serving notice (B6). No working pattern. |
+| Key entity "Employee": "working pattern" | Not in the API | No working pattern (D1). |
+
+Resolved by `/speckit-clarify` on 2026-10-27: the department source (Entra ID, FR-019), known
+leavers (a future end date, FR-014), the 90-day lookback (FR-016 and the "First months after
+launch" edge case), average headcount (FR-008), data administrators (FR-028) and the 2-hourly
+sync fallback (FR-024).
 | Assumption: pregnancy-related sickness | No flag in the API | Matched on reason text from settings (R13, B9). |
 
 ## Complexity Tracking

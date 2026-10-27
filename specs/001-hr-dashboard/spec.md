@@ -32,6 +32,26 @@
   changes.
 - Q: How often should the dashboard pull fresh data from BrightHR automatically? → A: Every
   hour from 07:00 to 19:00 UK time on working days, plus once overnight.
+- Q: BrightHR has no department field, so where does an employee's department come from? →
+  A: Their Entra ID (Microsoft 365) department, matched on email. The project owner decided
+  this during planning. It replaces "BrightHR department names" in the earlier answer about
+  "Who's off in Sales".
+- Q: When should the dashboard treat an employee as a known future leaver who has handed in
+  their notice? → A: When their BrightHR employment end date is set and is after today. They
+  count as a known leaver in the month of that date.
+- Q: How should "average headcount over the last 12 months" be worked out for the rolling
+  12-month attrition KPI? → A: The mean of 13 headcounts, taken today and on the same date in
+  each of the previous 12 months.
+- Q: BrightHR only gives absences up to 90 days back, so at launch the history begins part-way
+  through a month. Which months should the sickness forecast average? → A: Only complete
+  months for which the dashboard holds full sickness data. With fewer than 3, there is no
+  forecast.
+- Q: Apart from the dashboard itself, who may open the stored copy of the synced data and
+  change the dashboard's settings? → A: Two named data administrators: an HR data owner (Head
+  of HR or a delegate) and one IT administrator.
+- Q: If BrightHR's API rate limits turn out too tight for an hourly sync, what should the
+  dashboard do instead? → A: Sync every 2 hours from 07:00 to 19:00 on working days, plus
+  overnight, and move the "out of date" threshold from 2 hours to 3 hours.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -233,7 +253,7 @@ sample data, and check that every section shows the right values for that group 
   as a starter in their start month.
 - **Zero headcount in a filtered group**: attrition % and average Bradford Factor show "No staff
   in this group" rather than 0 or an error.
-- **A Sales department name in settings doesn't match any BrightHR department** (for example,
+- **A Sales department name in settings doesn't match any Entra ID department** (for example,
   after a rename): "Who's off in Sales" says which name was not found, rather than silently
   showing nobody.
 - **Less than 12 months of history for the filtered group** (for example, a new department):
@@ -241,6 +261,13 @@ sample data, and check that every section shows the right values for that group 
   and the chart says there is not enough history to forecast.
 - **Picked month near the edge of kept history**: the month picker offers only months whose
   whole window is covered by kept history (see FR-021).
+- **First months after launch**: BrightHR provides absences only up to 90 days back, so the
+  dashboard has no absence data before about 90 days before its first sync. It keeps every
+  absence it syncs from then on, for the retention period. Months with no or only part data
+  are marked on the charts ("No absence data before <date>"). The sickness forecast appears
+  once 3 complete months are held, and the month picker offers more months as history builds
+  up. Until 52 weeks are held, the average Bradford Factor uses the data held and says
+  "Based on data since <date>".
 - **User is in the access group but cannot open the SharePoint page** (or the reverse): the
   two are managed from one group, so this only happens through misconfiguration. The data stays
   protected either way, because data access is checked separately from page access (FR-004).
@@ -277,7 +304,10 @@ sample data, and check that every section shows the right values for that group 
   approved leave today; number of staff off sick today; rolling 12-month attrition %; and average
   Bradford Factor.
 - **FR-008**: Rolling 12-month attrition % MUST be the number of leavers in the last 12 months
-  divided by the average headcount over those 12 months, times 100. "Leavers" means everyone
+  divided by the average headcount over those 12 months, times 100. The average headcount is
+  the mean of 13 headcounts, taken today and on the same date in each of the previous 12
+  months; when that date doesn't exist in a month (for example 31 September), the month's last
+  day is used. "Leavers" means everyone
   whose employment ended, whatever the reason (resignation, dismissal, redundancy, or end of a
   fixed-term contract). The reason for leaving MUST NOT be synced.
 - **FR-009**: Average Bradford Factor MUST be the mean of each current employee's Bradford Factor
@@ -297,12 +327,16 @@ sample data, and check that every section shows the right values for that group 
   compassionate, unpaid, and other. Annual leave is not included. Future months show booked
   absences plus forecast sickness.
 - **FR-014**: The attrition chart MUST show leavers, starters, and the monthly attrition rate %
-  per month. Future months MUST show known leavers (who have given notice), known starters (with
-  a start date), and a trend-based forecast of further leavers, kept visually separate.
+  per month. Future months MUST show known leavers, known starters (with a future start date),
+  and a trend-based forecast of further leavers, kept visually separate. A known leaver is an
+  employee whose BrightHR employment end date is after today. They are counted in the month of
+  that date, whatever the reason for leaving.
 - **FR-015**: Every forecast value MUST be labelled "Forecast" and styled differently from actual
   values in a way that does not rely on colour alone.
 - **FR-016**: Each future month's forecast MUST be the monthly average over the last 12
-  complete months, the same for every future month in the window. This applies to sickness
+  complete months, the same for every future month in the window. For sickness days and
+  sickness episodes, only complete months for which the dashboard holds full sickness data
+  count; a month only partly covered by synced history is left out. This applies to sickness
   days, sickness episodes, and leavers. For leavers, the forecast of further leavers MUST be
   that average minus the known leavers for the month, never below zero. The method MUST be
   recorded in the metric catalogue.
@@ -313,8 +347,9 @@ sample data, and check that every section shows the right values for that group 
 
 **Who's off in Sales**
 
-- **FR-019**: "Sales" MUST mean every employee in a list of BrightHR department names held in
-  settings, starting with just "Sales". The list MUST be changeable without code changes. The
+- **FR-019**: "Sales" MUST mean every employee whose Entra ID department is in a list of
+  department names held in settings, starting with just "Sales". The data administrators (FR-028) MUST be able to change the list
+  without code changes. The
   dashboard MUST list Sales employees who are absent today
   ("Today") or at any point in the next 14 calendar days ("Upcoming"), with name, role, absence
   type (with the sickness reason where recorded), start date, end date, return date, and status
@@ -338,7 +373,9 @@ sample data, and check that every section shows the right values for that group 
   UK time on working days ("sync hours"), plus once overnight. The dashboard MUST say the data
   is out of date, and keep showing the most recent good data, when: the last attempt failed; or,
   during sync hours, the last successful update is more than 2 hours old; or, outside sync
-  hours, the overnight update has not succeeded.
+  hours, the overnight update has not succeeded. If BrightHR's rate limits can't support an
+  hourly sync, the daytime sync MUST be switchable by configuration, not code, to every 2 hours
+  over the same sync hours. The out-of-date threshold then becomes 3 hours.
 - **FR-025**: Users MUST be able to request a refresh. Refreshes MUST be limited to one every 15
   minutes across all users, and the user MUST be told when the next one is available.
 - **FR-026**: Every section MUST have distinct loading, empty, and error states. A failure in
@@ -349,7 +386,10 @@ sample data, and check that every section shows the right values for that group 
 - **FR-027**: BrightHR MUST be the only source of employee, leave, and absence data. The
   dashboard MUST NOT change any data in BrightHR.
 - **FR-028**: The dashboard MUST copy only the BrightHR fields that these views need, each listed
-  in the data inventory with its purpose, who can see it, and how long it is kept.
+  in the data inventory with its purpose, who can see it, and how long it is kept. Only the
+  dashboard's back end and two named data administrators, an HR data owner (Head of HR or a
+  delegate) and one IT administrator, MUST be able to open the stored copy or change the
+  dashboard's settings. Members of the access group see the data only through the dashboard.
 - **FR-029**: The dashboard MUST be able to run on synthetic sample data in the same shape as
   BrightHR data, with a clear "Sample data" label on every view. The sample data MUST use the
   roles Energy Analyst, Senior Energy Analyst, Senior Pricing Specialist, and Sales Team Manager,
@@ -361,9 +401,9 @@ sample data, and check that every section shows the right values for that group 
 
 ### Key Entities *(include if feature involves data)*
 
-- **Employee**: a person in BrightHR. Key attributes: name, department, role, start date,
-  leaving date (if any), whether they are serving notice, and working pattern (to tell working
-  days from non-working days). Department and role history is needed to report past months
+- **Employee**: a person in BrightHR. Key attributes: name, department (from Entra ID), role,
+  start date, leaving date (if any; a leaving date after today means they are serving notice),
+  and working pattern (to tell working days from non-working days). Department and role history is needed to report past months
   correctly.
 - **Absence**: a period an employee is away. Key attributes: employee, type (annual leave,
   sickness, compassionate, unpaid, or other), start and end date, half-day flags, length in days,
@@ -376,6 +416,8 @@ sample data, and check that every section shows the right values for that group 
 - **Sync record**: when data was last pulled from BrightHR, and whether it worked.
 - **Access group**: the Microsoft 365 group of HR and Senior Leadership members who may use the
   dashboard.
+- **Data administrator**: one of two named people (the HR data owner and one IT administrator)
+  who may open the stored copy of synced data and change the dashboard's settings.
 
 ## Success Criteria *(mandatory)*
 
@@ -389,8 +431,8 @@ sample data, and check that every section shows the right values for that group 
   sample data.
 - **SC-004**: In testing, a user outside the access group receives zero employee records from
   any page or data request.
-- **SC-005**: During sync hours (FR-024), users never see data more than 2 hours old without a
-  visible warning.
+- **SC-005**: During sync hours (FR-024), users never see data older than the out-of-date
+  threshold (2 hours, or 3 hours on the 2-hourly fallback) without a visible warning.
 - **SC-006**: An HR or Senior Leadership user can find who in Sales is off in the next 14 days
   within 30 seconds, without using BrightHR.
 - **SC-007**: An accessibility audit against WCAG 2.1 AA finds no failures, and every view works
@@ -407,6 +449,9 @@ sample data, and check that every section shows the right values for that group 
   release. If it is added later, restricted users see "Annual leave" for annual leave and
   "Absent" for every other absence type, never sickness reasons, and sickness figures for small
   groups are hidden from them (decided 2026-10-27).
+- **Department** comes from each employee's Entra ID record, matched to BrightHR on email,
+  because BrightHR has no department field. Employees with no match or no department are
+  grouped as "Not set".
 - **Working days** are Monday to Friday, excluding bank holidays in England and Wales.
 - **Retention**: synced data is kept for 13 months of history (enough for the rolling 12-month
   attrition rate, the 52-week Bradford Factor, and the earliest pickable month) plus future
