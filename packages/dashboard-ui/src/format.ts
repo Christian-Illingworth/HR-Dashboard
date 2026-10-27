@@ -33,6 +33,16 @@ export const formatMonthShort = (month: string) => monthShortFormat.format(atUtc
 /** 2026-10 → "October 2026". */
 export const formatMonthLong = (month: string) => monthLongFormat.format(atUtcMidnight(`${month}-01`));
 
+/**
+ * 2026-05 + -3 → 2026-02. Kept here rather than imported from @hrd/core, so the calculation code
+ * stays in the lazily loaded mock-data chunk and `api` mode never downloads it.
+ */
+export function shiftMonth(month: string, n: number): string {
+  const [y, m] = month.split('-').map(Number);
+  const i = y! * 12 + (m! - 1) + n;
+  return `${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}`;
+}
+
 /** 3.5 → "3.5", 7 → "7", with "days"/"day". */
 export function formatDays(days: number): string {
   const n = Number.isInteger(days) ? String(days) : days.toFixed(1);

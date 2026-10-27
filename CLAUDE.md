@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and a task list in [tasks.md](specs/001-hr-dashboard/tasks.md). Implementation has started. Delivery comes in three milestones: a mock-data web part first, then the sync function, then live data and access control. Milestone 1 is in progress (see the ticked tasks). Pending leave waits on BrightHR (research question B3). The repository is github.com/Christian-Illingworth/HR-Dashboard.
+The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and a task list in [tasks.md](specs/001-hr-dashboard/tasks.md). Implementation has started. Delivery comes in three milestones: a mock-data web part first, then the sync function, then live data and access control. Milestone 1 is built and tested in the harness: every metric, chart, list, state and filter on mock data. Only the SPFx shell is missing (tasks T008, T039, T040, T095), and it needs Node 22 (see Build & run). Pending leave waits on BrightHR (research question B3). The repository is github.com/Christian-Illingworth/HR-Dashboard.
 
 **[.specify/memory/constitution.md](.specify/memory/constitution.md) is the governing document. Read it before any spec, plan or code work.** It wins over this file if the two ever disagree. This file only adds how Claude should work here. Do not copy the constitution's rules into this file.
 
@@ -55,6 +55,9 @@ Node 22 LTS is the target (`.nvmrc`). The npm workspaces also run on Node 24. Th
 | `npm run dev:harness` | The dashboard on mock data at `http://localhost:5173/?today=2026-10-27`. `&state=` simulates a state: `loading`, `noData`, `staleFailed`, `staleThreshold`, `staleOvernight`, `sectionError`, `forbidden`, `unavailable`. |
 | `npm run test:e2e` | Playwright + axe against the harness (desktop and 360 px phone, Chromium and WebKit). Needs `npx playwright install chromium webkit` once. |
 | `npm run build:css -w @hrd/dashboard-ui` | Regenerates the shadow-root stylesheet after a change to `design-kit/css` or `src/styles/project.css`. A test fails if you forget. |
+| `npm run build:webpart` | Builds the UI library and runs the bundle check (`scripts/check-bundle.mjs`): no BrightHR hosts, Key Vault references, secrets or harness code, and mock data only in its lazy chunk. Then it builds the SPFx package. Until `apps/webpart` exists, it stops after the library with a message. |
+
+Expected values for tests are worked out by hand in `fixtures/expected/*.md`. When a metric changes, rework the numbers there by hand first, never by running the code. The catalogue (`docs/metric-catalogue.md`) is the living definition; code links to it as `// Metric: docs/metric-catalogue.md#mNN`.
 
 Planned commands that don't exist yet are in [quickstart.md](specs/001-hr-dashboard/quickstart.md).
 
@@ -105,6 +108,8 @@ Every change, however small, goes through a branch:
 The constitution's Principle VI and its Development Workflow & Quality Gates section define what "tested" means. Calculation tests are written first and seen to fail. They use synthetic fixtures with expected values worked out independently, and a fixed "today". Authorization rules for sickness data also need automated tests. Don't call a change done until those gates pass. If a gate couldn't be run, say so.
 
 ## Known gaps
+
+- **Node 22 isn't installed here.** This machine has Node 24.18 and no version manager. SPFx 1.23.2 needs Node ≥ 22.14 and < 23, so the web part (T008, T039, T040) can't be scaffolded or built until Node 22 is available (for example through nvm-windows). Everything else runs on Node 24.
 
 - **No `.claude/settings.json`.** Nothing yet denies reads of secret files. Deny rules wouldn't cover shell reads or `@`-mentions anyway. The real safeguard is keeping secrets in Key Vault and out of the project folder.
 - **BrightHR API access is not confirmed.** The public docs show a 90-day absence lookback, approved absences only (no pending leave), one absence call per employee, and no department or working-pattern fields. Rate limits, a sandbox, read-only credentials, data region and terms of use are open. The questions to ask are B1–B12 in [research.md](specs/001-hr-dashboard/research.md#questions-for-brighthr).

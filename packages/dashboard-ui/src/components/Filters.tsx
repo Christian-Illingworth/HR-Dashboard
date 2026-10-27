@@ -1,8 +1,8 @@
 // US7, FR-021: department, role and month filters. Every section updates; "today" figures and
 // the Sales list stay relative to today (FR-022).
 
-import { addMonths, type DashboardResponse } from '@hrd/core';
-import { formatMonth, formatMonthLong } from '../format';
+import type { DashboardResponse } from '@hrd/core';
+import { formatMonth, formatMonthLong, shiftMonth } from '../format';
 import { Select } from './Select';
 
 export interface FilterValues {
@@ -22,7 +22,7 @@ export function Filters({ filters, currentMonth, departmentHistoryStartMonth, on
   const { applied, options } = filters;
   const set = (patch: Partial<FilterValues>) => onChange({ ...applied, ...patch });
   const anyFilter = applied.department !== 'All' || applied.role !== 'All' || applied.month !== currentMonth;
-  const windowStart = addMonths(applied.month, -3);
+  const windowStart = shiftMonth(applied.month, -3);
   const groupFiltered = applied.department !== 'All' || applied.role !== 'All';
   const usesEarliest = groupFiltered && departmentHistoryStartMonth !== null && windowStart < departmentHistoryStartMonth;
 
@@ -64,7 +64,7 @@ export function Filters({ filters, currentMonth, departmentHistoryStartMonth, on
       </div>
       {applied.month !== currentMonth && (
         <p className="caption">
-          Charts show {formatMonth(windowStart)} to {formatMonth(addMonths(applied.month, 3))}. Today&apos;s numbers and
+          Charts show {formatMonth(windowStart)} to {formatMonth(shiftMonth(applied.month, 3))}. Today&apos;s numbers and
           &ldquo;Who&apos;s off in Sales&rdquo; still show today.
         </p>
       )}

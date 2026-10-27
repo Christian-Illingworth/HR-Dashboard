@@ -1,6 +1,5 @@
 // US3, FR-019, FR-020: who in Sales is off today or in the next 14 days.
 
-import { useState } from 'react';
 import type { SalesData, SalesEntry } from '@hrd/core';
 import { formatDay } from '../format';
 import { UsersIcon } from './icons';
