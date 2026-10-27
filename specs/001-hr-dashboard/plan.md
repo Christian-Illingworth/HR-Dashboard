@@ -20,8 +20,10 @@ The data path has three parts:
   checks the caller's `Dashboard.Read` app role (held through the access group), works out the
   figures in a pure, test-first `core` package, and returns them.
 
-Sample-data mode replaces BrightHR at the Function's client. A Vite harness lets the UI be
-built and tested without SharePoint.
+There are two sample-data modes. On the back end, sample data replaces BrightHR at the
+Function's client. In the web part, a `dataSource = sample` property runs the dashboard on
+bundled synthetic data, so it can be demoed before the Function exists ([tasks.md](tasks.md),
+milestone 1). A Vite harness lets the UI be built and tested without SharePoint.
 
 The public BrightHR API sets three limits that shape this plan. It has a 90-day lookback, so
 the dashboard builds its own history from the first sync. It lists approved absences only, so
