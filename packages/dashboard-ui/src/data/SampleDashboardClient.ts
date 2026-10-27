@@ -49,7 +49,7 @@ export class SampleDashboardClient implements DashboardClient {
           employees: built.employees,
           absences: built.absences,
           history: data.history,
-          reasons: [], // selectSicknessReasons arrives with US3 (tasks T057)
+          reasons: core.selectSicknessReasons(built.employees, built.reasonCandidates, settings, this.today),
         },
         status,
         settings,

@@ -7,6 +7,7 @@ import { SectionState } from './components/SectionState';
 import { MockDataNotice } from './components/MockDataNotice';
 import { KpiRow } from './components/KpiRow';
 import { LastUpdated } from './components/LastUpdated';
+import { SalesList, SalesTabs, type SalesTab } from './components/SalesList';
 
 export interface AppProps {
   client: DashboardClient;
@@ -78,6 +79,7 @@ const errorSections: DashboardResponse['sections'] = {
 };
 
 function Sections({ sections }: { sections: DashboardResponse['sections'] | undefined }) {
+  const [salesTab, setSalesTab] = useState<SalesTab>('today');
   return (
     <>
       <section className="hrd-section" aria-labelledby="hrd-kpis-title">
@@ -109,9 +111,14 @@ function Sections({ sections }: { sections: DashboardResponse['sections'] | unde
             {() => null}
           </SectionState>
         </SectionCard>
-        <SectionCard id="hrd-sales" title="Who's off in Sales" className="hrd-span-2">
+        <SectionCard
+          id="hrd-sales"
+          title="Who's off in Sales"
+          className="hrd-span-2"
+          actions={<SalesTabs tab={salesTab} onChange={setSalesTab} />}
+        >
           <SectionState section={sections?.salesAbsences} emptyText="No Sales absence data yet." loadingShape="list">
-            {() => null}
+            {(sales) => <SalesList data={sales} tab={salesTab} />}
           </SectionState>
         </SectionCard>
       </div>

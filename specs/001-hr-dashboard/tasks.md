@@ -241,8 +241,8 @@ the 20-day absence isn't listed (spec US3).
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T053 [US3] Work out by hand the expected Today and Upcoming entries at 2026-10-27 in `fixtures/expected/sales.md`: name, role, type, reason, start, end, return date, status and order. Include the "Not yet known" and `FirstHalf` return-date cases, `departmentsNotFound` with a settings line `Sales Ops`, and `outsideFilter` with department Pricing.
-- [ ] T054 [P] [US3] Write failing tests in `packages/core/test/metrics/m15-sales.test.ts`, using sales.md:
+- [X] T053 [US3] Work out by hand the expected Today and Upcoming entries at 2026-10-27 in `fixtures/expected/sales.md`: name, role, type, reason, start, end, return date, status and order. Include the "Not yet known" and `FirstHalf` return-date cases, `departmentsNotFound` with a settings line `Sales Ops`, and `outsideFilter` with department Pricing.
+- [X] T054 [P] [US3] Write failing tests in `packages/core/test/metrics/m15-sales.test.ts`, using sales.md:
   - Today vs Upcoming (tomorrow … today + 14) and the 20-day exclusion;
   - `publicHoliday` left out;
   - return date `nextWorkingDay(endDate)`, except "If `endPart` = `FirstHalf`, the return date is `endDate`";
@@ -251,14 +251,14 @@ the 20-day absence isn't listed (spec US3).
   - role filter applied;
   - `departmentsNotFound`, `outsideFilter`, status `Approved` and `pendingAvailable: false`;
   - someone off today and tomorrow appears in both tabs.
-- [ ] T055 [P] [US3] Write failing tests in `packages/core/test/sync/sickness-reasons.test.ts` for which reasons are kept. Quote: "A sickness absence of a current Sales-department employee that overlaps today to today + 14 days, or is open-ended". Reasons outside that rule are dropped.
+- [X] T055 [P] [US3] Write failing tests in `packages/core/test/sync/sickness-reasons.test.ts` for which reasons are kept. Quote: "A sickness absence of a current Sales-department employee that overlaps today to today + 14 days, or is open-ended". Reasons outside that rule are dropped.
 
 ### Implementation for User Story 3
 
-- [ ] T056 [P] [US3] Implement M15 in `packages/core/src/metrics/salesAbsences.ts` (`// Metric: …#m15`).
-- [ ] T057 [P] [US3] Implement `selectSicknessReasons(records, rawSicknessAbsences, settings, today)` in `packages/core/src/sync/sicknessReasons.ts`, and use it in `SampleDashboardClient` to build the sample reasons.
-- [ ] T058 [US3] Fill the `salesAbsences` section in `packages/core/src/dashboard/buildDashboard.ts`. It always uses today, whatever month is picked (FR-022). Sickness reasons appear **only** in this section (FR-006). Add a test asserting no other section's JSON contains any fixture reason text.
-- [ ] T059 [US3] Build `SalesList` in `packages/dashboard-ui/src/components/SalesList.tsx`:
+- [X] T056 [P] [US3] Implement M15 in `packages/core/src/metrics/salesAbsences.ts` (`// Metric: …#m15`).
+- [X] T057 [P] [US3] Implement `selectSicknessReasons(records, rawSicknessAbsences, settings, today)` in `packages/core/src/sync/sicknessReasons.ts`, and use it in `SampleDashboardClient` to build the sample reasons.
+- [X] T058 [US3] Fill the `salesAbsences` section in `packages/core/src/dashboard/buildDashboard.ts`. It always uses today, whatever month is picked (FR-022). Sickness reasons appear **only** in this section (FR-006). Add a test asserting no other section's JSON contains any fixture reason text.
+- [X] T059 [US3] Build `SalesList` in `packages/dashboard-ui/src/components/SalesList.tsx`:
   - a `.seg` Today/Upcoming switch (`aria-pressed`, keyboard operable);
   - a `.table` with columns Name, Role, Absence type (with the reason where present), Start, End, Return date and Status, and half-day parts shown as "(morning)"/"(afternoon)";
   - "Nobody in Sales is off" instead of an empty table;
@@ -268,7 +268,7 @@ the 20-day absence isn't listed (spec US3).
   - stacked rows on narrow screens.
 
   Add the test `packages/dashboard-ui/test/SalesList.test.tsx`.
-- [ ] T060 [US3] Write the end-to-end test `packages/dashboard-ui/e2e/sales.spec.ts`. The list matches sales.md, the switch works by keyboard and touch, and axe reports no violations.
+- [X] T060 [US3] Write the end-to-end test `packages/dashboard-ui/e2e/sales.spec.ts`. The list matches sales.md, the switch works by keyboard and touch, and axe reports no violations.
 
 **Checkpoint**: US1 and US3 both work on their own.
 

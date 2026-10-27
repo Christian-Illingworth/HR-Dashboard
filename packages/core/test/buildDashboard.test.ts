@@ -5,6 +5,21 @@ import { BadRequestError, buildDashboard, safeSection } from '../src/dashboard/b
 import { round1 } from '../src/dashboard/round';
 import { sampleInput } from './sampleInput';
 
+describe('Sales section (US3)', () => {
+  it('puts sickness reasons in the Sales section and nowhere else (FR-006)', () => {
+    const res = buildDashboard(sampleInput());
+    expect(res.sections.salesAbsences.status).toBe('ok');
+    expect(JSON.stringify(res.sections.salesAbsences)).toContain('Back pain');
+    const { salesAbsences: _sales, ...otherSections } = res.sections;
+    expect(JSON.stringify({ ...res, sections: otherSections })).not.toContain('Back pain');
+  });
+
+  it('is relative to today whatever month is picked (FR-022)', () => {
+    const may = buildDashboard(sampleInput({ query: { month: '2026-05' } })).sections.salesAbsences;
+    expect(may).toEqual(buildDashboard(sampleInput()).sections.salesAbsences);
+  });
+});
+
 // Rounded values from fixtures/expected/kpis.md.
 describe('KPI section (US1)', () => {
   it.each([

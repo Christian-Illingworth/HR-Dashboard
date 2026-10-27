@@ -2,6 +2,7 @@
 // Today is fixed at 2026-10-27 and now at 10:30 UK time (GMT).
 import { buildRecords } from '../src/sync/buildRecords';
 import { parseSettings } from '../src/records/settings';
+import { selectSicknessReasons } from '../src/sync/sicknessReasons';
 import type { BuildDashboardInput } from '../src/dashboard/buildDashboard';
 import type { AbsenceDto, EmployeeDto, ListResponse } from '../src/brighthr/types';
 import type { EmployeeHistoryRow, SyncStatus } from '../src/records/types';
@@ -34,7 +35,7 @@ export function sampleInput(over: Partial<BuildDashboardInput> & { rawSettings?:
       employees: built.employees,
       absences: built.absences,
       history: sampleHistory as EmployeeHistoryRow[],
-      reasons: [], // filled by selectSicknessReasons once US3 adds it (tasks T057)
+      reasons: selectSicknessReasons(built.employees, built.reasonCandidates, settings, TODAY),
     },
     status: sampleStatus as SyncStatus,
     settings,

@@ -1,6 +1,6 @@
 // Test helpers: a DashboardContext from the fixtures (with a filter), or from inline records.
 import { createContext, type DashboardContext } from '../src/dashboard/context';
-import type { AbsenceRecord, DashboardRecords, EmployeeRecord, SyncStatus } from '../src/records/types';
+import type { AbsenceRecord, DashboardRecords, EmployeeRecord, SicknessReasonRecord, SyncStatus } from '../src/records/types';
 import { sampleInput, TODAY, NOW } from './sampleInput';
 import launchStatus from '../../../fixtures/launch-sync-status.json';
 
@@ -10,10 +10,13 @@ export interface Filter {
 }
 
 /** Context over the synthetic fixtures. `launch` uses historyStartDate 2026-07-29. */
-export function fixtureContext(filter: Filter = {}, opts: { launch?: boolean; month?: string } = {}): DashboardContext {
-  const input = sampleInput();
+export function fixtureContext(
+  filter: Filter = {},
+  opts: { launch?: boolean; month?: string; reasons?: SicknessReasonRecord[]; rawSettings?: Record<string, string> } = {},
+): DashboardContext {
+  const input = sampleInput(opts.rawSettings ? { rawSettings: opts.rawSettings } : {});
   return createContext({
-    records: input.records,
+    records: opts.reasons ? { ...input.records, reasons: opts.reasons } : input.records,
     settings: input.settings,
     status: opts.launch ? (launchStatus as SyncStatus) : input.status,
     today: TODAY,

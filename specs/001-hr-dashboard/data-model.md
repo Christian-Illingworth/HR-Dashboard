@@ -437,8 +437,11 @@ and the edge cases. Every listed edge case needs a test (Principle VI).
 - **Formula**:
   - Sales = employees whose current `department` matches a `SalesDepartments` line, and who also
     match the role filter.
-  - Today = their absences (not `publicHoliday`) whose AbsenceSpan includes today. Upcoming =
-    those overlapping tomorrow … today + 14.
+  - Today = their absences (not `publicHoliday`) whose dates contain today. Upcoming = those
+    whose dates overlap tomorrow … today + 14. An open-ended absence counts as still running, so
+    it appears in both. (Revised during implementation, 2026-10-27: the first draft used day
+    spans, which stop at today for open-ended sickness and would have left it out of Upcoming.)
+  - Sales employees who left before today aren't listed.
   - Each entry has: name; role; type label (`displayName`); sickness reason, if a reason is
     stored; start (date and part); end (date and part, or "Not yet known"); return date;
     status "Approved" (D7). Sorted by start date, then family name.

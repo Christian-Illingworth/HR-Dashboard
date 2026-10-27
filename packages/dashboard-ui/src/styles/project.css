@@ -50,6 +50,21 @@
 .hrd-skeleton-chart { height: 220px; border-radius: var(--r); }
 .hrd-state { min-height: 120px; }
 
+/* ── Tables that stack into cards in a narrow container (Sales list, chart tables) ──
+   Each cell carries its column name in data-label, shown as a micro-label when stacked. */
+@container (max-width: 640px) {
+  .hrd-stack-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .hrd-stack-table, .hrd-stack-table tbody, .hrd-stack-table tr, .hrd-stack-table td { display: block; width: 100%; }
+  .hrd-stack-table tr { padding: var(--sp-2) 0; border-bottom: 1px solid var(--bdr); }
+  .hrd-stack-table tr:last-child { border-bottom: none; }
+  .hrd-stack-table td { border-bottom: none; padding: 2px 0; }
+  .hrd-stack-table td::before {
+    content: attr(data-label); display: block;
+    font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: 0.6px; text-transform: uppercase; color: var(--txt3);
+  }
+  .hrd-stack-table td.table-name::before { display: none; }
+}
+
 /* ── Small helpers ── */
 .hrd-inline-list { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); align-items: center; }
 .hrd-sr-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

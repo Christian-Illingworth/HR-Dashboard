@@ -8,6 +8,7 @@ import type { DashboardRecords, Settings, SyncStatus } from '../records/types';
 import { pickableMonths } from '../window/picker';
 import { createContext, type DashboardContext } from './context';
 import { buildKpis } from './sections/kpis';
+import { salesAbsences } from '../metrics/salesAbsences';
 import { ALL, type DashboardQuery, type DashboardResponse, type Section } from './types';
 
 export interface BuildDashboardInput {
@@ -64,7 +65,7 @@ const sections: SectionBuilders = {
   sickness: () => ({ status: 'empty' }),
   absence: () => ({ status: 'empty' }),
   attrition: () => ({ status: 'empty' }),
-  salesAbsences: () => ({ status: 'empty' }),
+  salesAbsences: (ctx) => safeSection(() => salesAbsences(ctx)),
 };
 
 export function buildDashboard(input: BuildDashboardInput): DashboardResponse {
