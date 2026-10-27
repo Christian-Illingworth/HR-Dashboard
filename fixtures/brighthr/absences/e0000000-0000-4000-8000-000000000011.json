@@ -1,0 +1,49 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000217",
+        "employeeId": "e0000000-0000-4000-8000-000000000011",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-09-28"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-10-02"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 3,
+          "description": "Cold or flu"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 5
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000114",
+        "employeeId": "e0000000-0000-4000-8000-000000000011",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-12-07"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-12-11"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

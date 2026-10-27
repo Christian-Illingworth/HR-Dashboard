@@ -200,9 +200,18 @@ These are worked out in `packages/core` on each request and never stored.
 
 **D1. Working-day fractions.** For an absence with `startDate`…`endDate` (an open-ended
 sickness ends at today):
-- Every working day in the range counts 1.
-- If `startPart` or `endPart` is `FirstHalf` or `SecondHalf`, that boundary day counts 0.5.
-  If the absence starts and ends on the same day with a half part, it counts 0.5.
+- Every working day in the range counts 1, except at the boundaries. A boundary day counts
+  only the half it covers. `FirstHalf` is the morning and `SecondHalf` the afternoon.
+  - Start day: a `startPart` of `SecondHalf` counts 0.5 (the absence starts in the afternoon).
+    `FirstHalf`, `FullDay` and `LocalDate` count the whole day.
+  - End day: an `endPart` of `FirstHalf` counts 0.5 (the absence ends at midday, which is
+    also why the return date is that same day, M15). `SecondHalf`, `FullDay` and
+    `LocalDate` count the whole day.
+  - One-day absence: morning only (`FirstHalf` to `FirstHalf`) or afternoon only
+    (`SecondHalf` to `SecondHalf`) counts 0.5. `FirstHalf` to `SecondHalf` counts 1.
+  - *(Revised during implementation, 2026-10-27. The first draft counted any half part as
+    0.5, which made a multi-day absence starting "in the morning" lose half a day, and
+    contradicted the return-date rule.)*
 - If both parts are `Time` and the dates are the same, the day counts 0.5. A `Time` boundary
   on a multi-day absence counts its day as 1. *(Project rule, to confirm with HR; BrightHR
   gives no length for non-sickness types.)*
@@ -250,6 +259,10 @@ Categories: `annualLeave`, `publicHoliday` (left out of every metric), `sickness
 **D7. Status.** Every stored absence is **Approved**, because BrightHR lists only approved
 absences (R9). Pending values are `null` with `pendingAvailable: false` until BrightHR answers
 question B3.
+
+**D8. Rounding.** Calculations keep full precision. Values are rounded only in the API
+response, to 1 decimal place, half away from zero (3.75 → 3.8). Counts of people and episodes
+are whole numbers and aren't rounded.
 
 ### Metrics
 

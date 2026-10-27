@@ -1,0 +1,22 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Other",
+        "id": "a0000000-0000-4000-8000-000000000306",
+        "employeeId": "e0000000-0000-4000-8000-000000000014",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-11-02"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-11-13"
+        },
+        "displayName": "Paternity leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

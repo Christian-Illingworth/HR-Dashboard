@@ -1,0 +1,64 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000209",
+        "employeeId": "e0000000-0000-4000-8000-000000000013",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-03-23"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-03-25"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 10,
+          "description": "Back pain"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 3
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000108",
+        "employeeId": "e0000000-0000-4000-8000-000000000013",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-09-29"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-10-06"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      },
+      {
+        "$type": "Other",
+        "id": "a0000000-0000-4000-8000-000000000303",
+        "employeeId": "e0000000-0000-4000-8000-000000000013",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-12-14"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-12-15"
+        },
+        "displayName": "Unpaid leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

@@ -1,0 +1,64 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000213",
+        "employeeId": "e0000000-0000-4000-8000-000000000006",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-06-29"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-07-03"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 9,
+          "description": "Injury"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 5
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000103",
+        "employeeId": "e0000000-0000-4000-8000-000000000006",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-08-24"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-09-04"
+        },
+        "displayName": "Annual leave",
+        "note": "Family holiday"
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000112",
+        "employeeId": "e0000000-0000-4000-8000-000000000006",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-12-21"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-12-31"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

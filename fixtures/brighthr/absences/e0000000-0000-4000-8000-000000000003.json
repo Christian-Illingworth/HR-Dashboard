@@ -1,0 +1,31 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000218",
+        "employeeId": "e0000000-0000-4000-8000-000000000003",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-10-22"
+        },
+        "end": null,
+        "displayName": "Sickness",
+        "note": "Physio booked",
+        "estimatedReturn": {
+          "date": "2026-11-02",
+          "time": null
+        },
+        "isCertified": false,
+        "reason": {
+          "id": 10,
+          "description": "Back pain"
+        },
+        "duration": null,
+        "isPaid": true,
+        "paidDuration": null
+      }
+    ],
+    "continuationToken": null
+  }
+]

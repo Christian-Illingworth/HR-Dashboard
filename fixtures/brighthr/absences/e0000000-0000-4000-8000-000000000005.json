@@ -1,0 +1,64 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000205",
+        "employeeId": "e0000000-0000-4000-8000-000000000005",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-01-12"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-01-16"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 3,
+          "description": "Cold or flu"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 5
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000101",
+        "employeeId": "e0000000-0000-4000-8000-000000000005",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-07-13"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-07-17"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      },
+      {
+        "$type": "Other",
+        "id": "a0000000-0000-4000-8000-000000000302",
+        "employeeId": "e0000000-0000-4000-8000-000000000005",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-08-17"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-08-19"
+        },
+        "displayName": "Compassionate leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

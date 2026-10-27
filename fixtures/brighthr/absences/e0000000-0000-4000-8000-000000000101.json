@@ -1,0 +1,34 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000208",
+        "employeeId": "e0000000-0000-4000-8000-000000000101",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-02-17"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-02-18"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 5,
+          "description": "Stomach upset"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 2
+        },
+        "isPaid": true,
+        "paidDuration": null
+      }
+    ],
+    "continuationToken": null
+  }
+]

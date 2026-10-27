@@ -1,0 +1,91 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000202",
+        "employeeId": "e0000000-0000-4000-8000-000000000002",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2025-11-10"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2025-11-12"
+        },
+        "displayName": "Sickness",
+        "note": "Saw the GP on day two",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 5,
+          "description": "Stomach upset"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 3
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Toil",
+        "id": "a0000000-0000-4000-8000-000000000304",
+        "employeeId": "e0000000-0000-4000-8000-000000000002",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-07-24"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-07-24"
+        },
+        "displayName": "TOIL",
+        "note": ""
+      },
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000216",
+        "employeeId": "e0000000-0000-4000-8000-000000000002",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-09-14"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-09-15"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 3,
+          "description": "Cold or flu"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 2
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000106",
+        "employeeId": "e0000000-0000-4000-8000-000000000002",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-10-26"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-10-30"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

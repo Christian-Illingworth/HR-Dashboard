@@ -10,3 +10,22 @@ dist/
 lib/
 temp/
 *.log
+
+# Azure Functions local settings (may hold secrets)
+**/local.settings.json
+
+# Local development data from the mock sync (synthetic, but never committed)
+.local-data/
+
+# SPFx build output
+apps/webpart/release/
+apps/webpart/sharepoint/solution/
+apps/webpart/lib-commonjs/
+apps/webpart/lib-dts/
+apps/webpart/lib-esm/
+apps/webpart/jest-output/
+
+# Test reports
+playwright-report/
+test-results/
+coverage/

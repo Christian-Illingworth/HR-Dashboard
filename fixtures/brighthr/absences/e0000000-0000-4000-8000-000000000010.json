@@ -1,0 +1,81 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000203",
+        "employeeId": "e0000000-0000-4000-8000-000000000010",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2025-12-08"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2025-12-09"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 7,
+          "description": "Migraine"
+        },
+        "duration": {
+          "$type": "Minutes",
+          "minutes": 900
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000116",
+        "employeeId": "e0000000-0000-4000-8000-000000000010",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-05-26"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-05-29"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000104",
+        "employeeId": "e0000000-0000-4000-8000-000000000010",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-08-31"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-08-31"
+        },
+        "displayName": "Bank holiday",
+        "note": ""
+      },
+      {
+        "$type": "Other",
+        "id": "a0000000-0000-4000-8000-000000000301",
+        "employeeId": "e0000000-0000-4000-8000-000000000010",
+        "start": {
+          "$type": "LocalDateTime",
+          "date": "2026-09-10",
+          "time": "09:00:00"
+        },
+        "end": {
+          "$type": "LocalDateTime",
+          "date": "2026-09-10",
+          "time": "12:00:00"
+        },
+        "displayName": "Medical appointment",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]

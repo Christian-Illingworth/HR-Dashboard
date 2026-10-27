@@ -1,0 +1,108 @@
+[
+  {
+    "items": [
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000206",
+        "employeeId": "e0000000-0000-4000-8000-000000000007",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-02-06"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-02-06"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 7,
+          "description": "Migraine"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 1
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Sickness",
+        "id": "a0000000-0000-4000-8000-000000000207",
+        "employeeId": "e0000000-0000-4000-8000-000000000007",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-02-09"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-02-09"
+        },
+        "displayName": "Sickness",
+        "note": "",
+        "estimatedReturn": null,
+        "isCertified": false,
+        "reason": {
+          "id": 7,
+          "description": "Migraine"
+        },
+        "duration": {
+          "$type": "Days",
+          "days": 1
+        },
+        "isPaid": true,
+        "paidDuration": null
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000115",
+        "employeeId": "e0000000-0000-4000-8000-000000000007",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-02-16"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-02-20"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      },
+      {
+        "$type": "Study",
+        "id": "a0000000-0000-4000-8000-000000000305",
+        "employeeId": "e0000000-0000-4000-8000-000000000007",
+        "start": {
+          "$type": "LocalDate",
+          "date": "2026-10-14"
+        },
+        "end": {
+          "$type": "LocalDate",
+          "date": "2026-10-14"
+        },
+        "displayName": "Study leave",
+        "note": ""
+      },
+      {
+        "$type": "Holiday",
+        "id": "a0000000-0000-4000-8000-000000000107",
+        "employeeId": "e0000000-0000-4000-8000-000000000007",
+        "start": {
+          "$type": "LocalDatePart",
+          "date": "2026-10-27",
+          "datePart": "FirstHalf"
+        },
+        "end": {
+          "$type": "LocalDatePart",
+          "date": "2026-10-27",
+          "datePart": "FirstHalf"
+        },
+        "displayName": "Annual leave",
+        "note": ""
+      }
+    ],
+    "continuationToken": null
+  }
+]
