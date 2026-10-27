@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loading · CU Web Design Kit</title>
+<link rel="icon" type="image/png" href="logo/favicon-32.png">
+<link rel="preload" href="fonts/poppins-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <!-- Standalone page: sign-in, loading, no access. The colour logo on the light page, one card. -->
+  <main class="standalone">
+    <img class="standalone-logo" src="logo/cu-logo-150.png" srcset="logo/cu-logo-150.png 1x, logo/cu-logo-250.png 2x" alt="Consultiv Utilities">
+    <div class="standalone-card">
+      <div class="standalone-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
+      <h1>Getting your tickets ready</h1>
+      <p>This takes about a minute the first time each morning.</p>
+      <ul class="load-steps">
+        <li class="is-done"><span class="load-mark"></span>Signed in as Sam Taylor</li>
+        <li class="is-active"><span class="load-mark"></span>Loading tickets</li>
+        <li><span class="load-mark"></span>Building the overview</li>
+      </ul>
+      <div class="load-bar"><span></span></div>
+      <div class="standalone-actions">
+        <a class="btn-secondary" href="index.html">Back to the kit</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

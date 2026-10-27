@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CU Web Design Kit</title>
+<link rel="icon" type="image/png" href="logo/favicon-32.png">
+<link rel="preload" href="fonts/poppins-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<script src="js/kit.js" defer></script>
+<style>
+  /* Demo-page layout only. Nothing here is part of the kit. */
+  .demo-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .demo-row + .demo-row, .chip-row + .demo-row { margin-top: 14px; }
+  .demo-note { margin-top: 12px; font-size: 12px; color: var(--txt3); }
+  .demo-note code, .demo-code { font-family: Consolas, 'Cascadia Mono', monospace; font-size: 12px; color: var(--txt); background: var(--bg); padding: 1px 5px; border-radius: 4px; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .swatch { border: 1px solid var(--bdr); border-radius: var(--r); overflow: hidden; background: var(--surf); }
+  .swatch-chip { height: 60px; background: var(--c); border-bottom: 1px solid var(--bdr); }
+  .swatch-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+  .swatch-name { font-size: 13px; font-weight: 600; }
+  .swatch-hex { font-size: 12px; color: var(--txt3); font-variant-numeric: tabular-nums; }
+  .swatch-use { font-size: 12px; color: var(--txt2); }
+  .logo-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; }
+  .logo-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 200px; padding: 28px; border: 1px solid var(--bdr); border-radius: var(--r); background: var(--surf); text-align: center; }
+  .logo-tile--dark { background: var(--navy); border-color: var(--navy); color: var(--on-dark-2); }
+  .logo-tile figcaption { font-size: 12px; }
+  .logo-marks { display: flex; gap: 20px; align-items: center; }
+  .type-rows > div { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--bdr); }
+  .type-rows > div:last-child { border-bottom: none; }
+  .type-meta { flex: 0 0 170px; font-size: 12px; color: var(--txt3); }
+  .shadow-boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px; }
+  .shadow-box { height: 90px; display: flex; align-items: center; justify-content: center; background: var(--surf); font-size: 12px; font-weight: 600; color: var(--txt2); }
+  .space-rows { display: flex; flex-direction: column; gap: 6px; }
+  .space-row { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--txt3); }
+  .space-row span:first-child { width: 90px; }
+  .space-bar { height: 10px; background: var(--teal); border-radius: 2px; }
+  .menu-demo .menu { position: static; animation: none; }
+  @media (max-width: 720px) { .type-rows > div { flex-direction: column; gap: 4px; } .type-meta { flex: none; } }
+</style>
+</head>
+<body>
+
+<!-- One line-icon set (Feather / Lucide style): 24×24, currentColor, 2px stroke, round caps.
+     Use: <svg class="icon"><use href="#i-search"/></svg> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+    <symbol id="i-droplet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-headset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/><path d="M19 20c0 1.5-2 2-5 2"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49L12.95 2.56a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></symbol>
+  </defs>
+</svg>
+
+<div class="app-shell">
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <img class="sidebar-logo" src="logo/cu-logo-150-white.png" srcset="logo/cu-logo-150-white.png 1x, logo/cu-logo-250-white.png 2x" alt="Consultiv Utilities">
+      <img class="sidebar-mark" src="logo/cu-mark-white.png" alt="Consultiv Utilities">
+      <button type="button" class="sidebar-collapse" aria-controls="appSidebar" aria-label="Collapse menu" title="Collapse menu"><svg width="16" height="16"><use href="#i-collapse"/></svg></button>
+      <button type="button" class="sidebar-expand" aria-controls="appSidebar" aria-expanded="false" aria-label="Show menu" title="Show menu"><svg width="18" height="18"><use href="#i-menu"/></svg></button>
+    </div>
+    <nav class="sidebar-nav" aria-label="Main">
+      <div class="sidebar-section">Guide</div>
+      <button type="button" class="nav-item active" aria-current="page" data-tab="foundations" data-title="Foundations" title="Foundations"><span class="nav-icon"><svg><use href="#i-droplet"/></svg></span><span class="nav-text">Foundations</span></button>
+      <button type="button" class="nav-item" data-tab="components" data-title="Components" title="Components"><span class="nav-icon"><svg><use href="#i-layers"/></svg></span><span class="nav-text">Components</span></button>
+      <div class="sidebar-section">Examples</div>
+      <button type="button" class="nav-item" data-tab="dashboard" data-title="Dashboard" title="Dashboard"><span class="nav-icon"><svg><use href="#i-grid"/></svg></span><span class="nav-text">Dashboard</span></button>
+      <button type="button" class="nav-item" data-tab="inbox" data-title="Inbox" title="Inbox"><span class="nav-icon"><svg><use href="#i-inbox"/></svg></span><span class="nav-text">Inbox</span><span class="nav-count">24</span></button>
+      <button type="button" class="nav-item nav-group" aria-expanded="true" title="Waiting"><span class="nav-icon"><svg><use href="#i-clock"/></svg></span><span class="nav-text">Waiting</span><span class="nav-count nav-count--watch">9</span><span class="nav-caret"><svg width="12" height="12"><use href="#i-chevron"/></svg></span></button>
+      <div class="nav-children">
+        <button type="button" class="nav-item nav-item--child"><span class="dot tone-teal"></span><span class="nav-text">On supplier</span><span class="nav-count">5</span></button>
+        <button type="button" class="nav-item nav-item--child"><span class="dot tone-sage"></span><span class="nav-text">On customer</span><span class="nav-count">3</span></button>
+        <button type="button" class="nav-item nav-item--child"><span class="dot tone-coral"></span><span class="nav-text">For us</span><span class="nav-count">1</span></button>
+      </div>
+      <div class="sidebar-section">Manager</div>
+      <a class="nav-item" href="standalone.html" title="Standalone page"><span class="nav-icon"><svg><use href="#i-external"/></svg></span><span class="nav-text">Standalone page</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="sidebar-user" title="sam.taylor@example.com">
+        <span class="avatar" aria-hidden="true">ST</span>
+        <span class="sidebar-user-text">
+          <span class="sidebar-user-name">Sam Taylor</span>
+          <span class="sidebar-user-role">Manager</span>
+        </span>
+      </div>
+      <label class="sidebar-toggle-row">
+        <span>Compact view</span>
+        <span class="toggle-switch"><input type="checkbox" checked><span class="toggle-track"><span class="toggle-thumb"></span></span></span>
+      </label>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="topbar">
+      <div class="topbar-heading">
+        <h1 class="topbar-title">Foundations</h1>
+        <div class="topbar-sub">Consultiv Utilities web design kit</div>
+      </div>
+      <div class="topbar-actions">
+        <div class="topbar-search"><input class="form-input" type="search" placeholder="Search…" aria-label="Search"></div>
+        <button type="button" class="btn-outline hide-phone"><svg class="icon"><use href="#i-download"/></svg>Export</button>
+        <button type="button" class="btn-cta" onclick="CU.toast('Claimed #48213 — Meter reading query')">Claim next <span class="btn-count">7</span></button>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ═══ Foundations ═══ -->
+      <section class="tab-pane active stack" id="pane-foundations">
+        <div class="card">
+          <h2 class="section-heading">Logo</h2>
+          <div class="logo-tiles">
+            <figure class="logo-tile">
+              <img src="logo/cu-logo-150.png" srcset="logo/cu-logo-150.png 1x, logo/cu-logo-250.png 2x" alt="Consultiv Utilities logo in colour" height="96">
+              <figcaption class="caption">Colour, on white or light surfaces</figcaption>
+            </figure>
+            <figure class="logo-tile logo-tile--dark">
+              <img src="logo/cu-logo-150-white.png" srcset="logo/cu-logo-150-white.png 1x, logo/cu-logo-250-white.png 2x" alt="Consultiv Utilities logo in white" height="96">
+              <figcaption>White, on navy and dark images</figcaption>
+            </figure>
+            <figure class="logo-tile">
+              <div class="logo-marks">
+                <img src="logo/cu-mark.png" alt="Brandmark in colour" width="29">
+                <span style="background:var(--navy);padding:10px;border-radius:var(--rsm);display:inline-flex"><img src="logo/cu-mark-white.png" alt="Brandmark in white" width="29"></span>
+              </div>
+              <figcaption class="caption">Brandmark alone: favicons, the collapsed sidebar, internal tools</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-heading">Brand colours</h2>
+          <div class="swatches">
+            <div class="swatch" style="--c:var(--navy)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Navy</span><span class="swatch-hex">#2B3F47 · --navy</span><span class="swatch-use">All text. Sidebar. Selected filters.</span></div></div>
+            <div class="swatch" style="--c:var(--teal)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Teal</span><span class="swatch-hex">#02708B · --teal</span><span class="swatch-use">Actions, links, focus ring.</span></div></div>
+            <div class="swatch" style="--c:var(--cyan)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Cyan</span><span class="swatch-hex">#4AC0E5 · --cyan</span><span class="swatch-use">Active marker. Marks only.</span></div></div>
+            <div class="swatch" style="--c:var(--lightblue)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Light blue</span><span class="swatch-hex">#B7E1F4 · --lightblue</span><span class="swatch-use">Page and hover tints.</span></div></div>
+            <div class="swatch" style="--c:var(--coral)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Coral</span><span class="swatch-hex">#EB5F5E · --coral</span><span class="swatch-use">Bad, urgent. SME.</span></div></div>
+            <div class="swatch" style="--c:var(--green)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Green</span><span class="swatch-hex">#31AF87 · --green</span><span class="swatch-use">Good, done. Corporate.</span></div></div>
+            <div class="swatch" style="--c:var(--gray)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Grey</span><span class="swatch-hex">#C6C6C5 · --gray</span><span class="swatch-use">Neutral marks only.</span></div></div>
+            <div class="swatch" style="--c:var(--white)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">White</span><span class="swatch-hex">#FFFFFF · --white</span><span class="swatch-use">Cards and panels.</span></div></div>
+          </div>
+          <h2 class="section-heading" style="margin-top:24px">Portal shades and the amber exception</h2>
+          <div class="swatches">
+            <div class="swatch" style="--c:var(--midteal)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Mid teal</span><span class="swatch-hex">#3D9BB8 · --midteal</span></div></div>
+            <div class="swatch" style="--c:var(--sage)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Sage</span><span class="swatch-hex">#8BC9AD · --sage</span></div></div>
+            <div class="swatch" style="--c:var(--deepteal)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Deep teal</span><span class="swatch-hex">#318487 · --deepteal</span></div></div>
+            <div class="swatch" style="--c:var(--darkgray)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Dark grey</span><span class="swatch-hex">#7B7B7A · --darkgray</span></div></div>
+            <div class="swatch" style="--c:var(--amber)"><div class="swatch-chip"></div><div class="swatch-body"><span class="swatch-name">Amber</span><span class="swatch-hex">#F3943E · --amber</span><span class="swatch-use">Warnings only.</span></div></div>
+          </div>
+          <p class="demo-note">Use the exact hex, never a darker or lighter shade of it. Light colours are too pale to read as text, so they colour a mark (dot, bar, border, tint) beside navy text.</p>
+        </div>
+
+        <div class="card-grid">
+          <div class="card">
+            <h2 class="section-heading">Text</h2>
+            <div class="type-rows">
+              <div><span class="type-meta">--txt · navy</span><span style="color:var(--txt)">Primary text and numbers</span></div>
+              <div><span class="type-meta">--txt2 · navy 86%</span><span style="color:var(--txt2)">Secondary text and headings</span></div>
+              <div><span class="type-meta">--txt3 · navy 75%</span><span style="color:var(--txt3)">Muted: captions, timestamps</span></div>
+              <div><span class="type-meta">--teal</span><a href="#">Links and the active control</a></div>
+            </div>
+          </div>
+          <div class="card">
+            <h2 class="section-heading">Type · Poppins</h2>
+            <div class="type-rows">
+              <div><span class="type-meta">.title-xl · 22/700</span><span class="title-xl">Page title</span></div>
+              <div><span class="type-meta">.title-lg · 17/700</span><span class="title-lg">Panel title</span></div>
+              <div><span class="type-meta">.title-md · 15/700</span><span class="title-md">Section or dialog</span></div>
+              <div><span class="type-meta">body · 14/400</span><span>Body text in a list or form</span></div>
+              <div><span class="type-meta">.body-sm · 13/400</span><span class="body-sm">Running text and messages</span></div>
+              <div><span class="type-meta">.eyebrow · 11/700</span><span class="eyebrow">Micro label</span></div>
+              <div><span class="type-meta">.kpi-value · 36/700</span><span class="kpi-value">1,284</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-grid">
+          <div class="card">
+            <h2 class="section-heading">Elevation and corners</h2>
+            <div class="shadow-boxes">
+              <div class="shadow-box" style="box-shadow:var(--sh-sm);border-radius:var(--rsm)">--sh-sm · 7px</div>
+              <div class="shadow-box" style="box-shadow:var(--sh-md);border-radius:var(--r)">--sh-md · 10px</div>
+              <div class="shadow-box" style="box-shadow:var(--sh-lg);border-radius:var(--r-lg)">--sh-lg · 16px</div>
+            </div>
+          </div>
+          <div class="card">
+            <h2 class="section-heading">Spacing · 4px grid</h2>
+            <div class="space-rows">
+              <div class="space-row"><span>--sp-1 · 4</span><span class="space-bar" style="width:4px"></span></div>
+              <div class="space-row"><span>--sp-2 · 8</span><span class="space-bar" style="width:8px"></span></div>
+              <div class="space-row"><span>--sp-3 · 12</span><span class="space-bar" style="width:12px"></span></div>
+              <div class="space-row"><span>--sp-4 · 16</span><span class="space-bar" style="width:16px"></span></div>
+              <div class="space-row"><span>--sp-5 · 20</span><span class="space-bar" style="width:20px"></span></div>
+              <div class="space-row"><span>--sp-6 · 24</span><span class="space-bar" style="width:24px"></span></div>
+              <div class="space-row"><span>--sp-7 · 32</span><span class="space-bar" style="width:32px"></span></div>
+              <div class="space-row"><span>--sp-8 · 40</span><span class="space-bar" style="width:40px"></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ Components ═══ -->
+      <section class="tab-pane stack" id="pane-components">
+        <div class="card">
+          <h2 class="section-heading">Buttons</h2>
+          <div class="demo-row">
+            <button type="button" class="btn-primary">Save changes</button>
+            <button type="button" class="btn-secondary">Cancel</button>
+            <button type="button" class="btn-outline"><svg class="icon"><use href="#i-download"/></svg>Export</button>
+            <button type="button" class="btn-cta">Claim next <span class="btn-count">7</span></button>
+            <button type="button" class="btn-action"><svg class="icon"><use href="#i-link"/></svg>Copy link</button>
+            <button type="button" class="btn-ai"><svg class="icon"><use href="#i-spark"/></svg>Draft with AI</button>
+            <button type="button" class="btn-icon" aria-label="Refresh"><svg class="icon"><use href="#i-refresh"/></svg></button>
+          </div>
+          <div class="demo-row">
+            <button type="button" class="btn-primary btn-sm">Small primary</button>
+            <button type="button" class="btn-secondary btn-sm">Small secondary</button>
+            <button type="button" class="btn-link">View all tickets</button>
+            <button type="button" class="btn-danger-link">Remove user</button>
+            <button type="button" class="btn-primary" disabled>Disabled</button>
+          </div>
+          <p class="demo-note">Teal commits something. The page's single main action is the <code>.btn-cta</code> pill. A destructive action is navy words with a coral underline, because white on coral fails contrast.</p>
+        </div>
+
+        <div class="card">
+          <h2 class="section-heading">Forms</h2>
+          <div class="field-grid">
+            <label class="field"><span class="field-label">Company name</span><input class="form-input" value="Northfield Bakeries Ltd"></label>
+            <label class="field"><span class="field-label">Supplier <span class="field-hint">(optional)</span></span>
+              <select class="form-select"><option>British Gas</option><option>EDF</option><option>Octopus Energy</option></select></label>
+            <label class="field"><span class="field-label">Contract end</span><input class="form-input" type="date" value="2027-03-31"></label>
+          </div>
+          <div class="field-grid" style="margin-top:12px">
+            <label class="field"><span class="form-label">Uppercase label style</span><input class="form-input" placeholder="Placeholder text"></label>
+            <div class="field"><span class="field-label">Inline</span><div class="field-inline"><input class="form-input" value="MPAN 1200 0512 3456"><button type="button" class="btn-secondary">Look up</button></div></div>
+          </div>
+          <label class="field" style="margin-top:12px"><span class="field-label">Notes</span><textarea class="form-textarea" placeholder="Write a note…"></textarea></label>
+          <div class="demo-row" style="margin-top:14px">
+            <label class="check-chip"><input type="checkbox" checked> Electricity</label>
+            <label class="check-chip"><input type="checkbox" checked> Gas</label>
+            <label class="check-chip"><input type="checkbox"> Water</label>
+          </div>
+          <div style="max-width:360px;margin-top:14px"><label class="switch-row">Email me when a ticket is assigned<span class="switch"><input type="checkbox" checked><span class="switch-track"></span></span></label></div>
+          <p class="form-error" style="margin-top:14px">Enter a contract end date after the start date.</p>
+          <div class="form-actions" style="margin-top:14px"><button type="button" class="btn-secondary">Cancel</button><button type="button" class="btn-primary">Save</button></div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-heading">Tones, tags and status</h2>
+          <div class="demo-row">
+            <span class="tag tone-cyan">Open</span>
+            <span class="tag tone-teal">Waiting on supplier</span>
+            <span class="tag tone-sage">Waiting on customer</span>
+            <span class="tag tone-coral">Waiting for us</span>
+            <span class="tag tone-gray">Future date</span>
+            <span class="tag tone-lightblue">AI agent</span>
+            <span class="tag tone-midteal">Pending</span>
+            <span class="tag tone-green">Resolved</span>
+            <span class="tag tone-darkgray">Closed</span>
+            <span class="tag tone-amber">Needs review</span>
+            <span class="tag">Neutral</span>
+          </div>
+          <div class="demo-row">
+            <span class="status tone-cyan">Open</span>
+            <span class="status tone-teal">Waiting on supplier</span>
+            <span class="status tone-green">Resolved</span>
+            <span class="badge tone-amber">Awaiting reply</span>
+            <span class="badge tone-coral">SLA breached</span>
+            <span class="badge">12 new</span>
+          </div>
+          <div class="demo-row">
+            <span class="prop"><span class="prop-label">Status</span><button type="button" class="pill tone-cyan">Open <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+            <span class="prop"><span class="prop-label">Priority</span><button type="button" class="pill" data-level="1">Low <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+            <span class="prop"><span class="prop-label">Priority</span><button type="button" class="pill" data-level="2">Medium <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+            <span class="prop"><span class="prop-label">Priority</span><button type="button" class="pill" data-level="3">High <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+            <span class="prop"><span class="prop-label">Priority</span><button type="button" class="pill" data-level="4">Urgent <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+            <span class="prop"><span class="prop-label">Saving</span><button type="button" class="pill tone-green is-busy">Resolved <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+            <span class="prop"><span class="prop-label">Read only</span><span class="pill pill--static tone-teal">Waiting on supplier</span></span>
+          </div>
+          <div class="demo-row">
+            <span class="signal" data-level="1">Low</span>
+            <span class="signal" data-level="2">Medium</span>
+            <span class="signal" data-level="3">High</span>
+            <span class="signal" data-level="4">Urgent</span>
+            <span class="rag rag--good">On target</span>
+            <span class="rag rag--watch">Watch</span>
+            <span class="rag rag--bad">Needs attention</span>
+            <span class="delta delta--good">▲ 12%</span>
+            <span class="delta delta--bad">▼ 4%</span>
+            <span class="delta delta--neutral">0%</span>
+          </div>
+          <div class="demo-row">
+            <span class="avatar">ST</span>
+            <a class="file-chip" href="#"><svg class="icon"><use href="#i-clip"/></svg>LOA-signed.pdf <span class="file-chip-size">212 KB</span></a>
+            <span class="caption">Send with <span class="kbd">Ctrl</span> <span class="kbd">Enter</span></span>
+          </div>
+          <p class="demo-note">A tone (<code>.tone-teal</code>, <code>.tone-coral</code>…) colours a component's marks: dot, border, tint. Text stays navy.</p>
+        </div>
+
+        <div class="card">
+          <h2 class="section-heading">Filters and menus</h2>
+          <div class="controls-row">
+            <div class="ctrl-group">
+              <span class="ctrl-label">Period</span>
+              <button type="button" class="filter-pill">Today</button>
+              <button type="button" class="filter-pill is-on">This week</button>
+              <button type="button" class="filter-pill">This month</button>
+            </div>
+            <div class="ctrl-group">
+              <span class="ctrl-label">Team</span>
+              <button type="button" class="select-trigger" data-menu="teamMenu"><span data-label>All teams</span><svg width="11" height="11"><use href="#i-chevron"/></svg></button>
+              <div class="menu" id="teamMenu" role="menu" hidden>
+                <button type="button" class="menu-item" role="menuitemradio" aria-checked="true" data-default>All teams</button>
+                <hr class="menu-divider">
+                <button type="button" class="menu-item" role="menuitemradio" aria-checked="false"><span class="dot tone-coral"></span>SME</button>
+                <button type="button" class="menu-item" role="menuitemradio" aria-checked="false"><span class="dot tone-green"></span>Corporate</button>
+              </div>
+            </div>
+            <div class="seg" role="group" aria-label="Measure">
+              <button type="button" class="seg-btn is-on">Count</button>
+              <button type="button" class="seg-btn">Avg resolve time</button>
+            </div>
+          </div>
+          <div class="chip-row">
+            <button type="button" class="chip is-on">All <b>24</b></button>
+            <button type="button" class="chip">Open <b>11</b></button>
+            <button type="button" class="chip">Waiting <b>9</b></button>
+            <button type="button" class="chip chip--watch">Awaiting reply <b>4</b></button>
+          </div>
+          <div class="demo-row">
+            <div class="soft-tabs"><button type="button" class="soft-tab is-on">Reply</button><button type="button" class="soft-tab">Forward</button><button type="button" class="soft-tab">Note</button></div>
+          </div>
+          <div class="demo-row menu-demo">
+            <div class="menu" role="menu">
+              <div class="menu-head">Set status</div>
+              <button type="button" class="menu-item" role="menuitemradio" aria-checked="true"><span class="dot tone-cyan"></span>Open</button>
+              <button type="button" class="menu-item" role="menuitemradio" aria-checked="false"><span class="dot tone-teal"></span>Waiting on supplier</button>
+              <button type="button" class="menu-item" role="menuitemradio" aria-checked="false"><span class="dot tone-green"></span>Resolved</button>
+            </div>
+          </div>
+          <p class="demo-note">Navy marks a selection that's on (a filter). Teal marks a dropdown that's filtering, and actions.</p>
+        </div>
+
+        <div class="card">
+          <h2 class="section-heading">Feedback</h2>
+          <div class="stack" style="gap:10px;max-width:640px">
+            <div class="notice">Your changes are saved automatically.</div>
+            <div class="notice tone-green">The supplier confirmed the switch for 1 November.</div>
+            <div class="notice tone-amber">3 tickets have no supplier set, so they're missing from this view.</div>
+            <div class="notice tone-coral">We couldn't reach the supplier portal. Try again in a few minutes.</div>
+          </div>
+          <div class="demo-row" style="margin-top:14px">
+            <button type="button" class="btn-secondary" onclick="CU.toast('Ticket #48213 resolved', { action: { label: 'Undo', onClick: function () { CU.toast('Change undone'); } } })">Show toast with Undo</button>
+            <button type="button" class="btn-secondary" onclick="CU.toast('We couldn\'t save that change. Check your connection.', { error: true })">Show error toast</button>
+            <button type="button" class="btn-secondary" data-open="demoModal">Open dialog</button>
+            <button type="button" class="btn-secondary" data-open="demoDrawer">Open drawer</button>
+          </div>
+          <div class="card-grid" style="margin-top:16px">
+            <div class="card card--compact">
+              <div class="empty-state"><svg><use href="#i-inbox"/></svg><span>Nothing waiting. New tickets will show up here.</span></div>
+            </div>
+            <div class="card card--compact">
+              <div class="skeleton skeleton-line w-60"></div>
+              <div class="skeleton skeleton-line w-80"></div>
+              <div class="skeleton skeleton-line w-40"></div>
+              <div class="skeleton skeleton-card"></div>
+            </div>
+            <div class="card card--compact">
+              <ul class="load-steps">
+                <li class="is-done"><span class="load-mark"></span>Signed in</li>
+                <li class="is-active"><span class="load-mark"></span>Loading tickets</li>
+                <li><span class="load-mark"></span>Building the overview</li>
+              </ul>
+              <div class="load-bar" style="margin-top:14px"><span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-heading">Timeline</h2>
+          <div style="max-width:720px">
+            <div class="timeline-entry tone-teal">
+              <div class="entry-head"><span class="entry-who"><span class="entry-author">Priya Shah</span><span class="badge tone-teal">Customer</span></span><span class="entry-time">Today 09:14</span></div>
+              <div class="prose"><p>Hi, our gas meter was replaced last week and the new reading isn't on the latest bill.</p><p>Could you chase this with the supplier?</p></div>
+            </div>
+            <div class="timeline-entry tone-cyan">
+              <div class="entry-head"><span class="entry-who"><span class="entry-author">Sam Taylor</span><span class="badge tone-cyan">Reply</span></span><span class="entry-time">Today 09:40</span></div>
+              <div class="prose"><p>Thanks Priya, I've sent the new meter details to the supplier and asked for a re-bill.</p></div>
+            </div>
+            <div class="timeline-entry timeline-entry--note">
+              <div class="entry-head"><span class="entry-who"><span class="entry-author">Sam Taylor</span><span class="badge tone-amber">Internal note</span></span><span class="entry-time">Today 09:42</span></div>
+              <div class="prose"><p>Supplier ref EX-55120. Expect 5 working days.</p></div>
+            </div>
+            <div class="timeline-event">Merged with #48190 by Sam Taylor · Today 09:45</div>
+          </div>
+        </div>
+
+        <div class="card card--flush">
+          <div class="card-head"><h2 class="section-heading">Table</h2><span class="caption">Rows open their record</span><button type="button" class="btn-link">Export CSV</button></div>
+          <div class="table-scroll">
+            <table class="table">
+              <thead><tr><th>Customer</th><th>Status</th><th>Owner</th><th class="num">Sites</th><th class="num">Annual kWh</th></tr></thead>
+              <tbody>
+                <tr class="is-link"><td><div class="table-name">Northfield Bakeries</div><div class="table-sub">SME · Leeds</div></td><td><span class="status tone-green">Live</span></td><td>Sam Taylor</td><td class="num">3</td><td class="num">412,000</td></tr>
+                <tr class="is-link is-active"><td><div class="table-name">Harbour Logistics</div><div class="table-sub">Corporate · Hull</div></td><td><span class="status tone-teal">Switching</span></td><td>Priya Shah</td><td class="num">14</td><td class="num">2,880,500</td></tr>
+                <tr class="is-link"><td><div class="table-name">Elm Street Dental</div><div class="table-sub">SME · York</div></td><td><span class="status tone-amber">Renewal due</span></td><td>Jo Bennett</td><td class="num">1</td><td class="num is-zero">0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination"><button type="button" class="page-btn" disabled>Previous</button><span class="page-info">Page 1 of 4</span><button type="button" class="page-btn">Next</button></div>
+        </div>
+      </section>
+
+      <!-- ═══ Dashboard example ═══ -->
+      <section class="tab-pane stack" id="pane-dashboard">
+        <div class="page-head" style="margin-bottom:0">
+          <h2 class="title-md">Overview</h2>
+          <span class="caption">1 – 27 October 2026 · updated 2 minutes ago</span>
+          <button type="button" class="btn-link">Set thresholds</button>
+        </div>
+        <div class="controls-row" style="margin-bottom:0">
+          <div class="ctrl-group">
+            <span class="ctrl-label">Period</span>
+            <button type="button" class="filter-pill">Today</button>
+            <button type="button" class="filter-pill">This week</button>
+            <button type="button" class="filter-pill is-on">This month</button>
+          </div>
+          <div class="ctrl-group">
+            <span class="ctrl-label">Team</span>
+            <button type="button" class="select-trigger is-filtered" data-menu="dashTeam"><span data-label>SME</span><svg width="11" height="11"><use href="#i-chevron"/></svg></button>
+            <div class="menu" id="dashTeam" role="menu" hidden>
+              <button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-default>All teams</button>
+              <hr class="menu-divider">
+              <button type="button" class="menu-item" role="menuitemradio" aria-checked="true"><span class="dot tone-coral"></span>SME</button>
+              <button type="button" class="menu-item" role="menuitemradio" aria-checked="false"><span class="dot tone-green"></span>Corporate</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <button type="button" class="kpi-tile">
+            <span class="kpi-label">Open tickets</span>
+            <span class="kpi-value">148</span>
+            <span class="kpi-sub">23 opened today</span>
+            <span class="rag rag--good">On target</span>
+          </button>
+          <button type="button" class="kpi-tile is-watch">
+            <span class="kpi-label">First response</span>
+            <span class="kpi-value">1h 42m</span>
+            <span class="kpi-sub">Average, working hours</span>
+            <span class="rag rag--watch">Watch · over 1h 30m</span>
+          </button>
+          <button type="button" class="kpi-tile is-bad">
+            <span class="kpi-label">Oldest unresolved</span>
+            <span class="kpi-value">19 days</span>
+            <span class="kpi-sub">#47702 · Change of tenancy</span>
+            <span class="rag rag--bad">Needs attention · over 10 days</span>
+          </button>
+          <button type="button" class="kpi-tile">
+            <span class="kpi-label">Resolved</span>
+            <span class="kpi-value">312</span>
+            <span class="kpi-sub">This month</span>
+            <span class="rag rag--good">On target</span>
+          </button>
+        </div>
+
+        <div class="kpi-strip">
+          <button type="button" class="kpi-mini"><span class="kpi-label">Awaiting reply</span><span class="kpi-value">12</span></button>
+          <button type="button" class="kpi-mini"><span class="kpi-label">Reopened</span><span class="kpi-value">4</span></button>
+          <button type="button" class="kpi-mini"><span class="kpi-label">Stale over 5 days</span><span class="kpi-value">9</span><span class="rag rag--watch">Watch</span></button>
+          <button type="button" class="kpi-mini"><span class="kpi-label">Resolve rate</span><span class="kpi-value">87%</span></button>
+        </div>
+
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-head"><h2 class="section-heading">Active tickets by status</h2><button type="button" class="btn-link">View all</button></div>
+            <div id="statusDonut"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2 class="section-heading">Active tickets by supplier</h2><span class="caption">One scale for every bar</span></div>
+            <ul class="bar-list">
+              <li><button type="button" class="bar-row"><span class="bar-name">British Gas</span><span class="bar"><span style="width:100%"></span></span><span class="bar-val">41</span></button></li>
+              <li><button type="button" class="bar-row"><span class="bar-name">EDF</span><span class="bar"><span style="width:76%"></span></span><span class="bar-val">31</span></button></li>
+              <li><button type="button" class="bar-row"><span class="bar-name">Octopus Energy</span><span class="bar"><span style="width:54%"></span></span><span class="bar-val">22</span></button></li>
+              <li><button type="button" class="bar-row"><span class="bar-name">E.ON Next</span><span class="bar"><span style="width:39%"></span></span><span class="bar-val">16</span></button></li>
+              <li><button type="button" class="bar-row"><span class="bar-name">TotalEnergies</span><span class="bar"><span style="width:22%"></span></span><span class="bar-val">9</span></button></li>
+            </ul>
+            <div class="notice tone-amber" style="margin-top:14px">7 waiting tickets have no supplier set. <button type="button" class="btn-link">List them</button></div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">Sites under contract</div><div class="stat-value">2,318</div><div class="stat-sub">Across 412 customers</div></div>
+          <div class="stat-card"><div class="stat-label">Renewals due</div><div class="stat-value">64</div><div class="stat-sub">In the next 90 days</div></div>
+          <div class="stat-card"><div class="stat-label">Savings delivered</div><div class="stat-value">£1.2m</div><div class="stat-sub">Year to date</div></div>
+        </div>
+
+        <div class="card card--flush">
+          <div class="card-head"><h2 class="section-heading">By agent</h2><span class="caption">This month</span></div>
+          <div class="table-scroll">
+            <table class="table table--dense">
+              <thead><tr><th>Agent</th><th class="num"><span class="dot tone-cyan"></span> Open</th><th class="num"><span class="dot tone-teal"></span> Waiting</th><th class="num"><span class="dot tone-green"></span> Resolved</th><th class="num">Total</th></tr></thead>
+              <tbody>
+                <tr><td><button type="button" class="btn-link" style="font-size:13px">Sam Taylor</button></td><td class="num">12</td><td class="num">5</td><td class="num">48</td><td class="num">65</td></tr>
+                <tr><td><button type="button" class="btn-link" style="font-size:13px">Priya Shah</button></td><td class="num">9</td><td class="num">7</td><td class="num">51</td><td class="num">67</td></tr>
+                <tr><td><button type="button" class="btn-link" style="font-size:13px">Jo Bennett</button></td><td class="num">15</td><td class="num is-zero">0</td><td class="num">39</td><td class="num">54</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ Inbox example (split view) ═══ -->
+      <section class="tab-pane" id="pane-inbox" data-flush>
+        <div class="split">
+          <div class="split-list">
+            <div class="split-list-head">
+              <input class="form-input" type="search" placeholder="Search this list" aria-label="Search this list">
+              <div class="chip-row">
+                <button type="button" class="chip is-on">All <b>24</b></button>
+                <button type="button" class="chip">Open <b>11</b></button>
+                <button type="button" class="chip chip--watch">Awaiting reply <b>4</b></button>
+              </div>
+            </div>
+            <div class="split-list-scroll">
+              <h3 class="list-section-head"><span class="dot tone-cyan"></span>Open</h3>
+              <button type="button" class="list-row is-selected" aria-current="true">
+                <span class="row-line1"><span class="row-title">Meter reading missing from October bill</span><span class="row-age is-aging">3d</span></span>
+                <span class="row-line2"><span>#48213</span><span><svg width="11" height="11"><use href="#i-user"/></svg>Priya Shah</span><span>Billing</span><span class="row-flags"><span class="signal" data-level="3">High</span></span></span>
+                <span class="row-summary">New gas meter fitted last week; the supplier billed on an estimate. Customer wants a re-bill.</span>
+              </button>
+              <button type="button" class="list-row">
+                <span class="row-line1"><span class="row-title">Change of tenancy at Unit 4, Marsh Lane</span><span class="row-age is-stale">19d</span></span>
+                <span class="row-line2"><span>#47702</span><span><svg width="11" height="11"><use href="#i-user"/></svg>Harbour Logistics</span><span>Tenancy</span><span class="row-flags"><span class="signal" data-level="4">Urgent</span></span></span>
+              </button>
+              <button type="button" class="list-row">
+                <span class="row-line1"><span class="row-title">Renewal quote for three sites</span><span class="row-age">5h</span></span>
+                <span class="row-line2"><span>#48240</span><span><svg width="11" height="11"><use href="#i-user"/></svg>Elm Street Dental</span><span>Renewals</span><span class="row-flags"><span class="row-flag tone-amber">Awaiting reply</span></span></span>
+              </button>
+              <h3 class="list-section-head"><span class="dot tone-teal"></span>Waiting on supplier</h3>
+              <button type="button" class="list-row">
+                <span class="row-line1"><span class="row-title">Switch date confirmation</span><span class="row-age">1d</span></span>
+                <span class="row-line2"><span>#48105</span><span><svg width="11" height="11"><use href="#i-user"/></svg>Northfield Bakeries</span><span class="status tone-teal">Waiting on supplier</span></span>
+              </button>
+              <button type="button" class="list-row">
+                <span class="row-line1"><span class="row-title">Duplicate standing charge on two invoices</span><span class="row-age">2d</span></span>
+                <span class="row-line2"><span>#48088</span><span><svg width="11" height="11"><use href="#i-user"/></svg>Brookside Garden Centre</span><span>Billing</span></span>
+              </button>
+            </div>
+          </div>
+
+          <article class="split-detail">
+            <header class="detail-head">
+              <button type="button" class="detail-back"><svg width="14" height="14"><use href="#i-back"/></svg>Back to list</button>
+              <div class="detail-titlerow">
+                <div>
+                  <div class="detail-path">#48213 · Billing › Meter readings</div>
+                  <h2 class="detail-title">Meter reading missing from October bill</h2>
+                </div>
+                <div class="detail-actions">
+                  <button type="button" class="btn-action"><svg class="icon"><use href="#i-link"/></svg>Copy link</button>
+                  <button type="button" class="btn-action"><svg class="icon"><use href="#i-external"/></svg>Open in portal</button>
+                </div>
+              </div>
+              <div class="props">
+                <span class="prop"><span class="prop-label">Owner</span><button type="button" class="pill"><svg width="12" height="12" style="opacity:1;color:var(--teal)"><use href="#i-headset"/></svg>Sam Taylor <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+                <span class="prop"><span class="prop-label">Status</span><button type="button" class="pill tone-cyan">Open <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+                <span class="prop"><span class="prop-label">Priority</span><button type="button" class="pill" data-level="3">High <svg width="11" height="11"><use href="#i-chevron"/></svg></button></span>
+                <span class="prop"><span class="prop-label">Due</span><span class="pill pill--static">30 Oct</span></span>
+              </div>
+            </header>
+            <div class="detail-scroll">
+              <div class="meta-row" style="margin-bottom:18px">
+                <div class="meta-item"><span class="meta-label">Requester</span><span class="meta-value">Priya Shah</span></div>
+                <div class="meta-item"><span class="meta-label">Customer</span><span class="meta-value">Northfield Bakeries</span></div>
+                <div class="meta-item"><span class="meta-label">MPRN</span><span class="meta-value num">7381 2290 41</span></div>
+              </div>
+              <div class="timeline-entry tone-teal">
+                <div class="entry-head"><span class="entry-who"><span class="entry-author">Priya Shah</span><span class="badge tone-teal">Customer</span></span><span class="entry-time">Mon 09:14</span></div>
+                <div class="prose"><p>Hi, our gas meter was replaced last week and the new reading isn't on the October bill. It's been estimated instead.</p><p>Photo of the new meter attached.</p></div>
+                <div style="margin-top:8px"><a class="file-chip" href="#"><svg class="icon"><use href="#i-clip"/></svg>meter-photo.jpg <span class="file-chip-size">1.4 MB</span></a></div>
+              </div>
+              <div class="timeline-entry timeline-entry--note">
+                <div class="entry-head"><span class="entry-who"><span class="entry-author">Sam Taylor</span><span class="badge tone-amber">Internal note</span></span><span class="entry-time">Mon 09:42</span></div>
+                <div class="prose"><p>Raised with the supplier, ref EX-55120. Expect 5 working days.</p></div>
+              </div>
+            </div>
+            <footer class="detail-foot">
+              <div class="soft-tabs" style="margin-bottom:8px"><button type="button" class="soft-tab is-on">Reply</button><button type="button" class="soft-tab">Note</button></div>
+              <textarea class="form-textarea" style="min-height:72px" placeholder="Reply to Priya Shah…"></textarea>
+              <div class="form-actions" style="margin-top:8px"><span class="caption"><span class="kbd">Ctrl</span> <span class="kbd">Enter</span> to send</span><button type="button" class="btn-ai"><svg class="icon"><use href="#i-spark"/></svg>Draft with AI</button><button type="button" class="btn-primary">Send</button></div>
+            </footer>
+          </article>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Dialog: a .modal-overlay that starts hidden; data-open / data-close drive it. -->
+<div class="modal-overlay" id="demoModal" hidden>
+  <div class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="demoModalTitle">
+    <div class="modal-header"><h2 id="demoModalTitle">Resolve 3 tickets?</h2><button type="button" class="modal-close" data-close aria-label="Close"><svg width="16" height="16"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body"><p class="body-sm">The customers will get the resolution email. You can reopen them for 7 days.</p></div>
+    <div class="modal-foot"><button type="button" class="btn-secondary" data-close>Cancel</button><button type="button" class="btn-primary" data-close onclick="CU.toast('3 tickets resolved')">Resolve</button></div>
+  </div>
+</div>
+
+<!-- Drawer: the same, with its own backdrop. -->
+<div class="drawer-wrap" id="demoDrawer" hidden>
+  <div class="drawer-overlay" data-close></div>
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="demoDrawerTitle">
+    <div class="drawer-head"><div><h2 id="demoDrawerTitle">Edit user</h2><span class="caption">sam.taylor@example.com</span></div><button type="button" class="modal-close" data-close aria-label="Close"><svg width="16" height="16"><use href="#i-x"/></svg></button></div>
+    <div class="drawer-body">
+      <label class="field"><span class="field-label">Name</span><input class="form-input" value="Sam Taylor"></label>
+      <label class="field"><span class="field-label">Role</span><select class="form-select"><option>Agent</option><option selected>Manager</option></select></label>
+      <div class="field"><span class="field-label">Teams</span><div class="demo-row"><label class="check-chip"><input type="checkbox" checked> SME</label><label class="check-chip"><input type="checkbox"> Corporate</label></div></div>
+      <label class="switch-row">Can see every team's tickets<span class="switch"><input type="checkbox"><span class="switch-track"></span></span></label>
+    </div>
+    <div class="drawer-foot"><button type="button" class="btn-danger-link">Remove user</button><span class="spacer"></span><button type="button" class="btn-secondary" data-close>Cancel</button><button type="button" class="btn-primary" data-close>Save</button></div>
+  </aside>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    CU.donut(document.getElementById('statusDonut'), [
+      { label: 'Open', value: 58, tone: 'cyan' },
+      { label: 'Waiting on supplier', value: 41, tone: 'teal' },
+      { label: 'Waiting on customer', value: 23, tone: 'sage' },
+      { label: 'Waiting for us', value: 9, tone: 'coral' },
+      { label: 'Future date', value: 17, tone: 'gray' }
+    ], { label: 'Active', sub: 'tickets' });
+  });
+</script>
+</body>
+</html>

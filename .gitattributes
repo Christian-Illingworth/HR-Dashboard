@@ -1,0 +1,2 @@
+# Keep LF line endings so Spec Kit manifest hashes stay valid on every checkout
+* text=auto eol=lf
