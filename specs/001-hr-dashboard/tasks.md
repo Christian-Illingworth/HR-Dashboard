@@ -394,14 +394,14 @@ actuals with May highlighted, while the today KPIs and the Sales list stay the s
 
 ### Tests for User Story 7 ⚠️
 
-- [ ] T087 [US7] Work out by hand the expected values for role Senior Energy Analyst, department Pricing, month 2026-05, and the employee who moved from Analysis to Sales in 2026-08 (past months under Analysis, current under Sales), in `fixtures/expected/filters.md`.
-- [ ] T088 [P] [US7] Write failing tests in `packages/core/test/filters.test.ts`, using filters.md. Every section respects department and role (D3 for past months). Month 2026-05 gives a Feb–Aug window, all `actual`, with no forecasts (FR-021). Today's KPIs and the Sales list don't change with the month (FR-022). An unoffered option gives `BadRequestError`.
+- [X] T087 [US7] Work out by hand the expected values for role Senior Energy Analyst, department Pricing, month 2026-05, and the employee who moved from Analysis to Sales in 2026-08 (past months under Analysis, current under Sales), in `fixtures/expected/filters.md`.
+- [X] T088 [P] [US7] Write failing tests in `packages/core/test/filters.test.ts`, using filters.md. Every section respects department and role (D3 for past months). Month 2026-05 gives a Feb–Aug window, all `actual`, with no forecasts (FR-021). Today's KPIs and the Sales list don't change with the month (FR-022). An unoffered option gives `BadRequestError`.
 
 ### Implementation for User Story 7
 
-- [ ] T089 [US7] Apply the department, role and month query throughout `packages/core/src/dashboard/buildDashboard.ts`, so T088 passes.
-- [ ] T090 [US7] Build `Filters` in `packages/dashboard-ui/src/components/Filters.tsx`. It has three `.select-trigger` + `.menu` dropdowns (Department, Role, Month), rebuilt in React with a listbox pattern: Enter, Space and the arrow keys open and move, Escape closes, focus returns to the trigger, and `aria-expanded` and `aria-activedescendant` are set. Use `.is-filtered` when not "All". Show the note "Departments and roles before <month> use the earliest values known" when relevant. Keep the previous data visible while the new data loads. Add the test `packages/dashboard-ui/test/Filters.test.tsx`.
-- [ ] T091 [US7] Write the end-to-end test `packages/dashboard-ui/e2e/filters.spec.ts`: the three filter scenarios above, keyboard-only use, the phone layout and axe.
+- [X] T089 [US7] Apply the department, role and month query throughout `packages/core/src/dashboard/buildDashboard.ts`, so T088 passes.
+- [X] T090 [US7] Build `Filters` in `packages/dashboard-ui/src/components/Filters.tsx`. It has three `.select-trigger` + `.menu` dropdowns (Department, Role, Month), rebuilt in React with a listbox pattern: Enter, Space and the arrow keys open and move, Escape closes, focus returns to the trigger, and `aria-expanded` and `aria-activedescendant` are set. Use `.is-filtered` when not "All". Show the note "Departments and roles before <month> use the earliest values known" when relevant. Keep the previous data visible while the new data loads. Add the test `packages/dashboard-ui/test/Filters.test.tsx`.
+- [X] T091 [US7] Write the end-to-end test `packages/dashboard-ui/e2e/filters.spec.ts`: the three filter scenarios above, keyboard-only use, the phone layout and axe.
 
 **Checkpoint**: the whole dashboard works on sample data in the harness.
 

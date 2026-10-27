@@ -11,6 +11,7 @@ import { SalesList, SalesTabs, type SalesTab } from './components/SalesList';
 import { FreshnessNotice } from './components/FreshnessNotice';
 import { RefreshButton } from './components/RefreshButton';
 import { ChartSection } from './charts/ChartSection';
+import { Filters } from './components/Filters';
 import { attritionModel, attritionNotes } from './components/attritionChart';
 import {
   absenceModel,
@@ -28,7 +29,7 @@ export interface AppProps {
 }
 
 export function App({ client, noAccessContact }: AppProps) {
-  const [query] = useState<DashboardQuery>({});
+  const [query, setQuery] = useState<DashboardQuery>({});
   const { data, problem, loading, reload } = useDashboard(client, query);
 
   if (problem === 'forbidden' || problem === 'unauthenticated') {
@@ -65,6 +66,14 @@ export function App({ client, noAccessContact }: AppProps) {
 
       {data?.meta.dataMode === 'sample' && <MockDataNotice />}
       {data && <FreshnessNotice freshness={data.freshness} />}
+      {data && !data.freshness.noDataYet && (
+        <Filters
+          filters={data.filters}
+          currentMonth={data.meta.today.slice(0, 7)}
+          departmentHistoryStartMonth={data.coverage.departmentHistoryStartMonth}
+          onChange={(next) => setQuery(next)}
+        />
+      )}
 
       {problem && !data && (
         <div className="notice tone-coral" role="alert">
