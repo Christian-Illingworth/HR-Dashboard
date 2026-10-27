@@ -1,0 +1,357 @@
+openapi: 3.1.0
+info:
+  title: HR Dashboard API
+  version: 0.1.0
+  description: |
+    The back end the SPFx web part calls (research R3). Served by the Azure Function app.
+    Every operation requires an Entra ID access token for the "HR Dashboard API" app
+    registration with scope `user_impersonation` and app role `Dashboard.Read` (research R4).
+    401 and 403 responses never contain dashboard data (FR-004, SC-004).
+    Metric definitions: data-model.md section 4 (IDs M01-M16).
+servers:
+  - url: https://{functionApp}.azurewebsites.net/api
+    variables:
+      functionApp:
+        default: hr-dashboard-func
+security:
+  - entra: [user_impersonation]
+
+paths:
+  /dashboard:
+    get:
+      operationId: getDashboard
+      summary: Every section of the dashboard for one filter combination.
+      parameters:
+        - name: month
+          in: query
+          description: Selected month (YYYY-MM). Defaults to the current month. Must be one of filters.options.months.
+          schema: { type: string, pattern: '^\d{4}-(0[1-9]|1[0-2])$' }
+        - name: department
+          in: query
+          description: A department from filters.options.departments, or "All" (default).
+          schema: { type: string, default: All }
+        - name: role
+          in: query
+          description: A job title from filters.options.roles, or "All" (default).
+          schema: { type: string, default: All }
+      responses:
+        '200':
+          description: Dashboard data. A failure in one section is reported in that section only (FR-026).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DashboardResponse' }
+        '400':
+          description: A query value that isn't offered (for example, a month outside the picker range).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '503':
+          description: Stored data couldn't be read (for example, Graph unavailable). The UI shows an error state for every section, with a retry.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /refresh:
+    post:
+      operationId: requestRefresh
+      summary: Ask for a sync now. One every 15 minutes across all users (FR-025).
+      responses:
+        '202':
+          description: A sync was queued, or one is already running.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, nextAllowedAt]
+                properties:
+                  status: { type: string, enum: [queued, alreadyRunning] }
+                  nextAllowedAt: { type: string, format: date-time }
+        '429':
+          description: Too soon since the last refresh.
+          headers:
+            Retry-After: { schema: { type: integer }, description: Seconds until nextAllowedAt. }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [nextAllowedAt]
+                properties:
+                  nextAllowedAt: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+components:
+  securitySchemes:
+    entra:
+      type: oauth2
+      description: Tokens are acquired by SPFx AadHttpClient for the API's app ID URI.
+      flows:
+        implicit:
+          authorizationUrl: https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/authorize
+          scopes:
+            user_impersonation: Read HR dashboard data as the signed-in user.
+
+  responses:
+    Unauthenticated:
+      description: Missing, expired or invalid token. No body data beyond the error code.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Valid token without the Dashboard.Read role (user not in the access group). No dashboard data.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      additionalProperties: false
+      properties:
+        error: { type: string, enum: [unauthenticated, forbidden, badRequest, unavailable] }
+        message: { type: string, description: Plain English. Never contains personal data. }
+
+    DashboardResponse:
+      type: object
+      required: [meta, freshness, refresh, filters, coverage, sections]
+      properties:
+        meta:
+          type: object
+          required: [dataMode, today, generatedAt]
+          properties:
+            dataMode: { type: string, enum: [sample, live], description: '"sample" → the UI shows "Sample data" on every view (FR-029).' }
+            today: { type: string, format: date, description: Europe/London date used for every calculation. }
+            generatedAt: { type: string, format: date-time }
+        freshness:
+          description: Metric M16.
+          type: object
+          required: [noDataYet, isStale]
+          properties:
+            noDataYet: { type: boolean }
+            lastSuccessAt: { type: [string, 'null'], format: date-time }
+            lastAttemptAt: { type: [string, 'null'], format: date-time }
+            lastAttemptOutcome: { type: [string, 'null'], enum: [Running, Succeeded, Failed, null] }
+            isStale: { type: boolean }
+            staleReason: { type: [string, 'null'], enum: [lastAttemptFailed, olderThan2Hours, overnightMissed, null] }
+        refresh:
+          type: object
+          required: [nextAllowedAt]
+          properties:
+            nextAllowedAt: { type: string, format: date-time, description: Now or later. }
+        filters:
+          type: object
+          required: [applied, options]
+          properties:
+            applied:
+              type: object
+              required: [month, department, role]
+              properties:
+                month: { type: string }
+                department: { type: string }
+                role: { type: string }
+            options:
+              type: object
+              required: [months, departments, roles]
+              properties:
+                months: { type: array, items: { type: string }, description: 'Pickable months (data-model D4), newest first.' }
+                departments: { type: array, items: { type: string }, description: '"All" first, then current departments A–Z, including "Not set" if used.' }
+                roles: { type: array, items: { type: string } }
+        coverage:
+          type: object
+          properties:
+            historyStartDate: { type: [string, 'null'], format: date, description: No absence data before this date (research R11). }
+            departmentHistoryStartMonth: { type: [string, 'null'], description: Department and role values before this month are the earliest known (D3). }
+        sections:
+          type: object
+          required: [kpis, leave, sickness, absence, attrition, salesAbsences]
+          properties:
+            kpis: { $ref: '#/components/schemas/KpisSection' }
+            leave: { $ref: '#/components/schemas/LeaveSection' }
+            sickness: { $ref: '#/components/schemas/SicknessSection' }
+            absence: { $ref: '#/components/schemas/AbsenceSection' }
+            attrition: { $ref: '#/components/schemas/AttritionSection' }
+            salesAbsences: { $ref: '#/components/schemas/SalesSection' }
+
+    SectionStatus:
+      type: string
+      enum: [ok, empty, error]
+      description: '"error" carries a plain-English message and no data; other sections are unaffected (FR-026).'
+
+    Value:
+      description: One plotted value. kind drives styling and the tooltip label (FR-015, FR-017).
+      type: object
+      required: [value, kind]
+      properties:
+        value: { type: [number, 'null'] }
+        kind: { type: string, enum: [actual, toDate, booked, known, forecast] }
+
+    MonthBase:
+      type: object
+      required: [month, period, isSelected, isCurrent, coverage]
+      properties:
+        month: { type: string, description: YYYY-MM }
+        period: { type: string, enum: [actual, toDate, future] }
+        isSelected: { type: boolean }
+        isCurrent: { type: boolean }
+        coverage: { type: string, enum: [full, partial, none], description: data-model D4. Absence-based charts only; always "full" for attrition. }
+
+    KpisSection:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/SectionStatus' }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            headcount: { type: integer, description: M01 }
+            onLeaveToday: { type: integer, description: M02 }
+            offSickToday: { type: integer, description: M03 }
+            attrition12m:
+              description: M04
+              type: object
+              properties:
+                percent: { type: [number, 'null'] }
+                leavers: { type: integer }
+                averageHeadcount: { type: number }
+                noStaff: { type: boolean }
+            bradfordAverage:
+              description: M05
+              type: object
+              properties:
+                value: { type: [number, 'null'] }
+                noStaff: { type: boolean }
+                basisStartDate: { type: string, format: date }
+                basisIsPartial: { type: boolean, description: true → "Based on data since <basisStartDate>". }
+
+    LeaveSection:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/SectionStatus' }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            pendingAvailable: { type: boolean, description: 'false until BrightHR provides pending absences (research R9, B3).' }
+            months:
+              type: array
+              minItems: 7
+              maxItems: 7
+              items:
+                allOf:
+                  - { $ref: '#/components/schemas/MonthBase' }
+                  - type: object
+                    properties:
+                      approvedDays: { $ref: '#/components/schemas/Value' }
+                      pendingDays: { $ref: '#/components/schemas/Value' }
+
+    SicknessSection:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/SectionStatus' }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            forecastBasisMonths: { type: integer, description: Months averaged for M13; under 3 → no forecast. }
+            notEnoughHistory: { type: boolean }
+            months:
+              type: array
+              items:
+                allOf:
+                  - { $ref: '#/components/schemas/MonthBase' }
+                  - type: object
+                    properties:
+                      days: { $ref: '#/components/schemas/Value', description: M07 or M13 }
+                      episodes: { $ref: '#/components/schemas/Value', description: M08 or M13 }
+
+    AbsenceSection:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/SectionStatus' }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            months:
+              type: array
+              items:
+                allOf:
+                  - { $ref: '#/components/schemas/MonthBase' }
+                  - type: object
+                    description: M09; series order sickness, compassionate, unpaid, other.
+                    properties:
+                      sickness: { $ref: '#/components/schemas/Value' }
+                      compassionate: { $ref: '#/components/schemas/Value' }
+                      unpaid: { $ref: '#/components/schemas/Value' }
+                      other: { $ref: '#/components/schemas/Value' }
+
+    AttritionSection:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/SectionStatus' }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            forecastBasisMonths: { type: integer }
+            notEnoughHistory: { type: boolean }
+            months:
+              type: array
+              items:
+                allOf:
+                  - { $ref: '#/components/schemas/MonthBase' }
+                  - type: object
+                    properties:
+                      leaversActual: { $ref: '#/components/schemas/Value', description: M10 (kind actual) }
+                      leaversKnown: { $ref: '#/components/schemas/Value', description: M10 (kind known) }
+                      leaversForecast: { $ref: '#/components/schemas/Value', description: M14 (kind forecast); null for past months }
+                      startersActual: { $ref: '#/components/schemas/Value', description: M11 }
+                      startersKnown: { $ref: '#/components/schemas/Value', description: M11 }
+                      ratePercent: { $ref: '#/components/schemas/Value', description: M12; null value for future months or zero headcount }
+                      noStaff: { type: boolean }
+
+    SalesSection:
+      description: M15. Always relative to today, whatever month is picked (FR-022).
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/SectionStatus' }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            outsideFilter: { type: boolean }
+            departmentsNotFound: { type: array, items: { type: string } }
+            pendingAvailable: { type: boolean }
+            today: { type: array, items: { $ref: '#/components/schemas/SalesEntry' } }
+            upcoming: { type: array, items: { $ref: '#/components/schemas/SalesEntry' } }
+
+    SalesEntry:
+      type: object
+      required: [name, role, absenceType, start, status]
+      properties:
+        name: { type: string }
+        role: { type: string }
+        absenceType: { type: string, description: BrightHR displayName. }
+        sicknessReason: { type: [string, 'null'], description: Special category data. Only present in this section (FR-006). }
+        start:
+          type: object
+          properties:
+            date: { type: string, format: date }
+            part: { type: string, enum: [FullDay, FirstHalf, SecondHalf, Time] }
+        end:
+          type: [object, 'null']
+          description: null → "Not yet known".
+          properties:
+            date: { type: string, format: date }
+            part: { type: string, enum: [FullDay, FirstHalf, SecondHalf, Time] }
+        returnDate: { type: [string, 'null'], format: date, description: null → "Not yet known". }
+        status: { type: string, enum: [Approved, Pending] }

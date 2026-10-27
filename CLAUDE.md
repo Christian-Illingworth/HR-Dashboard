@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec in [specs/001-hr-dashboard/spec.md](specs/001-hr-dashboard/spec.md) and is ready for `/speckit-plan`. There is no plan and no code yet. The repository is github.com/Christian-Illingworth/HR-Dashboard.
+The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and is ready for `/speckit-tasks`. The plan lists spec follow-ups that came out of the BrightHR API findings; resolve them before or during tasks. There is no code yet. The repository is github.com/Christian-Illingworth/HR-Dashboard.
 
 **[.specify/memory/constitution.md](.specify/memory/constitution.md) is the governing document. Read it before any spec, plan or code work.** It wins over this file if the two ever disagree. This file only adds how Claude should work here. Do not copy the constitution's rules into this file.
 
@@ -34,12 +34,21 @@ The constitution fixes these points:
 - Secrets live in Azure Key Vault.
 - Synced data stays in the company's Microsoft 365 or Azure tenant.
 
-Everything else is chosen in the first `/speckit-plan`, under Principle VIII (Keep It Simple). That includes the framework, the back-end host, sync storage, the test framework and the build commands. Add a **Build & run** section here once something can be built.
+The feature 001 plan chose the rest ([plan.md](specs/001-hr-dashboard/plan.md), with the reasons in [research.md](specs/001-hr-dashboard/research.md)):
+- TypeScript throughout, on Node 22 LTS. npm workspaces: `packages/core` (pure calculations), `packages/dashboard-ui` (React on the design kit, with a Vite harness on sample data) and `apps/sync-function`. `apps/webpart` (SPFx) sits outside the workspaces.
+- The SPFx web part renders inside a shadow root and calls the Function API with `AadHttpClient`. It never reads SharePoint lists, and it doesn't use PnPjs.
+- Azure Functions (Flex Consumption, UK South) syncs BrightHR and serves `/api/dashboard` and `/api/refresh`. It checks the `Dashboard.Read` app role in code with `jose`.
+- Synced data lives in SharePoint lists in a separate "HR Dashboard Data" site that only the Function (`Sites.Selected`) and named admins can open. Departments come from Entra ID (`User.Read.All`).
+- Charts are hand-built SVG. There are no chart, UI-component or date libraries.
+- Tests use Vitest, React Testing Library, and Playwright with axe.
+
+Add a **Build & run** section here once something can be built. The planned commands are in [quickstart.md](specs/001-hr-dashboard/quickstart.md).
 
 | Service | Used for | Environment | Credentials | ToS / data review |
 |---|---|---|---|---|
 | BrightHR API | Employee, absence and sickness data (read-only) | Live access not confirmed. Mock mode only. | Key Vault (not set up yet) | Not done |
-| Microsoft 365 / Entra ID / SharePoint Online | Hosting, sign-in, authorization | Company production tenant. There is no separate dev tenant yet. | Not set up yet | Not applicable (already licensed) |
+| Microsoft 365 / Entra ID / SharePoint Online / Microsoft Graph | Hosting, sign-in, authorization, data site, departments | Company production tenant. There is no separate dev tenant yet. | Managed identity (not set up yet) | Not applicable (already licensed) |
+| Azure (Functions, Storage, Key Vault, Application Insights) | Sync and API back end, secrets | No subscription or resource group agreed yet | Managed identity (not set up yet) | Not applicable (company Azure) |
 
 ## UI
 
@@ -48,7 +57,7 @@ Follow [design-kit/DESIGN.md](design-kit/DESIGN.md) for all UI. Use the classes 
 - **Colour causes most mistakes.** Text is navy, and teal is the only other text colour, used for links and the active state of a control. Every other brand colour goes on marks only: dots, bars, borders and tints. Never invent a shade. Ask before adding a new hue.
 - **No Fluent UI, Bootstrap or other component library.** Their classes clash with the kit's.
 - **Don't edit `design-kit/`.** It is a copy of `Projects\Consultiv-Utilities-Brand\cu-web-design-kit\cu-web-design-kit`. Make kit changes at the source and copy them across. Project styles go in a separate file, loaded after the kit, that uses the kit's tokens.
-- **Contain the styles.** The kit's CSS must not leak into the SharePoint page, and SharePoint's CSS must not restyle the dashboard. Decide how in the first plan.
+- **Contain the styles.** The kit's CSS must not leak into the SharePoint page, and SharePoint's CSS must not restyle the dashboard. The plan does this with a shadow root and a build step that rewrites `:root` and `body` in the kit's CSS. `kit.js` isn't used, so its behaviours are rebuilt in React (research R2).
 - **Use the kit's components.** Charts use the kit's series order and `.tone-*` classes. Forecasts still need a non-colour marker, such as a dashed line plus a "Forecast" label (constitution Principle V).
 
 ## Hard constraints
@@ -84,7 +93,7 @@ The constitution's Principle VI and its Development Workflow & Quality Gates sec
 ## Known gaps
 
 - **No `.claude/settings.json`.** Nothing yet denies reads of secret files. Deny rules wouldn't cover shell reads or `@`-mentions anyway. The real safeguard is keeping secrets in Key Vault and out of the project folder.
-- **BrightHR API access is not confirmed.** Nobody has checked yet whether BrightHR offers a sandbox, its rate limits, its terms of service, or how it handles data sent to it.
-- **The access group doesn't exist yet.** The spec limits the dashboard to one Microsoft 365 group for HR and Senior Leadership. IT creates it; Claude must not (see Hard constraints). The business decides who counts as Senior Leadership.
-- **Unconfirmed spec assumptions.** The Sales department names in BrightHR haven't been checked (the spec starts with just "Sales"). Working days assume bank holidays in England and Wales.
+- **BrightHR API access is not confirmed.** The public docs show a 90-day absence lookback, approved absences only (no pending leave), one absence call per employee, and no department or working-pattern fields. Rate limits, a sandbox, read-only credentials, data region and terms of use are open. The questions to ask are B1–B12 in [research.md](specs/001-hr-dashboard/research.md#questions-for-brighthr).
+- **The access group and Azure setup don't exist yet.** The spec limits the dashboard to one Microsoft 365 group for HR and Senior Leadership. IT creates it; Claude must not (see Hard constraints). The business decides who counts as Senior Leadership. The setup a human must do is P1–P10 in research.md. Assigning the group to an app role needs Entra ID P1, which hasn't been confirmed.
+- **Unconfirmed spec assumptions.** The Sales department names in Entra ID haven't been checked (settings start with just "Sales"). Working days assume bank holidays in England and Wales. Headcount is assumed to be under 250.
 - **Code structure section is missing.** The company guidelines ask for a Code structure section copied from `CLAUDE.md.template`. The real template hasn't been provided: the file of that name in Downloads is a copy of the guidelines. Add the section when the real template arrives.
