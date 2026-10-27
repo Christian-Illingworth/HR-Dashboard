@@ -75,4 +75,9 @@ describe('niceScale', () => {
     expect(niceScale(6.5)).toEqual({ top: 8, ticks: [0, 2, 4, 6, 8] });
     expect(niceScale(0)).toEqual({ top: 4, ticks: [0, 1, 2, 3, 4] });
   });
+
+  it('keeps whole-number steps with headroom for counts of people', () => {
+    expect(niceScale(1, true)).toEqual({ top: 2, ticks: [0, 1, 2] });
+    expect(niceScale(9, true)).toEqual({ top: 9, ticks: [0, 3, 6, 9] });
+  });
 });

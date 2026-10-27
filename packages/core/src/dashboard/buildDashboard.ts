@@ -8,6 +8,7 @@ import type { DashboardRecords, Settings, SyncStatus } from '../records/types';
 import { pickableMonths } from '../window/picker';
 import { createContext, type DashboardContext } from './context';
 import { buildKpis } from './sections/kpis';
+import { buildAttrition } from './sections/attrition';
 import { buildAbsence, buildLeave, buildSickness } from './sections/trends';
 import { salesAbsences } from '../metrics/salesAbsences';
 import { freshness, nextAllowedRefresh } from '../metrics/freshness';
@@ -66,7 +67,7 @@ const sections: SectionBuilders = {
   leave: (ctx) => safeSection(() => buildLeave(ctx)),
   sickness: (ctx) => safeSection(() => buildSickness(ctx)),
   absence: (ctx) => safeSection(() => buildAbsence(ctx)),
-  attrition: () => ({ status: 'empty' }),
+  attrition: (ctx) => safeSection(() => buildAttrition(ctx)),
   salesAbsences: (ctx) => safeSection(() => salesAbsences(ctx)),
 };
 

@@ -5,9 +5,9 @@ import { formatMonth, formatNumber } from '../format';
 import { KIND_LABEL, type ChartModel } from './model';
 import type { Value } from '@hrd/core';
 
-function cell(v: Value | undefined, format: (n: number) => string): string {
+function cell(v: Value | undefined, format: (n: number) => string, period: string): string {
   if (!v) return '–';
-  if (v.value === null) return v.kind === 'forecast' ? 'No forecast' : 'Not available';
+  if (v.value === null) return v.kind === 'forecast' && period === 'future' ? 'No forecast' : '–';
   return v.kind === 'actual' ? format(v.value) : `${format(v.value)} (${KIND_LABEL[v.kind].toLowerCase()})`;
 }
 
@@ -47,17 +47,17 @@ export function ChartTable({ model }: { model: ChartModel }) {
               </th>
               {parts.map((p) => (
                 <td key={p.key} className="num" data-label={p.label}>
-                  {cell(m.values[p.key], model.format)}
+                  {cell(m.values[p.key], model.format, m.period)}
                 </td>
               ))}
               {model.line && (
                 <td className="num" data-label={model.line.label}>
-                  {cell(m.values[model.line.key], model.line.format)}
+                  {cell(m.values[model.line.key], model.line.format, m.period)}
                 </td>
               )}
               {model.extra && (
                 <td className="num" data-label={model.extra.label}>
-                  {cell(m.extra, model.extra.format ?? formatNumber)}
+                  {cell(m.extra, model.extra.format ?? formatNumber, m.period)}
                 </td>
               )}
             </tr>

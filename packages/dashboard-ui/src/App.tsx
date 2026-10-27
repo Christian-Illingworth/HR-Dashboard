@@ -11,6 +11,7 @@ import { SalesList, SalesTabs, type SalesTab } from './components/SalesList';
 import { FreshnessNotice } from './components/FreshnessNotice';
 import { RefreshButton } from './components/RefreshButton';
 import { ChartSection } from './charts/ChartSection';
+import { attritionModel, attritionNotes } from './components/attritionChart';
 import {
   absenceModel,
   absenceNotes,
@@ -147,11 +148,14 @@ function Sections({
           toModel={(d) => absenceModel(d, historyStartDate)}
           notes={(d) => absenceNotes(d, historyStartDate)}
         />
-        <SectionCard id="hrd-attrition" title="Staff attrition">
-          <SectionState section={sections?.attrition} emptyText="No attrition data yet.">
-            {() => null}
-          </SectionState>
-        </SectionCard>
+        <ChartSection
+          id="hrd-attrition"
+          title="Staff attrition"
+          section={sections?.attrition}
+          emptyText="No attrition data yet."
+          toModel={attritionModel}
+          notes={attritionNotes}
+        />
         <SectionCard
           id="hrd-sales"
           title="Who's off in Sales"

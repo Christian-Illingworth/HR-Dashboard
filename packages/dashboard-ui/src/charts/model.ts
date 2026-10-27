@@ -48,6 +48,8 @@ export interface ChartModel {
   months: ChartMonth[];
   /** Formats a bar value, e.g. 9.5 → "9.5 days". */
   format: (n: number) => string;
+  /** Whole-number value axis (counts of people). */
+  integerAxis?: boolean;
   line?: ChartLine;
   /** A figure shown under each month (e.g. sickness episodes): full label, short axis label. */
   extra?: { label: string; short: string; format?: (n: number) => string };
@@ -71,12 +73,19 @@ export function styleOf(kind: ValueKind): 'actual' | 'booked' | 'known' | 'forec
   return 'actual';
 }
 
-/** A tidy axis maximum (1, 2, 2.5, 5 × 10ⁿ steps, 4 ticks). */
-export function niceScale(max: number): { top: number; ticks: number[] } {
+/**
+ * A tidy axis maximum (1, 2, 2.5, 5 × 10ⁿ steps, about 4 ticks). `integer` keeps whole-number
+ * steps for counts of people, with at least two steps of headroom.
+ */
+export function niceScale(max: number, integer = false): { top: number; ticks: number[] } {
   if (!(max > 0)) return { top: 4, ticks: [0, 1, 2, 3, 4] };
   const rough = max / 4;
   const pow = 10 ** Math.floor(Math.log10(rough));
-  const step = [1, 2, 2.5, 5, 10].map((m) => m * pow).find((s) => s >= rough)!;
+  let step = [1, 2, 2.5, 5, 10].map((m) => m * pow).find((s) => s >= rough)!;
+  if (integer) {
+    step = Math.max(1, Math.round(step));
+    max = Math.max(max, 2);
+  }
   const top = step * Math.ceil(max / step);
   const ticks: number[] = [];
   for (let t = 0; t <= top + step / 2; t += step) ticks.push(Math.round(t * 1000) / 1000);

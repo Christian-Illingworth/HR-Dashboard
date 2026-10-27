@@ -59,6 +59,31 @@ describe('trend sections (US5)', () => {
   });
 });
 
+// Rounded values from fixtures/expected/attrition.md.
+describe('attrition section (US6)', () => {
+  it('shows actual, known and forecast leavers apart, with starters and the rate', () => {
+    const a = buildDashboard(sampleInput()).sections.attrition.data!;
+    expect(a).toMatchObject({ forecastBasisMonths: 12, notEnoughHistory: false });
+    const row = (i: number) => {
+      const m = a.months[i]!;
+      return [m.leaversActual.value, m.leaversKnown.value, m.leaversForecast.value, m.startersActual.value, m.startersKnown.value, m.ratePercent.value];
+    };
+    expect([0, 1, 2, 3, 4, 5, 6].map(row)).toEqual([
+      [0, null, null, 0, null, 0],
+      [1, null, null, 0, null, 6.9],
+      [0, null, null, 0, null, 0],
+      [1, 0, null, 0, 0, 7.1],
+      [null, 0, 0.3, null, 1, null],
+      [null, 1, 0, null, 0, null],
+      [null, 0, 0.3, null, 0, null],
+    ]);
+    expect(a.months[3]!.leaversActual.kind).toBe('toDate');
+    expect(a.months[5]!.leaversKnown.kind).toBe('known');
+    expect(a.months[4]!.leaversForecast.kind).toBe('forecast');
+    expect(a.months.every((m) => m.coverage === 'full')).toBe(true);
+  });
+});
+
 describe('freshness and refresh (US4)', () => {
   it('reports the sample data as fresh at 10:30, with a refresh allowed now', () => {
     const res = buildDashboard(sampleInput());

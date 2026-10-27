@@ -368,17 +368,17 @@ forecast. Forecast values are labelled "Forecast". Past monthly rates match
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T079 [US6] Work out by hand the expected M10–M12 and M14 values for Jul 2026 – Jan 2027 at 2026-10-27, in `fixtures/expected/attrition.md`. Include the known December leaver, a future starter, the current month's "to date" rate, and further leavers = max(0, avg − known).
-- [ ] T080 [P] [US6] Write failing tests in `packages/core/test/metrics/m10-leavers.test.ts`, `m11-starters.test.ts` and `m12-monthly-attrition.test.ts`. Cover: `actual` vs `known`, with both in the current month; a leaver counted in headcount up to `endDate`; a denominator of 0 → `null` + `noStaff`; future rate `null`; the `toDate` rate uses D6(today).
-- [ ] T081 [P] [US6] Write failing tests in `packages/core/test/forecast/m14-leavers.test.ts`. Quote: "basis months = the 12 months before the current month in which the group's headcount at the start of the month was more than 0". Cover: fewer than 3 → `null` + `notEnoughHistory`; known leavers above the average → 0; not limited by `historyStartDate`.
+- [X] T079 [US6] Work out by hand the expected M10–M12 and M14 values for Jul 2026 – Jan 2027 at 2026-10-27, in `fixtures/expected/attrition.md`. Include the known December leaver, a future starter, the current month's "to date" rate, and further leavers = max(0, avg − known).
+- [X] T080 [P] [US6] Write failing tests in `packages/core/test/metrics/m10-leavers.test.ts`, `m11-starters.test.ts` and `m12-monthly-attrition.test.ts`. Cover: `actual` vs `known`, with both in the current month; a leaver counted in headcount up to `endDate`; a denominator of 0 → `null` + `noStaff`; future rate `null`; the `toDate` rate uses D6(today).
+- [X] T081 [P] [US6] Write failing tests in `packages/core/test/forecast/m14-leavers.test.ts`. Quote: "basis months = the 12 months before the current month in which the group's headcount at the start of the month was more than 0". Cover: fewer than 3 → `null` + `notEnoughHistory`; known leavers above the average → 0; not limited by `historyStartDate`.
 
 ### Implementation for User Story 6
 
-- [ ] T082 [P] [US6] Implement M10–M12 in `packages/core/src/metrics/leavers.ts`, `packages/core/src/metrics/starters.ts` and `packages/core/src/metrics/monthlyAttrition.ts`, each with its `// Metric:` link.
-- [ ] T083 [P] [US6] Implement M14 in `packages/core/src/forecast/leavers.ts` (`// Metric: …#m14`).
-- [ ] T084 [US6] Fill the `attrition` section in `packages/core/src/dashboard/buildDashboard.ts`. Extend `packages/core/test/buildDashboard.test.ts`.
-- [ ] T085 [US6] Build `AttritionChart` in `packages/dashboard-ui/src/components/AttritionChart.tsx`, using the T075 primitives. Leavers and starters are side-by-side column groups: actual solid, known with a distinct pattern and the label "Known", forecast hatched with the label "Forecast". The rate % is a line with dot markers, shown for past months and the current month only. It has a legend and a table view. Add the test `packages/dashboard-ui/test/AttritionChart.test.tsx`.
-- [ ] T086 [US6] Write the end-to-end test `packages/dashboard-ui/e2e/attrition.spec.ts`: values against attrition.md, the known December leaver apart from the forecast, labels, keyboard access and axe.
+- [X] T082 [P] [US6] Implement M10–M12 in `packages/core/src/metrics/leavers.ts`, `packages/core/src/metrics/starters.ts` and `packages/core/src/metrics/monthlyAttrition.ts`, each with its `// Metric:` link.
+- [X] T083 [P] [US6] Implement M14 in `packages/core/src/forecast/leavers.ts` (`// Metric: …#m14`).
+- [X] T084 [US6] Fill the `attrition` section in `packages/core/src/dashboard/buildDashboard.ts`. Extend `packages/core/test/buildDashboard.test.ts`.
+- [X] T085 [US6] Build `AttritionChart` in `packages/dashboard-ui/src/components/AttritionChart.tsx`, using the T075 primitives *(as built: the model is `src/components/attritionChart.ts`, drawn by `BarChart` with a whole-number axis)*. Leavers and starters are side-by-side column groups: actual solid, known with a distinct pattern and the label "Known", forecast hatched with the label "Forecast". The rate % is a line with dot markers, shown for past months and the current month only. It has a legend and a table view. Add the test `packages/dashboard-ui/test/AttritionChart.test.tsx`.
+- [X] T086 [US6] Write the end-to-end test `packages/dashboard-ui/e2e/attrition.spec.ts`: values against attrition.md, the known December leaver apart from the forecast, labels, keyboard access and axe.
 
 **Checkpoint**: every chart works on sample data.
 

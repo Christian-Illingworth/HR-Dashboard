@@ -23,7 +23,7 @@ export function describeMonth(model: ChartModel, m: ChartMonth): string[] {
       const v = m.values[p.key];
       if (!v) continue;
       if (v.value === null) {
-        if (v.kind === 'forecast') lines.push(`${p.label}: no forecast (not enough history)`);
+        if (v.kind === 'forecast' && m.period === 'future') lines.push(`${p.label}: no forecast (not enough history)`);
         continue;
       }
       lines.push(`${p.label}: ${model.format(v.value)} (${KIND_LABEL[v.kind].toLowerCase()})`);
@@ -77,7 +77,7 @@ export function BarChart({ model }: { model: ChartModel }) {
   const height = bracketY + 18;
 
   const maxBar = Math.max(0, ...months.flatMap((m) => model.groups.map((g) => groupTotal(m, g) ?? 0)));
-  const yScale = niceScale(maxBar);
+  const yScale = niceScale(maxBar, model.integerAxis);
   const y = (v: number) => plotBottom - (v / yScale.top) * PLOT_H;
   const lineScale = model.line
     ? niceScale(Math.max(0, ...months.map((m) => m.values[model.line!.key]?.value ?? 0)))
@@ -201,7 +201,7 @@ export function BarChart({ model }: { model: ChartModel }) {
                         </g>
                       );
                     })}
-                    {total !== null && (
+                    {total !== null && total > 0 && (
                       <text className="hrd-value-label" x={gx + colW / 2} y={y(total) - 5} textAnchor="middle">
                         {formatNumber(total)}
                       </text>
