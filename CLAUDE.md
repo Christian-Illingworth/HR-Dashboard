@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and is ready for `/speckit-tasks`. The plan lists spec follow-ups that came out of the BrightHR API findings; resolve them before or during tasks. There is no code yet. The repository is github.com/Christian-Illingworth/HR-Dashboard.
+The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and a task list in [tasks.md](specs/001-hr-dashboard/tasks.md). It is ready for `/speckit-analyze`, then `/speckit-implement`. Delivery comes in three milestones: a sample-data web part first, then the sync function, then live data and access control. The plan still lists spec follow-ups from the BrightHR API findings. There is no code yet. The repository is github.com/Christian-Illingworth/HR-Dashboard.
 
 **[.specify/memory/constitution.md](.specify/memory/constitution.md) is the governing document. Read it before any spec, plan or code work.** It wins over this file if the two ever disagree. This file only adds how Claude should work here. Do not copy the constitution's rules into this file.
 
@@ -36,7 +36,7 @@ The constitution fixes these points:
 
 The feature 001 plan chose the rest ([plan.md](specs/001-hr-dashboard/plan.md), with the reasons in [research.md](specs/001-hr-dashboard/research.md)):
 - TypeScript throughout, on Node 22 LTS. npm workspaces: `packages/core` (pure calculations), `packages/dashboard-ui` (React on the design kit, with a Vite harness on sample data) and `apps/sync-function`. `apps/webpart` (SPFx) sits outside the workspaces.
-- The SPFx web part renders inside a shadow root and calls the Function API with `AadHttpClient`. It never reads SharePoint lists, and it doesn't use PnPjs.
+- The SPFx web part renders inside a shadow root. Its `dataSource` property is `sample` (bundled synthetic data, calculated in the browser, labelled "Sample data") or `api` (the Function API through `AadHttpClient`). It never reads SharePoint lists, and it doesn't use PnPjs.
 - Azure Functions (Flex Consumption, UK South) syncs BrightHR and serves `/api/dashboard` and `/api/refresh`. It checks the `Dashboard.Read` app role in code with `jose`.
 - Synced data lives in SharePoint lists in a separate "HR Dashboard Data" site that only the Function (`Sites.Selected`) and named admins can open. Departments come from Entra ID (`User.Read.All`).
 - Charts are hand-built SVG. There are no chart, UI-component or date libraries.

@@ -398,10 +398,17 @@ API allows it.
 - Every stored sync result carries `DataMode` (`Sample` or `Live`). The API returns it, and
   the UI shows a "Sample data" `.notice` on every view when it is `Sample` (FR-029,
   Principle VII).
+- **The web part's sample-data mode** (revised 2026-10-27 for the delivery order in
+  tasks.md). The web part property `dataSource` is `sample` or `api`, which is configuration
+  under Principle VII. In `sample`, a `SampleDashboardClient` runs `packages/core` in the browser
+  over the bundled synthetic fixtures, with a fixed sample "today" (default 2026-10-27), and
+  never contacts the back end. That lets the dashboard be demoed in SharePoint before the
+  Function or BrightHR access exists. The fixtures and `core` load as a separate lazy chunk,
+  which the bundle check verifies. In `api` mode, figures come only from the Function, and
+  mock BrightHR data is still swapped in at the Function's client.
 - The **UI dev harness** (`packages/dashboard-ui`, Vite) runs without SharePoint or Azure. It
-  uses a harness-only data client that calls `packages/core` in the browser over the same
-  fixtures, with `?today=YYYY-MM-DD`. This code never goes into the web part bundle; a bundle
-  check enforces this. Production calculations happen only in the Function.
+  uses the same `SampleDashboardClient`, plus a harness-only wrapper that simulates states
+  (`?today=YYYY-MM-DD`, `?state=…`). The wrapper never goes into the web part bundle.
 - Fixtures use made-up people and the spec's roles (Energy Analyst, Senior Energy Analyst,
   Senior Pricing Specialist, Sales Team Manager), with departments including "Sales". Expected
   values for tests are worked out by hand in `fixtures/expected/*.md`, separately from the code.
@@ -523,6 +530,6 @@ admin, listed in the order needed.
 | Fluent UI and Fluent UI React Charting | Design kit + hand-built SVG charts | Principle III. Project owner confirmed, 2026-10-27 (R1). |
 | Web part reads lists with PnPjs | Web part calls the Function API with `AadHttpClient` | Synced-data access rule, Principle II tests. Project owner confirmed, 2026-10-27 (R3). |
 | Monthly aggregated metrics list | Figures worked out per request from stored records | Not needed once the Function serves the page (R6, R15). |
-| Web part mock mode on BrightHR-shaped fixtures | Mock at the Function's BrightHR client, plus a harness-only client for UI work | Principle VII prefers mocking at the back end. The web part shows "Sample data" from the API's `dataMode` (R14). |
+| Web part mock mode on BrightHR-shaped fixtures | Kept as the web part's `dataSource = sample` mode, plus mocking at the Function's BrightHR client for `api` mode | Allows a demo before the Function exists (delivery order, 2026-10-27). Principle VII's preferred back-end mock still applies to `api` mode (R14). |
 | Power Automate fallback on the same lists | Not planned | R16. |
 | Approved vs pending leave | Approved only until BrightHR answers B3 | API limit. Project owner confirmed, 2026-10-27 (R9). |
