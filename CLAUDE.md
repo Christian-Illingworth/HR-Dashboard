@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and a task list in [tasks.md](specs/001-hr-dashboard/tasks.md). It is ready for `/speckit-analyze`, then `/speckit-implement`. Delivery comes in three milestones: a sample-data web part first, then the sync function, then live data and access control. `/speckit-analyze` findings have been fixed in the spec. Pending leave waits on BrightHR (research question B3). There is no code yet. The repository is github.com/Christian-Illingworth/HR-Dashboard.
+The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and a task list in [tasks.md](specs/001-hr-dashboard/tasks.md). Implementation has started. Delivery comes in three milestones: a mock-data web part first, then the sync function, then live data and access control. Milestone 1 is in progress (see the ticked tasks). Pending leave waits on BrightHR (research question B3). The repository is github.com/Christian-Illingworth/HR-Dashboard.
 
 **[.specify/memory/constitution.md](.specify/memory/constitution.md) is the governing document. Read it before any spec, plan or code work.** It wins over this file if the two ever disagree. This file only adds how Claude should work here. Do not copy the constitution's rules into this file.
 
@@ -42,7 +42,21 @@ The feature 001 plan chose the rest ([plan.md](specs/001-hr-dashboard/plan.md), 
 - Charts are hand-built SVG. There are no chart, UI-component or date libraries.
 - Tests use Vitest, React Testing Library, and Playwright with axe.
 
-Add a **Build & run** section here once something can be built. The planned commands are in [quickstart.md](specs/001-hr-dashboard/quickstart.md).
+## Build & run
+
+Node 22 LTS is the target (`.nvmrc`). The npm workspaces also run on Node 24. The SPFx web part (`apps/webpart`, not built yet) needs Node ≥ 22.14 and < 23, as SPFx 1.23.2 requires.
+
+| Command (repo root) | Does |
+|---|---|
+| `npm ci` | Installs the workspaces (`packages/core`, `packages/dashboard-ui`). |
+| `npm test` | Vitest for every workspace: calculations (core) and components (dashboard-ui). |
+| `npm run typecheck` | TypeScript for both workspaces. |
+| `npm run lint` / `npm run lint:css` | ESLint (bans Fluent UI, chart libraries, PnPjs, and clock or I/O in core) and Stylelint (no colour literals). |
+| `npm run dev:harness` | The dashboard on mock data at `http://localhost:5173/?today=2026-10-27`. `&state=` simulates a state: `loading`, `noData`, `staleFailed`, `staleThreshold`, `staleOvernight`, `sectionError`, `forbidden`, `unavailable`. |
+| `npm run test:e2e` | Playwright + axe against the harness (desktop and 360 px phone, Chromium and WebKit). Needs `npx playwright install chromium webkit` once. |
+| `npm run build:css -w @hrd/dashboard-ui` | Regenerates the shadow-root stylesheet after a change to `design-kit/css` or `src/styles/project.css`. A test fails if you forget. |
+
+Planned commands that don't exist yet are in [quickstart.md](specs/001-hr-dashboard/quickstart.md).
 
 | Service | Used for | Environment | Credentials | ToS / data review |
 |---|---|---|---|---|
