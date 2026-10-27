@@ -8,6 +8,8 @@ import { MockDataNotice } from './components/MockDataNotice';
 import { KpiRow } from './components/KpiRow';
 import { LastUpdated } from './components/LastUpdated';
 import { SalesList, SalesTabs, type SalesTab } from './components/SalesList';
+import { FreshnessNotice } from './components/FreshnessNotice';
+import { RefreshButton } from './components/RefreshButton';
 
 export interface AppProps {
   client: DashboardClient;
@@ -38,9 +40,21 @@ export function App({ client, noAccessContact }: AppProps) {
           <h2 className="title-xl">HR Dashboard</h2>
           {data && <LastUpdated freshness={data.freshness} />}
         </div>
+        {data && (
+          <RefreshButton
+            client={client}
+            lastSuccessAt={data.freshness.lastSuccessAt}
+            poll={async () => {
+              const r = await client.getDashboard(query);
+              return r.kind === 'ok' ? r.data.freshness.lastSuccessAt : null;
+            }}
+            onRefreshed={reload}
+          />
+        )}
       </header>
 
       {data?.meta.dataMode === 'sample' && <MockDataNotice />}
+      {data && <FreshnessNotice freshness={data.freshness} />}
 
       {problem && !data && (
         <div className="notice tone-coral" role="alert">

@@ -286,7 +286,7 @@ available.
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T061 [US4] Work out by hand the M16 cases in `fixtures/expected/freshness.md`:
+- [X] T061 [US4] Work out by hand the M16 cases in `fixtures/expected/freshness.md`:
   - Monday 07:00 after a good 02:00 run → fresh;
   - 02:10 while the overnight run is still going → judged against the previous night;
   - last attempt `Failed` → `lastAttemptFailed`;
@@ -294,20 +294,20 @@ available.
   - the same with an interval of 2 → fresh, because the threshold is 3 hours;
   - 21:00 with no successful 02:00 run → `overnightMissed`;
   - `lastSuccessAt` null → `noDataYet`.
-- [ ] T062 [P] [US4] Write failing tests in `packages/core/test/metrics/m16-freshness.test.ts`, using freshness.md. `syncIntervalHours` (1 or 2) is a parameter, never read from the environment.
+- [X] T062 [P] [US4] Write failing tests in `packages/core/test/metrics/m16-freshness.test.ts`, using freshness.md. `syncIntervalHours` (1 or 2) is a parameter, never read from the environment.
 
 ### Implementation for User Story 4
 
-- [ ] T063 [US4] Implement M16 in `packages/core/src/metrics/freshness.ts` (`// Metric: …#m16`). Fill `freshness` and `refresh.nextAllowedAt` in `packages/core/src/dashboard/buildDashboard.ts`.
-- [ ] T064 [P] [US4] Build `FreshnessNotice` in `packages/dashboard-ui/src/components/FreshnessNotice.tsx` (`.notice`):
+- [X] T063 [US4] Implement M16 in `packages/core/src/metrics/freshness.ts` (`// Metric: …#m16`). Fill `freshness` and `refresh.nextAllowedAt` in `packages/core/src/dashboard/buildDashboard.ts`.
+- [X] T064 [P] [US4] Build `FreshnessNotice` in `packages/dashboard-ui/src/components/FreshnessNotice.tsx` (`.notice`):
   - "No data yet" (with no zeros shown);
   - "The latest BrightHR update failed. Data last updated <time>.";
   - "Data may be out of date. Last updated <time>.";
   - "Last night's update didn't complete. Data last updated <time>.".
 
   Sections keep showing the most recent good data. Add the test `packages/dashboard-ui/test/FreshnessNotice.test.tsx`.
-- [ ] T065 [P] [US4] Build `RefreshButton` in `packages/dashboard-ui/src/components/RefreshButton.tsx`. It calls `client.requestRefresh()`. On `tooSoon` it shows "Next refresh available at HH:mm". On `queued` it shows a busy `.pill.is-busy`, polls `getDashboard` every 15 s for up to 10 minutes until `freshness.lastSuccessAt` changes, then reloads every section (research R8). Add a test with fake timers, `packages/dashboard-ui/test/RefreshButton.test.tsx`.
-- [ ] T066 [US4] Write the end-to-end test `packages/dashboard-ui/e2e/states.spec.ts`. It covers every harness `?state=` value plus a single-section error with the other sections still rendered (FR-026). Run axe on each state.
+- [X] T065 [P] [US4] Build `RefreshButton` in `packages/dashboard-ui/src/components/RefreshButton.tsx`. It calls `client.requestRefresh()`. On `tooSoon` it shows "Next refresh available at HH:mm". On `queued` it shows a busy `.pill.is-busy`, polls `getDashboard` every 15 s for up to 10 minutes until `freshness.lastSuccessAt` changes, then reloads every section (research R8). Add a test with fake timers, `packages/dashboard-ui/test/RefreshButton.test.tsx`.
+- [X] T066 [US4] Write the end-to-end test `packages/dashboard-ui/e2e/states.spec.ts`. It covers every harness `?state=` value plus a single-section error with the other sections still rendered (FR-026). Run axe on each state.
 
 **Checkpoint**: US4's UI behaviour is demonstrable on sample data.
 

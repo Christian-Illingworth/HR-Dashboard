@@ -306,11 +306,17 @@ and the edge cases. Every listed edge case needs a test (Principle VI).
   - `noDataYet` if `lastSuccessAt` is null.
   - Otherwise stale if any of these is true:
     - `lastAttemptOutcome` = `Failed` (`staleReason: lastAttemptFailed`);
-    - `now` is within sync hours (working day, 07:00–19:59) and `now − lastSuccessAt` is more
-      than the threshold: 2 hours, or 3 hours when `SYNC_DAYTIME_INTERVAL_HOURS` = 2 (FR-024)
-      (`olderThanThreshold`);
-    - `now` is outside sync hours and `lastSuccessAt` is before the most recent 02:00 run that
-      is at least 30 minutes ago (`overnightMissed`).
+    - `lastSuccessAt` is before the most recent 02:00 run that is at least 30 minutes ago,
+      whether or not `now` is in sync hours (`overnightMissed`);
+    - `now` is within sync hours (working day, 07:00–19:59) and the daytime age is more than
+      the threshold: 2 hours, or 3 hours when `SYNC_DAYTIME_INTERVAL_HOURS` = 2 (FR-024)
+      (`olderThanThreshold`). The daytime age is `now` minus the later of `lastSuccessAt` and
+      07:00 today, so the day's first runs have time to happen.
+  - *(Revised during implementation, 2026-10-27: measuring age only from `lastSuccessAt` made
+    07:00 on every working day stale, which contradicted the edge case below. The overnight
+    check now also applies in the day, so a missed overnight run still shows.)*
+  - `refresh.nextAllowedAt` = `lastManualRefreshAt` + 15 minutes if that is later than `now`,
+    otherwise `now` (FR-025).
 - **Edge cases**: 07:00 on Monday after a good overnight run → fresh. 02:10 while the overnight
   run is in progress → judged against the previous night. A run still going (`Running`) isn't
   counted as failed.

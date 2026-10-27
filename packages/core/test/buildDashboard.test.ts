@@ -5,6 +5,38 @@ import { BadRequestError, buildDashboard, safeSection } from '../src/dashboard/b
 import { round1 } from '../src/dashboard/round';
 import { sampleInput } from './sampleInput';
 
+describe('freshness and refresh (US4)', () => {
+  it('reports the sample data as fresh at 10:30, with a refresh allowed now', () => {
+    const res = buildDashboard(sampleInput());
+    expect(res.freshness).toEqual({
+      noDataYet: false,
+      lastSuccessAt: '2026-10-27T09:00:00Z',
+      lastAttemptAt: '2026-10-27T08:58:00Z',
+      lastAttemptOutcome: 'Succeeded',
+      isStale: false,
+      staleReason: null,
+    });
+    expect(res.refresh.nextAllowedAt).toBe('2026-10-27T10:30:00.000Z');
+  });
+
+  it('shows "No data yet" (empty sections), not zeros, before the first successful sync', () => {
+    const input = sampleInput();
+    input.status = { ...input.status, lastSuccessAt: null, historyStartDate: null };
+    input.records = { employees: [], absences: [], history: [], reasons: [] };
+    const res = buildDashboard(input);
+    expect(res.freshness.noDataYet).toBe(true);
+    expect(Object.values(res.sections).every((s) => s.status === 'empty')).toBe(true);
+  });
+
+  it('uses the interval passed in and the last manual refresh from the status', () => {
+    const input = sampleInput({ now: '2026-10-27T11:30:00.000Z' });
+    input.status = { ...input.status, lastManualRefreshAt: '2026-10-27T11:20:00Z' };
+    expect(buildDashboard(input).freshness.staleReason).toBe('olderThanThreshold');
+    expect(buildDashboard({ ...input, syncIntervalHours: 2 }).freshness.isStale).toBe(false);
+    expect(buildDashboard(input).refresh.nextAllowedAt).toBe('2026-10-27T11:35:00.000Z');
+  });
+});
+
 describe('Sales section (US3)', () => {
   it('puts sickness reasons in the Sales section and nowhere else (FR-006)', () => {
     const res = buildDashboard(sampleInput());

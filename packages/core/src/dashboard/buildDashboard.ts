@@ -9,6 +9,7 @@ import { pickableMonths } from '../window/picker';
 import { createContext, type DashboardContext } from './context';
 import { buildKpis } from './sections/kpis';
 import { salesAbsences } from '../metrics/salesAbsences';
+import { freshness, nextAllowedRefresh } from '../metrics/freshness';
 import { ALL, type DashboardQuery, type DashboardResponse, type Section } from './types';
 
 export interface BuildDashboardInput {
@@ -68,6 +69,15 @@ const sections: SectionBuilders = {
   salesAbsences: (ctx) => safeSection(() => salesAbsences(ctx)),
 };
 
+const noDataYet: DashboardResponse['sections'] = {
+  kpis: { status: 'empty' },
+  leave: { status: 'empty' },
+  sickness: { status: 'empty' },
+  absence: { status: 'empty' },
+  attrition: { status: 'empty' },
+  salesAbsences: { status: 'empty' },
+};
+
 export function buildDashboard(input: BuildDashboardInput): DashboardResponse {
   const options = filterOptions(input);
   const applied = {
@@ -97,21 +107,20 @@ export function buildDashboard(input: BuildDashboardInput): DashboardResponse {
       today: input.today,
       generatedAt: new Date(input.now).toISOString(),
     },
-    freshness: {
-      noDataYet: input.status.lastSuccessAt === null,
-      lastSuccessAt: input.status.lastSuccessAt,
-      lastAttemptAt: input.status.lastAttemptStartedAt,
-      lastAttemptOutcome: input.status.lastAttemptOutcome,
-      isStale: false,
-      staleReason: null,
-    },
-    refresh: { nextAllowedAt: new Date(input.now).toISOString() },
+    freshness: freshness({
+      status: input.status,
+      now: input.now,
+      syncIntervalHours: input.syncIntervalHours,
+      calendar: ctx.calendar,
+    }),
+    refresh: { nextAllowedAt: nextAllowedRefresh(input.status.lastManualRefreshAt, input.now) },
     filters: { applied, options },
     coverage: {
       historyStartDate: input.status.historyStartDate,
       departmentHistoryStartMonth: ctx.membership.departmentHistoryStartMonth,
     },
-    sections: {
+    // Spec edge case: before the first successful sync, show "No data yet", never zeros.
+    sections: input.status.lastSuccessAt === null ? noDataYet : {
       kpis: sections.kpis(ctx),
       leave: sections.leave(ctx),
       sickness: sections.sickness(ctx),
