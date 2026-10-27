@@ -2,7 +2,37 @@
 // Section values are covered by the metric tests and the later blocks in this file.
 import { describe, expect, it } from 'vitest';
 import { BadRequestError, buildDashboard, safeSection } from '../src/dashboard/buildDashboard';
+import { round1 } from '../src/dashboard/round';
 import { sampleInput } from './sampleInput';
+
+// Rounded values from fixtures/expected/kpis.md.
+describe('KPI section (US1)', () => {
+  it.each([
+    [
+      'All',
+      {},
+      { headcount: 14, onLeaveToday: 2, offSickToday: 2, attrition12m: { percent: 31.6, leavers: 5, averageHeadcount: 15.8, noStaff: false }, bradfordAverage: { value: 3.8, noStaff: false, basisStartDate: '2025-10-29', basisIsPartial: false } },
+    ],
+    [
+      'Sales',
+      { department: 'Sales' },
+      { headcount: 4, onLeaveToday: 1, offSickToday: 1, attrition12m: { percent: 25, leavers: 1, averageHeadcount: 4, noStaff: false }, bradfordAverage: { value: 7, noStaff: false, basisStartDate: '2025-10-29', basisIsPartial: false } },
+    ],
+    [
+      'Senior Energy Analyst',
+      { role: 'Senior Energy Analyst' },
+      { headcount: 4, onLeaveToday: 1, offSickToday: 1, attrition12m: { percent: 0, leavers: 0, averageHeadcount: 4, noStaff: false }, bradfordAverage: { value: 2.8, noStaff: false, basisStartDate: '2025-10-29', basisIsPartial: false } },
+    ],
+    [
+      'Sales + Senior Pricing Specialist',
+      { department: 'Sales', role: 'Senior Pricing Specialist' },
+      { headcount: 0, onLeaveToday: 0, offSickToday: 0, attrition12m: { percent: null, leavers: 0, averageHeadcount: 0, noStaff: true }, bradfordAverage: { value: null, noStaff: true, basisStartDate: '2025-10-29', basisIsPartial: false } },
+    ],
+  ])('%s', (_name, query, expected) => {
+    const kpis = buildDashboard(sampleInput({ query })).sections.kpis;
+    expect(kpis).toEqual({ status: 'ok', data: expected });
+  });
+});
 
 describe('buildDashboard skeleton', () => {
   const res = buildDashboard(sampleInput());
@@ -37,6 +67,14 @@ describe('buildDashboard skeleton', () => {
     expect(() => buildDashboard(sampleInput({ query: { month: '2025-12' } }))).toThrow(BadRequestError);
     expect(() => buildDashboard(sampleInput({ query: { department: 'Marketing' } }))).toThrow(BadRequestError);
     expect(() => buildDashboard(sampleInput({ query: { role: 'Chief Llama' } }))).toThrow(BadRequestError);
+  });
+
+  it('rounds to 1 decimal place, half away from zero (D8)', () => {
+    expect(round1(3.75)).toBe(3.8);
+    expect(round1(2.75)).toBe(2.8);
+    expect(round1(31.553398)).toBe(31.6);
+    expect(round1(0.04)).toBe(0);
+    expect(round1(null)).toBeNull();
   });
 
   it('isolates a failing section and does not leak the error text', () => {

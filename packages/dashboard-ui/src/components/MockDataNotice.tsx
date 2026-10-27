@@ -2,8 +2,10 @@
 export function MockDataNotice() {
   return (
     <div className="notice tone-amber" role="note">
-      <strong>Mock data.</strong>&nbsp;These are sample figures about made-up people, not real employee
-      records.
+      {/* One child, so the kit's flex notice keeps the label and the sentence on one line. */}
+      <span>
+        <strong>Mock data.</strong> These are sample figures about made-up people, not real employee records.
+      </span>
     </div>
   );
 }

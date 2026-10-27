@@ -7,6 +7,7 @@ import { monthOf } from '../dates';
 import type { DashboardRecords, Settings, SyncStatus } from '../records/types';
 import { pickableMonths } from '../window/picker';
 import { createContext, type DashboardContext } from './context';
+import { buildKpis } from './sections/kpis';
 import { ALL, type DashboardQuery, type DashboardResponse, type Section } from './types';
 
 export interface BuildDashboardInput {
@@ -58,7 +59,7 @@ type SectionBuilders = {
 
 // Each user story replaces its placeholder here.
 const sections: SectionBuilders = {
-  kpis: () => ({ status: 'empty' }),
+  kpis: (ctx) => safeSection(() => buildKpis(ctx)),
   leave: () => ({ status: 'empty' }),
   sickness: () => ({ status: 'empty' }),
   absence: () => ({ status: 'empty' }),

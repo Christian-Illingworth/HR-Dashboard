@@ -5,6 +5,8 @@ import { useDashboard } from './useDashboard';
 import { SectionCard } from './components/SectionCard';
 import { SectionState } from './components/SectionState';
 import { MockDataNotice } from './components/MockDataNotice';
+import { KpiRow } from './components/KpiRow';
+import { LastUpdated } from './components/LastUpdated';
 
 export interface AppProps {
   client: DashboardClient;
@@ -33,6 +35,7 @@ export function App({ client, noAccessContact }: AppProps) {
       <header className="hrd-header">
         <div className="hrd-header-meta">
           <h2 className="title-xl">HR Dashboard</h2>
+          {data && <LastUpdated freshness={data.freshness} />}
         </div>
       </header>
 
@@ -77,11 +80,14 @@ const errorSections: DashboardResponse['sections'] = {
 function Sections({ sections }: { sections: DashboardResponse['sections'] | undefined }) {
   return (
     <>
-      <SectionCard id="hrd-kpis" title="Headline numbers">
+      <section className="hrd-section" aria-labelledby="hrd-kpis-title">
+        <h3 className="visually-hidden" id="hrd-kpis-title">
+          Headline numbers
+        </h3>
         <SectionState section={sections?.kpis} emptyText="No headline numbers yet." loadingShape="list">
-          {() => null}
+          {(kpis) => <KpiRow kpis={kpis} />}
         </SectionState>
-      </SectionCard>
+      </section>
       <div className="hrd-grid">
         <SectionCard id="hrd-leave" title="Annual leave">
           <SectionState section={sections?.leave} emptyText="No leave data yet.">
