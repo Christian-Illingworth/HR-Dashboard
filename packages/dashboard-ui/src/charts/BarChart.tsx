@@ -60,6 +60,11 @@ export function BarChart({ model }: { model: ChartModel }) {
   const [focusIndex, setFocusIndex] = useState(selectedIndex);
   const [active, setActive] = useState<number | null>(null);
   const pointRefs = useRef<(SVGGElement | null)[]>([]);
+  // A tap fires pointerdown, then focus (which opens the tooltip), then click. Recording what
+  // was open at pointerdown lets the click tell "first tap: open" from "second tap: close".
+  const activeRef = useRef<number | null>(null);
+  activeRef.current = active;
+  const press = useRef<{ wasOpen: boolean; mouse: boolean }>({ wasOpen: false, mouse: false });
 
   const hasLine = !!model.line;
   // On narrow charts the "Episodes" label sits on its own line, so the months keep their room.
@@ -172,7 +177,15 @@ export function BarChart({ model }: { model: ChartModel }) {
               }}
               onBlur={() => setActive(null)}
               onMouseEnter={() => setActive(i)}
-              onClick={() => setActive(active === i ? null : i)}
+              onPointerDown={(e) => {
+                press.current = { wasOpen: activeRef.current === i, mouse: e.pointerType === 'mouse' };
+              }}
+              onClick={() => {
+                // Mouse: hover already shows it, so a click keeps it open. Touch: toggle.
+                const { wasOpen, mouse } = press.current;
+                press.current = { wasOpen: false, mouse: false };
+                setActive(mouse || !wasOpen ? i : null);
+              }}
             >
               <rect className="hrd-hit" x={left + band * i + 1} y={TOP - 6} width={band - 2} height={PLOT_H + 6} rx="6" />
               {model.groups.map((g, gi) => {

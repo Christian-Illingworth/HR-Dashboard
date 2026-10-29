@@ -146,7 +146,7 @@ packages/
 │   ├── src/
 │   │   ├── App.tsx              # sections, filters, refresh, per-section states
 │   │   ├── components/          # KpiRow, SalesList, Filters, FreshnessNotice, NoAccess, SectionState
-│   │   ├── charts/              # ColumnChart, StackedColumnChart, ComboChart, ChartTooltip, ChartTable, patterns
+│   │   ├── charts/              # BarChart (columns, stacks, line, tooltip, keyboard), model, patterns, Legend, ChartTable, ChartSection
 │   │   ├── data/                # DashboardClient interface
 │   │   └── styles/              # project.css (tokens only) + build-shadow-css (PostCSS)
 │   ├── harness/                 # Vite dev harness and harness-only client (never in the web part)

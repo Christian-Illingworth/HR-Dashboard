@@ -23,9 +23,10 @@ interface Props<T> {
 
 export function ChartSection<T>({ id, title, section, emptyText, toModel, notes, className }: Props<T>) {
   const [asTable, setAsTable] = useState(false);
+  // A toggle keeps one name; aria-pressed (and the teal edge when pressed) says which view shows.
   const toggle = (
-    <button type="button" className="btn-outline" aria-pressed={asTable} onClick={() => setAsTable((t) => !t)}>
-      <TableIcon /> {asTable ? 'Show chart' : 'Show table'}
+    <button type="button" className="btn-outline hrd-toggle" aria-pressed={asTable} onClick={() => setAsTable((t) => !t)}>
+      <TableIcon /> Table view
     </button>
   );
   return (
