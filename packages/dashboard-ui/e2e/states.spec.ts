@@ -48,6 +48,14 @@ test('unavailable: an error with a retry, and an error state in each section', a
   await expectNoAxeViolations(page);
 });
 
+test('no access (FR-005): who to contact, no sections, and axe-clean', async ({ page }) => {
+  await open(page, 'forbidden');
+  await expect(page.getByRole('heading', { name: "You don't have access to the HR Dashboard" })).toBeVisible();
+  await expect(page.getByText('To ask for access, contact the HR team.')).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Headcount' })).toHaveCount(0);
+  await expectNoAxeViolations(page);
+});
+
 test('refresh: a second refresh within 15 minutes says when the next one is available', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-27T10:30:00Z') });
   await page.goto('/?today=2026-10-27');

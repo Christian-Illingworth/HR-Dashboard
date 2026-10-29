@@ -1,7 +1,7 @@
 // M09 absence days by type per month. Expected values from fixtures/expected/absence.md.
 import { describe, expect, it } from 'vitest';
 import { absenceDaysByType } from '../../src/metrics/absenceByType';
-import { fixtureContext } from '../contextFor';
+import { absence, employee, fixtureContext, inlineContext } from '../contextFor';
 
 describe('M09 absence days by type (fixtures)', () => {
   it.each([
@@ -20,5 +20,16 @@ describe('M09 absence days by type (fixtures)', () => {
     // September has 11 days of annual leave and none of it may appear here.
     const sep = absenceDaysByType(fixtureContext(), '2026-09');
     expect(sep.sickness + sep.compassionate + sep.unpaid + sep.other).toBeCloseTo(5.5, 10);
+  });
+});
+
+describe('M09 edge cases', () => {
+  it('re-categorises past absences when the type map changes', () => {
+    // One day of "Jury service" on Tue 4 Aug 2026: "other" by default, "compassionate" once mapped.
+    const e = employee();
+    const records = { employees: [e], absences: [absence(e.employeeId, { brightHrType: 'Other', displayName: 'Jury service', startDate: '2026-08-04', endDate: '2026-08-04' })] };
+    expect(absenceDaysByType(inlineContext(records), '2026-08')).toMatchObject({ compassionate: 0, other: 1 });
+    const mapped = inlineContext(records, { settings: { absenceTypeMap: [{ displayName: 'jury service', category: 'compassionate' }] } });
+    expect(absenceDaysByType(mapped, '2026-08')).toMatchObject({ compassionate: 1, other: 0 });
   });
 });

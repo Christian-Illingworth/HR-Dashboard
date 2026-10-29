@@ -28,7 +28,7 @@ export async function testAuth() {
     new SignJWT({ scp: 'user_impersonation', roles: ['Dashboard.Read'], ...claims })
       .setProtectedHeader({ alg: 'RS256', kid: 'k' })
       .setIssuer(`https://login.microsoftonline.com/${TENANT}/v2.0`)
-      .setAudience(AUDIENCE)
+      .setAudience(typeof claims.aud === 'string' ? claims.aud : AUDIENCE)
       .setIssuedAt()
       .setExpirationTime('10m')
       .sign(pair.privateKey)

@@ -12,6 +12,7 @@ import { FreshnessNotice } from './components/FreshnessNotice';
 import { RefreshButton } from './components/RefreshButton';
 import { ChartSection } from './charts/ChartSection';
 import { Filters } from './components/Filters';
+import { NoAccess } from './components/NoAccess';
 import { attritionModel, attritionNotes } from './components/attritionChart';
 import {
   absenceModel,
@@ -33,14 +34,7 @@ export function App({ client, noAccessContact }: AppProps) {
   const { data, problem, loading, reload } = useDashboard(client, query);
 
   if (problem === 'forbidden' || problem === 'unauthenticated') {
-    // Replaced by the NoAccess screen in tasks T122.
-    return (
-      <div className="hrd-dashboard">
-        <div className="notice tone-coral" role="alert">
-          You don&apos;t have access to the HR Dashboard. {noAccessContact}
-        </div>
-      </div>
-    );
+    return <NoAccess reason={problem} contact={noAccessContact} />;
   }
 
   const sections = data?.sections;

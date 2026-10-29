@@ -532,14 +532,15 @@ from the group, their next token is refused.
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T119 [P] [US2] Write a failing test in `apps/sync-function/test/http/no-leak.test.ts`. For 401 and 403 on both endpoints, the response body equals the exact `Error` schema, and contains none of the fixture names, sickness reason strings, department names or numbers from the dataset (SC-004).
-- [ ] T120 [P] [US2] Write failing tests in `apps/webpart/src/webparts/hrDashboard/ApiDashboardClient.test.ts`. A token acquisition error containing `AADSTS50105` or `AADSTS501051` → `forbidden`. HTTP 403 → `forbidden`. HTTP 401 → one retry with a fresh token, then `unauthenticated`. 503 → `unavailable`. Network failure → `unavailable`.
+- [X] T119 [P] [US2] Write a failing test in `apps/sync-function/test/http/no-leak.test.ts`. For 401 and 403 on both endpoints, the response body equals the exact `Error` schema, and contains none of the fixture names, sickness reason strings, department names or numbers from the dataset (SC-004).
+- [X] T120 [P] [US2] Write failing tests in `apps/webpart/src/webparts/hrDashboard/ApiDashboardClient.test.ts`. A token acquisition error containing `AADSTS50105` or `AADSTS501051` → `forbidden`. HTTP 403 → `forbidden`. HTTP 401 → one retry with a fresh token, then `unauthenticated`. 503 → `unavailable`. Network failure → `unavailable`.
+  *As built*: the client and its tests live in `packages/dashboard-ui/src/data/ApiDashboardClient.ts` and `packages/dashboard-ui/test/ApiDashboardClient.test.ts`, behind an `ApiTransport` interface, so they run without SPFx. The `AadHttpClient` transport moves to T039.
 
 ### Implementation for User Story 2
 
-- [ ] T121 [US2] Make T120 pass in `apps/webpart/src/webparts/hrDashboard/ApiDashboardClient.ts`.
-- [ ] T122 [P] [US2] Build `NoAccess` in `packages/dashboard-ui/src/components/NoAccess.tsx`, and render it from `App.tsx` when the client returns `forbidden`. It says "You don't have access to the HR Dashboard" and shows the `noAccessContact` text (FR-005). It renders no sections and makes no further data requests. On `unauthenticated` it shows a sign-in problem message. Add the test `packages/dashboard-ui/test/NoAccess.test.tsx`, plus the harness `?state=forbidden` axe check in `packages/dashboard-ui/e2e/states.spec.ts`.
-- [ ] T123 [US2] Write the runbook `docs/runbooks/access-control.md`, for a **human** to follow. It covers:
+- [X] T121 [US2] Make T120 pass in `apps/webpart/src/webparts/hrDashboard/ApiDashboardClient.ts`.
+- [X] T122 [P] [US2] Build `NoAccess` in `packages/dashboard-ui/src/components/NoAccess.tsx`, and render it from `App.tsx` when the client returns `forbidden`. It says "You don't have access to the HR Dashboard" and shows the `noAccessContact` text (FR-005). It renders no sections and makes no further data requests. On `unauthenticated` it shows a sign-in problem message. Add the test `packages/dashboard-ui/test/NoAccess.test.tsx`, plus the harness `?state=forbidden` axe check in `packages/dashboard-ui/e2e/states.spec.ts`.
+- [X] T123 [US2] Write the runbook `docs/runbooks/access-control.md`, for a **human** to follow. It covers:
   - **P1**: create the access group (HR and Senior Leadership; the business decides who is in Senior Leadership).
   - **Entra ID P1**: check the licence, which group assignment needs.
   - **P2**: register "HR Dashboard API", expose `user_impersonation`, add the `Dashboard.Read` app role, set assignment required = Yes, and assign the access group. Set `API_AUDIENCE` and the web part's `apiAppIdUri`.
@@ -547,7 +548,7 @@ from the group, their next token is refused.
   - **P9**: share the dashboard page with the access group only, and switch the web part to `dataSource = api`.
   - **Checks**: a member sees data; a non-member sees no access with no data in the network log; after a removal, the user's data requests are refused within 90 minutes (FR-003), once their cached token expires. If the tenant's access-token lifetime is set above 90 minutes, flag it, because it would break FR-003.
   - **Fallback**: the `groups` claim, if Entra ID P1 isn't available (research R4).
-- [ ] T124 [US2] Create the self-review record `docs/reviews/authorization-self-review.md`, from the constitution's quality gates. It has items for: the authorization tests pass (T106, T113, T119, T120); the bundle check shows no secret (T092); a 403 response contains no sickness reasons (T119). There are fields for date, reviewer and second reviewer (optional), for a human to complete.
+- [X] T124 [US2] Create the self-review record `docs/reviews/authorization-self-review.md`, from the constitution's quality gates. It has items for: the authorization tests pass (T106, T113, T119, T120); the bundle check shows no secret (T092); a 403 response contains no sickness reasons (T119). There are fields for date, reviewer and second reviewer (optional), for a human to complete.
 
 **Checkpoint**: US2 is in place in code. A human completes the access-control runbook, and the
 web part runs on `dataSource = api` against the Function in mock mode.
@@ -559,15 +560,15 @@ web part runs on `dataSource = api` against the Function in mock mode.
 **Purpose**: The live clients, the contract tests and the go-live runbook. **No task here may
 run anything against live BrightHR.** Only a human runs the contract tests and makes the switch.
 
-- [ ] T125 Write failing tests in `apps/sync-function/test/unit/live-client.test.ts`, using mocked `fetch` only (quickstart Q3):
+- [X] T125 Write failing tests in `apps/sync-function/test/unit/live-client.test.ts`, using mocked `fetch` only (quickstart Q3):
   - **Allow-list**: only `POST https://login.brighthr.com/connect/token`, `POST https://api.bright.hr/employees/v1/query` and `POST https://api.bright.hr/absences/v1/query` are allowed. Any other method or path, including `PUT /employees/v1/{id}/external-reference`, throws **before** any `fetch` call.
   - **Token**: cached until 60 seconds before `expires_in`.
   - **Errors**: 401 → `BRIGHTHR_AUTH`. 429 → wait `Retry-After`, or exponential backoff with jitter, for at most 5 tries, then `BRIGHTHR_RATE_LIMIT`. 5xx → retried the same way, then `BRIGHTHR_UNAVAILABLE`.
-- [ ] T126 Implement `LiveBrightHrClient` in `apps/sync-function/src/brighthr/liveClient.ts` so T125 passes. Credentials come only from the config (`BRIGHTHR_CLIENT_ID`/`BRIGHTHR_CLIENT_SECRET`, filled from Key Vault references) and never appear in a log or error message.
-- [ ] T127 [P] Write failing tests in `apps/sync-function/test/unit/graph-directory.test.ts` with mocked `fetch`, then implement `GraphDirectoryClient` in `apps/sync-function/src/graph/graphDirectory.ts`. It calls `GET https://graph.microsoft.com/v1.0/users?$select=mail,userPrincipalName,department` with paging and a managed-identity token, and needs `User.Read.All`.
-- [ ] T128 Wire `BRIGHTHR_MODE=live` in `apps/sync-function/src/composition.ts` to `LiveBrightHrClient` + `GraphDirectoryClient`, with `dataMode` `Live`. Start-up fails if the live settings are missing. Extend `apps/sync-function/test/unit/config.test.ts`.
-- [ ] T129 Write the contract tests `apps/sync-function/test/contract/brighthr.contract.test.ts`. They are **skipped unless** `RUN_LIVE_CONTRACT=1` is set by a human, and they read nothing from the repo except the fixtures. They compare the shape of live responses (field names, types and the `$type` discriminators) with `fixtures/brighthr/`, and print differences only, never values (Principle VII).
-- [ ] T130 Write the runbook `docs/runbooks/go-live.md`, for a **human** to follow:
+- [X] T126 Implement `LiveBrightHrClient` in `apps/sync-function/src/brighthr/liveClient.ts` so T125 passes. Credentials come only from the config (`BRIGHTHR_CLIENT_ID`/`BRIGHTHR_CLIENT_SECRET`, filled from Key Vault references) and never appear in a log or error message.
+- [X] T127 [P] Write failing tests in `apps/sync-function/test/unit/graph-directory.test.ts` with mocked `fetch`, then implement `GraphDirectoryClient` in `apps/sync-function/src/graph/graphDirectory.ts`. It calls `GET https://graph.microsoft.com/v1.0/users?$select=mail,userPrincipalName,department` with paging and a managed-identity token, and needs `User.Read.All`.
+- [X] T128 Wire `BRIGHTHR_MODE=live` in `apps/sync-function/src/composition.ts` to `LiveBrightHrClient` + `GraphDirectoryClient`, with `dataMode` `Live`. Start-up fails if the live settings are missing. Extend `apps/sync-function/test/unit/config.test.ts`. *As built*: the wiring is tested in `apps/sync-function/test/unit/composition.test.ts`.
+- [X] T129 Write the contract tests `apps/sync-function/test/contract/brighthr.contract.test.ts`. They are **skipped unless** `RUN_LIVE_CONTRACT=1` is set by a human, and they read nothing from the repo except the fixtures. They compare the shape of live responses (field names, types and the `$type` discriminators) with `fixtures/brighthr/`, and print differences only, never values (Principle VII).
+- [X] T130 Write the runbook `docs/runbooks/go-live.md`, for a **human** to follow:
   1. Get BrightHR's answers to B1–B12, and record them in `specs/001-hr-dashboard/research.md` and `CLAUDE.md`.
   2. If the rate limits need it, set `SYNC_DAYTIME_INTERVAL_HOURS=2`.
   3. **P5**: grant `User.Read.All`.
@@ -586,10 +587,11 @@ run anything against live BrightHR.** Only a human runs the contract tests and m
 
 **Purpose**: Cross-cutting checks from the constitution's quality gates and quickstart.
 
-- [ ] T131 [P] Check `docs/metric-catalogue.md` against the code. Every metric file has its `// Metric:` link, every catalogue edge case has a named test, and rules settled during implementation are recorded. Check `docs/data-inventory.md` against what `buildRecords` and the store actually write.
-- [ ] T132 [P] Write `docs/checks/performance.md` from quickstart Q10, for a human to fill in: the timing method (cold after 20 idle minutes, and warm, on office broadband and on 4G), the targets (5 s and 10 s, SC-002), and what to do if the cold start misses (set one always-ready instance, and record it in plan.md Complexity Tracking).
-- [ ] T133 Create `docs/checks/release-gate.md` from the release gate checklist in [quickstart.md](quickstart.md#release-gate-checklist). Link each item to its evidence: test commands, the manual-check record (T094), the self-review (T124), the bundle check (T092) and `git diff --stat design-kit/`.
-- [ ] T134 Run the whole validation in [quickstart.md](quickstart.md): Q1–Q8 automatically, and Q9–Q10 as human steps. Fix failures. Update `CLAUDE.md` (status, Build & run, known gaps) to match the delivered state.
+- [X] T131 [P] Check `docs/metric-catalogue.md` against the code. Every metric file has its `// Metric:` link, every catalogue edge case has a named test, and rules settled during implementation are recorded. Check `docs/data-inventory.md` against what `buildRecords` and the store actually write.
+- [X] T132 [P] Write `docs/checks/performance.md` from quickstart Q10, for a human to fill in: the timing method (cold after 20 idle minutes, and warm, on office broadband and on 4G), the targets (5 s and 10 s, SC-002), and what to do if the cold start misses (set one always-ready instance, and record it in plan.md Complexity Tracking).
+- [X] T133 Create `docs/checks/release-gate.md` from the release gate checklist in [quickstart.md](quickstart.md#release-gate-checklist). Link each item to its evidence: test commands, the manual-check record (T094), the self-review (T124), the bundle check (T092) and `git diff --stat design-kit/`.
+- [X] T134 Run the whole validation in [quickstart.md](quickstart.md): Q1–Q8 automatically, and Q9–Q10 as human steps. Fix failures. Update `CLAUDE.md` (status, Build & run, known gaps) to match the delivered state.
+  *As run (2026-10-29, Node 24)*: Q1–Q7 pass; Q7 calls the handlers directly because `func` and Azurite aren't installed. Q8's bundle check passes on the UI library; the `.sppkg` part waits on T040 (Node 22). Q9–Q10 are for a human ([manual-checks.md](../../docs/checks/manual-checks.md), [performance.md](../../docs/checks/performance.md)). Quickstart's Q3, Q4 and Q7 commands were corrected to match the code.
 
 ---
 

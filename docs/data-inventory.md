@@ -14,6 +14,8 @@ only.
 | Job title | `employment.jobTitle` | Role filter, Sales list | HRD Employees, History | Function, Admins, Access group | As employee / history |
 | Start and end dates | `employment.start`, `employment.end` | Headcount, starters, leavers | HRD Employees | Function, Admins; Access group as totals | Until 13 months after leaving |
 | Department | Entra `department` | Filters, Sales membership | HRD Employees, History | Function, Admins, Access group | As employee / history |
+| Monthly department and job title | Copied from HRD Employees each month (`Month` = `YYYY-MM`) | Filters for past months (D3) | HRD Employee History | Function, Admins; Access group as totals | 13 months, or until the employee's record is removed |
+| Content hash | Generated: SHA-256 of the stored fields | Skipping unchanged writes | HRD Employees, HRD Absences | Function, Admins | As the record |
 | Absence ID, employee ID, type, display name | `AbsenceDto` | All absence metrics | HRD Absences | Function, Admins; Access group as totals and the Sales list | 13 months after the absence ends |
 | Absence start and end dates and parts | `start`, `end`, `datePart` | Day counts, Sales list | HRD Absences | As above | As above |
 | Sickness duration | `duration` | Sickness days | HRD Absences | Function, Admins; Access group as totals | As above |

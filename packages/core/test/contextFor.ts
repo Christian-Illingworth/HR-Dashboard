@@ -1,6 +1,6 @@
 // Test helpers: a DashboardContext from the fixtures (with a filter), or from inline records.
 import { createContext, type DashboardContext } from '../src/dashboard/context';
-import type { AbsenceRecord, DashboardRecords, EmployeeRecord, SicknessReasonRecord, SyncStatus } from '../src/records/types';
+import type { AbsenceRecord, DashboardRecords, EmployeeRecord, Settings, SicknessReasonRecord, SyncStatus } from '../src/records/types';
 import { sampleInput, TODAY, NOW } from './sampleInput';
 import launchStatus from '../../../fixtures/launch-sync-status.json';
 
@@ -43,12 +43,18 @@ export const baseStatus: SyncStatus = {
 /** Context over inline records, for single edge cases. */
 export function inlineContext(
   records: Partial<DashboardRecords>,
-  opts: { today?: string; filter?: Filter; status?: Partial<SyncStatus>; month?: string } = {},
+  opts: { today?: string; filter?: Filter; status?: Partial<SyncStatus>; month?: string; settings?: Partial<Settings> } = {},
 ): DashboardContext {
   const today = opts.today ?? TODAY;
   return createContext({
     records: { employees: [], absences: [], history: [], reasons: [], ...records },
-    settings: { salesDepartments: ['Sales'], absenceTypeMap: [{ displayName: 'Bank holiday', category: 'publicHoliday' }], pregnancyRelatedReasons: [], standardDayHours: 7.5 },
+    settings: {
+      salesDepartments: ['Sales'],
+      absenceTypeMap: [{ displayName: 'Bank holiday', category: 'publicHoliday' }],
+      pregnancyRelatedReasons: [],
+      standardDayHours: 7.5,
+      ...opts.settings,
+    },
     status: { ...baseStatus, ...opts.status },
     today,
     now: `${today}T10:30:00.000Z`,

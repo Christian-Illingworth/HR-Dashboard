@@ -1,11 +1,14 @@
 // Picks the BrightHR client, the directory and the store from configuration (research R14).
-// Mock and file are the defaults; switching to live data is a configuration change only.
+// Mock and file are the defaults; switching to live data is a configuration change only, made by
+// a human at go-live (docs/runbooks/go-live.md).
 
 import { ManagedIdentityCredential } from '@azure/identity';
 import type { BrightHrClient } from './brighthr/BrightHrClient';
+import { LiveBrightHrClient } from './brighthr/liveClient';
 import { MockBrightHrClient } from './brighthr/mockClient';
 import type { Config } from './config';
 import type { DirectoryClient } from './graph/DirectoryClient';
+import { GraphDirectoryClient } from './graph/graphDirectory';
 import { MockDirectoryClient } from './graph/mockDirectory';
 import { createLogger, type Logger } from './log';
 import { FileStore } from './store/fileStore';
@@ -23,18 +26,16 @@ export interface Services {
 const systemNow = () => new Date().toISOString();
 
 export function compose(config: Config, now: () => string = systemNow): Services {
-  if (config.brightHrMode === 'live') {
-    // Tasks T126–T128 (Milestone 3) add LiveBrightHrClient and GraphDirectoryClient here.
-    throw new Error('Live BrightHR data is not available until Milestone 3.');
-  }
-  const store =
-    config.storeMode === 'sharepoint'
-      ? new SharePointStore({ siteId: config.dataSiteId!, credential: new ManagedIdentityCredential() })
-      : new FileStore(config.localDataDir);
+  const credential = config.brightHrMode === 'live' || config.storeMode === 'sharepoint' ? new ManagedIdentityCredential() : null;
+  const live = config.brightHrMode === 'live';
+  if (live && !config.brightHr) throw new Error('BRIGHTHR_MODE is live but the BrightHR credentials are not set.');
   return {
-    brightHr: new MockBrightHrClient({ fixturesDir: config.fixturesDir, now }),
-    directory: new MockDirectoryClient({ fixturesDir: config.fixturesDir }),
-    store,
+    brightHr: live ? new LiveBrightHrClient(config.brightHr!) : new MockBrightHrClient({ fixturesDir: config.fixturesDir, now }),
+    directory: live ? new GraphDirectoryClient({ credential: credential! }) : new MockDirectoryClient({ fixturesDir: config.fixturesDir }),
+    store:
+      config.storeMode === 'sharepoint'
+        ? new SharePointStore({ siteId: config.dataSiteId!, credential: credential! })
+        : new FileStore(config.localDataDir),
     now,
     log: createLogger(),
   };
