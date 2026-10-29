@@ -1,0 +1,20 @@
+{
+  "name": "@hrd/sync-function",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HR Dashboard back end: syncs BrightHR into the data site and serves the dashboard API (Azure Functions v4).",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "func start",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.17.0",
+    "@azure/identity": "^4.14.0",
+    "@hrd/core": "0.1.0",
+    "jose": "^6.2.13"
+  }
+}

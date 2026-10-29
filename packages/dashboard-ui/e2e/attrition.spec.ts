@@ -8,13 +8,22 @@ test('attrition: December’s known leaver apart from the forecast, and past rat
   await expect(section.getByRole('img', { name: /^December 2026\. Known leavers: 1 person \(known\)\. Forecast further leavers: 0 people \(forecast\)/ })).toBeAttached();
   await expect(section.getByText('Known and forecast')).toBeVisible();
 
-  await section.getByRole('button', { name: 'Show table' }).click();
+  await section.getByRole('button', { name: 'Table view' }).click();
   const rows = (await section.getByRole('table').getByRole('row').allInnerTexts()).map((r) => r.replace(/\s+/g, ' ').trim());
   expect(rows[2]).toContain('6.9%'); // August
   expect(rows[4]).toContain('7.1% (to date)'); // October
   expect(rows[5]).toContain('0.3 people (forecast)'); // November further leavers
   expect(rows[5]).toContain('1 person (known)'); // November known starter
   await expectNoAxeViolations(page);
+});
+
+test('attrition chart: tapping or clicking a month shows the rate (FR-017)', async ({ page, isMobile }) => {
+  await openHarness(page);
+  const section = page.getByRole('region', { name: 'Staff attrition' });
+  const august = section.getByRole('img', { name: /^August 2026/ });
+  if (isMobile) await august.tap();
+  else await august.click();
+  await expect(section.getByText('Monthly attrition rate: 6.9% (actual)')).toBeVisible();
 });
 
 test('attrition chart: keyboard tooltip shows the rate', async ({ page }) => {

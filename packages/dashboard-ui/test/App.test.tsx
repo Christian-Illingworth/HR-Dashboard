@@ -21,7 +21,8 @@ describe('App shell', () => {
 
   it('labels mock data on the view and shows every section', async () => {
     render(<App client={new SampleDashboardClient()} noAccessContact="" />);
-    expect(await screen.findByText('Mock data.')).toBeInTheDocument();
+    // The mock client calculates in the browser; under a full parallel test run that can take over 1 s.
+    expect(await screen.findByText('Mock data.', {}, { timeout: 5000 })).toBeInTheDocument();
     for (const title of ['Headline numbers', 'Annual leave', 'Sickness', 'Absence by type', 'Staff attrition', "Who's off in Sales"]) {
       expect(screen.getByRole('heading', { name: title })).toBeInTheDocument();
     }

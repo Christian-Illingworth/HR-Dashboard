@@ -67,6 +67,21 @@ describe('BarChart', () => {
     fireEvent.click(screen.getAllByRole('img')[0]!);
     expect(screen.getByText('Approved annual leave: 7 days (actual)')).toBeInTheDocument();
   });
+
+  it('keeps the tooltip open when a tap focuses the month first, and closes it on a second tap', () => {
+    // A real tap fires pointerdown, then focus, then click (FR-017).
+    render(<BarChart model={leaveModel(leave, '2025-10-01')} />);
+    const july = screen.getAllByRole('img')[0]!;
+    const tap = () => {
+      fireEvent.pointerDown(july, { pointerType: 'touch' });
+      fireEvent.focus(july);
+      fireEvent.click(july);
+    };
+    tap();
+    expect(screen.getByText('Approved annual leave: 7 days (actual)')).toBeInTheDocument();
+    tap();
+    expect(screen.queryByText('Approved annual leave: 7 days (actual)')).not.toBeInTheDocument();
+  });
 });
 
 describe('niceScale', () => {

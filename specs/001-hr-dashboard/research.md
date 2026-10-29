@@ -52,6 +52,11 @@ points, tooltips by mouse, touch and keyboard, a table view, and patterns as wel
   are built in `packages/dashboard-ui` now, structured so they can move to the kit later. That
   move is a kit change, made at the kit's source.
 
+**Logo** (project owner, 2026-10-29, tasks T137): the dashboard shows **no logo**. The SharePoint
+page around the web part already carries the company brand, and a second logo would repeat it
+and take space on phones. Principle III's "use the kit's … logos" applies if a logo is ever
+added: it would be the kit's colour stacked logo, unedited.
+
 ## R2. Keeping the kit's styles in, and SharePoint's styles out
 
 **Decision**: the SPFx web part attaches an **open shadow root** to its DOM element and renders
@@ -353,8 +358,11 @@ department field in BrightHR would remove the Graph permission.
 - **"Today"** is the Europe/London date. BrightHR dates are local dates and are used as they
   are.
 - **Holiday, TOIL and Other days**: count working days from start to end inclusive. A
-  `LocalDatePart` boundary of `FirstHalf` or `SecondHalf` counts that day as 0.5. A
-  `LocalDateTime` boundary counts its day as 1, except that an absence starting and ending on
+  boundary day counts only the half it covers (`FirstHalf` is the morning, `SecondHalf` the
+  afternoon). A `SecondHalf` start or a `FirstHalf` end counts 0.5, while a `FirstHalf` start or
+  a `SecondHalf` end counts the whole day. A one-day morning or afternoon counts 0.5. (Revised
+  during implementation on 2026-10-27; see `docs/metric-catalogue.md#d1`.) A `LocalDateTime`
+  boundary counts its day as 1, except that an absence starting and ending on
   the same day with `LocalDateTime` boundaries counts as 0.5. This is a project rule (BrightHR
   gives no length for these types) and is recorded in the metric catalogue as one to confirm.
 - **Sickness days**: if `duration` is in Days, use it as the total. If it is in Minutes,

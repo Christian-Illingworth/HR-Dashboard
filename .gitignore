@@ -29,3 +29,6 @@ apps/webpart/jest-output/
 playwright-report/
 test-results/
 coverage/
+
+# Synthetic fixtures copied into the Function app for mock mode (scripts/build.mjs)
+apps/sync-function/fixtures/

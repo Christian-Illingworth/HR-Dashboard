@@ -47,6 +47,11 @@ describe('M03 off sick today (fixtures)', () => {
 });
 
 describe('M02 edge cases', () => {
+  it('counts a morning-only absence', () => {
+    const e = employee();
+    expect(onLeaveToday(inlineContext({ employees: [e], absences: [absence(e.employeeId, { startPart: 'FirstHalf', endPart: 'FirstHalf' })] }))).toBe(1);
+  });
+
   it('counts a person with two overlapping leave records once', () => {
     const e = employee();
     const ctx = inlineContext({
@@ -80,6 +85,11 @@ describe('M02 edge cases', () => {
 
 describe('M03 edge cases', () => {
   const sick = (employeeId: string, over = {}) => absence(employeeId, { brightHrType: 'Sickness', displayName: 'Sickness', ...over });
+
+  it('counts a half day', () => {
+    const e = employee();
+    expect(offSickToday(inlineContext({ employees: [e], absences: [sick(e.employeeId, { startPart: 'SecondHalf', endPart: 'SecondHalf' })] }))).toBe(1);
+  });
 
   it('does not count sickness that starts tomorrow', () => {
     const e = employee();

@@ -42,6 +42,13 @@ describe('M05 edge cases', () => {
     expect(r.value).toBe(2);
   });
 
+  it('counts an open-ended episode up to today', () => {
+    // Sick from Mon 26 Oct 2026 with no end; today is Tue 27 Oct: S = 1, D = 2 → 2.
+    const e = employee();
+    const r = bradfordAverage(inlineContext({ employees: [e], absences: [sick(e.employeeId, { startDate: '2026-10-26', endDate: null, endPart: null })] }));
+    expect(r.value).toBe(2);
+  });
+
   it('includes a starter part-way through the period, with their own days only', () => {
     // a: two 1-day episodes → 2² × 2 = 8. b (started 2026-06-01): one 3-day episode → 3. (8 + 3) ÷ 2 = 5.5
     const a = employee();

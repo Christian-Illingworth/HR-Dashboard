@@ -50,11 +50,14 @@ describe('ChartSection', () => {
         notes={(d) => sicknessNotes(d, '2025-10-01')}
       />,
     );
-    const toggle = screen.getByRole('button', { name: 'Show table' });
+    // One fixed name; the pressed state says whether the table is showing (Constitution IV).
+    const toggle = screen.getByRole('button', { name: 'Table view' });
     expect(toggle).toHaveAttribute('aria-pressed', 'false');
     fireEvent.click(toggle);
     expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Show chart' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Table view' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(toggle);
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(screen.getByText('Forecast: the monthly average of the last 12 complete months.')).toBeInTheDocument();
   });
 

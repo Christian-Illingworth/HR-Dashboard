@@ -1,0 +1,10 @@
+*.ts
+!dist/**
+src/
+test/
+scripts/
+node_modules/@types/
+local.settings.json
+local.settings.example.json
+tsconfig.json
+vitest.config.ts

@@ -7,7 +7,7 @@ const section = (page: Page, name: string) => page.getByRole('region', { name })
 
 async function tableRows(page: Page, sectionName: string) {
   const s = section(page, sectionName);
-  await s.getByRole('button', { name: 'Show table' }).click();
+  await s.getByRole('button', { name: 'Table view' }).click();
   const rows = s.getByRole('table').getByRole('row');
   return rows.allInnerTexts();
 }
@@ -60,6 +60,15 @@ test('charts work from the keyboard: arrow keys move, the tooltip shows exact va
   await expect(chart.getByText('Sickness days: 3.3 days (forecast)')).toBeVisible();
   await page.keyboard.press('End');
   await expect(chart.getByText('January 2027', { exact: true })).toBeVisible();
+});
+
+test('tapping or clicking a month shows its tooltip (FR-017)', async ({ page, isMobile }) => {
+  await openHarness(page);
+  const chart = section(page, 'Sickness');
+  const july = chart.getByRole('img', { name: /^July 2026/ });
+  if (isMobile) await july.tap();
+  else await july.click();
+  await expect(chart.getByText('Sickness days: 5 days (actual)')).toBeVisible();
 });
 
 test('charts fit the phone layout without sideways scrolling', async ({ page }) => {
