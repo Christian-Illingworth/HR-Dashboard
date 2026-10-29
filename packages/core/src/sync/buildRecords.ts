@@ -61,15 +61,18 @@ export function buildRecords(input: BuildRecordsInput): BuildRecordsOutput {
       continue;
     }
     const department = departmentByEmail.get(lower(e.email)) || NOT_SET;
-    const sales = isSalesDepartment(department, settings);
+    // Names: Sales staff for the Sales list (001), and everyone employed on the sync date while
+    // AnniversaryNames is on (002 FR-014, FR-015). Leavers' and future starters' names aren't kept.
+    const employedToday = e.startDate <= today && (e.endDate === null || e.endDate >= today);
+    const named = isSalesDepartment(department, settings) || (settings.anniversaryNames && employedToday);
     employees.push({
       employeeId: e.employeeId,
       startDate: e.startDate,
       endDate: e.endDate,
       jobTitle: e.jobTitle?.trim() || NOT_SET,
       department,
-      givenName: sales ? e.givenName : null,
-      familyName: sales ? e.familyName : null,
+      givenName: named ? e.givenName : null,
+      familyName: named ? e.familyName : null,
     });
   }
 

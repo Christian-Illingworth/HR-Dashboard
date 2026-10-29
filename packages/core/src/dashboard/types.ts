@@ -122,6 +122,33 @@ export interface Freshness {
   staleReason: StaleReason | null;
 }
 
+/** M17 bands by completed years (feature 002). Always all six, in this order. */
+export type ServiceBandId = 'under1' | 'y1' | 'y2' | 'y3' | 'y4' | 'y5plus';
+
+export interface ServiceBand {
+  band: ServiceBandId;
+  label: string;
+  count: number;
+}
+
+/** M18. Carries no start date (spec 002 FR-017). */
+export interface AnniversaryEntry {
+  name: string | null;
+  role: string;
+  date: IsoDate;
+  years: number;
+  milestone: boolean;
+}
+
+export interface ServiceData {
+  /** Years to 1 dp. */
+  averageYears: number;
+  medianYears: number;
+  firstYear: number;
+  bands: ServiceBand[];
+  anniversaries: { enabled: boolean; from: IsoDate; to: IsoDate; entries: AnniversaryEntry[] };
+}
+
 export interface DashboardQuery {
   month?: Month;
   department?: string;
@@ -144,6 +171,7 @@ export interface DashboardResponse {
     absence: Section<AbsenceData>;
     attrition: Section<AttritionData>;
     salesAbsences: Section<SalesData>;
+    service: Section<ServiceData>;
   };
 }
 

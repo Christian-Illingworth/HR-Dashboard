@@ -14,7 +14,20 @@ describe('settings parser', () => {
       ],
       pregnancyRelatedReasons: ['Pregnancy-related illness'],
       standardDayHours: 7.5,
+      anniversaryNames: true,
     });
+  });
+
+  it.each([
+    ['On', true],
+    [' on ', true],
+    ['ON', true],
+    ['Off', false],
+    ['', false],
+    ['Yes', false],
+    [undefined, false],
+  ] as [string | undefined, boolean][])('reads AnniversaryNames %j as %s (002 FR-014: off unless On)', (value, expected) => {
+    expect(parseSettings({ AnniversaryNames: value }).anniversaryNames).toBe(expected);
   });
 
   it('splits lines, trims them and drops blanks (including Windows line endings)', () => {
@@ -29,6 +42,7 @@ describe('settings parser', () => {
       absenceTypeMap: [],
       pregnancyRelatedReasons: [],
       standardDayHours: 7.5,
+      anniversaryNames: false,
     });
   });
 

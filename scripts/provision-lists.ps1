@@ -103,7 +103,7 @@ foreach ($listName in $lists.Keys) {
 }
 
 # Seed items: default settings (data-model §2.6) and the single status item.
-$settings = [ordered]@{ SalesDepartments = 'Sales'; AbsenceTypeMap = ''; PregnancyRelatedReasons = ''; StandardDayHours = '7.5' }
+$settings = [ordered]@{ SalesDepartments = 'Sales'; AbsenceTypeMap = ''; PregnancyRelatedReasons = ''; StandardDayHours = '7.5'; AnniversaryNames = 'Off' }
 $existingSettings = @(Get-PnPListItem -List 'HRD Settings' | ForEach-Object { $_['Title'] })
 foreach ($key in $settings.Keys) {
   if ($existingSettings -notcontains $key) {

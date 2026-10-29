@@ -9,7 +9,7 @@ only.
 | Data | Source | Purpose | Stored in | Who can see it | Kept for |
 |---|---|---|---|---|---|
 | Employee ID | `EmployeeDto.id` | Key | HRD Employees, History, Absences | Function, Admins | Until 13 months after leaving |
-| Given and family name | `name.givenName`, `name.familyName` | Sales list | HRD Employees (Sales staff only) | Function, Admins, Access group (Sales list) | While in a Sales department |
+| Given and family name | `name.givenName`, `name.familyName` | Sales list; work anniversaries (feature 002, only while `AnniversaryNames` is `On`) | HRD Employees (Sales staff; everyone employed on the sync date while `AnniversaryNames` is `On`) | Function, Admins, Access group (Sales list and anniversary list only) | Sales staff: while in a Sales department. Everyone else: while employed and `AnniversaryNames` is `On`; cleared at the first sync after leaving or after the setting is turned `Off` |
 | Email | `EmployeeDto.email` | Department matching | Not stored (sync memory only) | Function | Duration of a sync |
 | Job title | `employment.jobTitle` | Role filter, Sales list | HRD Employees, History | Function, Admins, Access group | As employee / history |
 | Start and end dates | `employment.start`, `employment.end` | Headcount, starters, leavers | HRD Employees | Function, Admins; Access group as totals | Until 13 months after leaving |
@@ -22,7 +22,7 @@ only.
 | Pregnancy-related flag (**special category**) | Derived from `reason.description` | Bradford Factor exclusion | HRD Absences | Function, Admins | As above |
 | Sickness reason (**special category**) | `reason.description` | Sales list (FR-006) | HRD Sickness Reasons | Function, Admins, Access group (Sales list only) | While in the Sales list's range (today to today + 14, or open-ended) |
 | Sync status and warnings | Generated | Freshness, refresh limit | HRD Sync Status | Function, Admins; Access group as freshness | Overwritten each sync |
-| Settings | Admin-entered | Sales departments, type mapping | HRD Settings | Function, Admins | Until changed |
+| Settings | Admin-entered | Sales departments, type mapping, whether anniversary names are stored (`AnniversaryNames`, the HR data owner's approval) | HRD Settings | Function, Admins | Until changed |
 
 **Not synced**: `note`, `reason.id`, `isCertified`, `estimatedReturn`, `isPaid`,
 `paidDuration`, `externalReference`, `payrollNumber`, reason for leaving, and clocking data.

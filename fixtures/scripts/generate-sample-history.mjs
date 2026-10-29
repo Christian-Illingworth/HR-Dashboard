@@ -11,11 +11,11 @@ const T = (n) => `e0000000-0000-4000-8000-000000000${100 + n}`;
 const people = [
   [E(1), 'Sales Team Manager', '2019-03-04', null, 'Sales'],
   [E(2), 'Energy Analyst', '2021-06-01', null, 'Sales'],
-  [E(3), 'Senior Energy Analyst', '2020-09-14', null, 'Sales'],
+  [E(3), 'Senior Energy Analyst', '2021-12-01', null, 'Sales'],
   [E(4), 'Energy Analyst', '2024-01-08', null, (m) => (m >= '2026-08' ? 'Sales' : 'Analysis')],
   [E(5), 'Senior Pricing Specialist', '2018-05-21', null, 'Pricing'],
   [E(6), 'Senior Pricing Specialist', '2022-02-01', null, 'Pricing'],
-  [E(7), 'Senior Energy Analyst', '2017-11-06', null, 'Analysis'],
+  [E(7), 'Senior Energy Analyst', '2016-11-06', null, 'Analysis'],
   [E(8), 'Energy Analyst', '2023-04-03', null, 'Analysis'],
   [E(9), 'Energy Analyst', '2025-02-10', null, 'Analysis'],
   [E(10), 'Energy Analyst', '2022-08-15', null, 'Operations'],

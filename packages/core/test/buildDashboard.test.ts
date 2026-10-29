@@ -131,6 +131,31 @@ describe('Sales section (US3)', () => {
   });
 });
 
+// Rounded values from fixtures/expected/service.md (feature 002).
+describe('length of service section (002 US1)', () => {
+  it.each([
+    ['All', {}, { averageYears: 5.4, medianYears: 4.8, firstYear: 0, counts: [0, 1, 2, 2, 3, 6] }],
+    ['Sales', { department: 'Sales' }, { averageYears: 5.2, medianYears: 5.2, firstYear: 0, counts: [0, 0, 1, 0, 1, 2] }],
+    ['Senior Energy Analyst', { role: 'Senior Energy Analyst' }, { averageYears: 7.9, medianYears: 7.9, firstYear: 0, counts: [0, 0, 0, 0, 1, 3] }],
+    ['Pricing', { department: 'Pricing' }, { averageYears: 6.6, medianYears: 6.6, firstYear: 0, counts: [0, 0, 0, 0, 1, 1] }],
+  ])('%s', (_name, query, expected) => {
+    const service = buildDashboard(sampleInput({ query })).sections.service;
+    expect(service.status).toBe('ok');
+    expect(service.data).toMatchObject({ averageYears: expected.averageYears, medianYears: expected.medianYears, firstYear: expected.firstYear });
+    expect(service.data!.bands.map((b) => b.count)).toEqual(expected.counts);
+  });
+
+  it('says "No staff in this group" for a group with nobody in it (002 FR-013)', () => {
+    const service = buildDashboard(sampleInput({ query: { department: 'Sales', role: 'Senior Pricing Specialist' } })).sections.service;
+    expect(service).toEqual({ status: 'empty', message: 'No staff in this group' });
+  });
+
+  it('is relative to today whatever month is picked (002 FR-012)', () => {
+    const may = buildDashboard(sampleInput({ query: { month: '2026-05' } })).sections.service;
+    expect(may).toEqual(buildDashboard(sampleInput()).sections.service);
+  });
+});
+
 // Rounded values from fixtures/expected/kpis.md.
 describe('KPI section (US1)', () => {
   it.each([

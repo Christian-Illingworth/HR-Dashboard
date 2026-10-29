@@ -53,6 +53,7 @@ export function inlineContext(
       absenceTypeMap: [{ displayName: 'Bank holiday', category: 'publicHoliday' }],
       pregnancyRelatedReasons: [],
       standardDayHours: 7.5,
+      anniversaryNames: true,
       ...opts.settings,
     },
     status: { ...baseStatus, ...opts.status },

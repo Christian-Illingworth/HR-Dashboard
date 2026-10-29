@@ -104,6 +104,11 @@ B9). See [data-model.md §2.6](../../specs/001-hr-dashboard/data-model.md).
 - **`PregnancyRelatedReasons`**: one sickness reason per line, exactly as BrightHR shows it. These
   absences are left out of the Bradford Factor.
 - **`SalesDepartments`**: check the Sales department names against Entra ID (one per line).
+- **`AnniversaryNames`** (feature 002): leave it `Off` unless the HR data owner has approved
+  storing every current employee's name for the work anniversaries list. Setting it to `On` is
+  that approval, so note who approved it and when. While it's `Off`, length of service still
+  shows and the list says it isn't switched on. Setting it back to `Off` removes non-Sales names
+  at the next sync. See the names row in [docs/data-inventory.md](../data-inventory.md).
 
 ## 7. Clear the synthetic data
 

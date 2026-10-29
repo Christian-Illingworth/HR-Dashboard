@@ -56,5 +56,6 @@ export function parseSettings(raw: RawSettings): Settings {
     absenceTypeMap,
     pregnancyRelatedReasons: lines(raw.PregnancyRelatedReasons),
     standardDayHours,
+    anniversaryNames: (raw.AnniversaryNames ?? '').trim().toLowerCase() === 'on',
   };
 }

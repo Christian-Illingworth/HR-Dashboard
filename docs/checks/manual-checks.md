@@ -28,6 +28,12 @@ data.
   - The filters, the chart tooltips (tap) and the Today / Next 14 days switch all work by touch.
 - **Page styling**: the SharePoint page around the web part (header, navigation, fonts) is
   unchanged, and the dashboard keeps the kit's look (Poppins, navy text, white cards).
+- **Length of service** (feature 002):
+  - Keyboard: Tab reaches the work anniversaries list, and the arrow keys scroll it.
+  - Screen reader: each band reads as its name and count ("2–3 yrs: 2 people"), and each
+    milestone anniversary reads "Milestone".
+  - SharePoint app: the anniversary list scrolls by touch inside the card, without scrolling the
+    page sideways; on a phone each entry shows the badges and date, then the name and role.
 
 | Date | Tester | Build (commit) | Keyboard only | NVDA / Narrator | VoiceOver (iOS) | SharePoint app, iOS | SharePoint app, Android | Page styling unchanged | Notes |
 |---|---|---|---|---|---|---|---|---|---|

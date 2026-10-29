@@ -16,7 +16,7 @@ const failing: DashboardClient = {
 describe('App shell', () => {
   it('shows a loading state in every section, not blanks or zeros', () => {
     render(<App client={never} noAccessContact="" />);
-    expect(screen.getAllByText('Loading')).toHaveLength(6);
+    expect(screen.getAllByText('Loading')).toHaveLength(7);
   });
 
   it('labels mock data on the view and shows every section', async () => {
@@ -32,6 +32,6 @@ describe('App shell', () => {
     render(<App client={failing} noAccessContact="" />);
     await waitFor(() => expect(screen.getByText(/couldn.t load its data/)).toBeInTheDocument());
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
-    expect(screen.getAllByText('This section could not be loaded.')).toHaveLength(6);
+    expect(screen.getAllByText('This section could not be loaded.')).toHaveLength(7);
   });
 });

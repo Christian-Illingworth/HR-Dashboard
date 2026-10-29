@@ -321,4 +321,49 @@ and the edge cases. Every listed edge case needs a test (Principle VI).
   run is in progress → judged against the previous night. A run still going (`Running`) isn't
   counted as failed.
 
+<a id="m17"></a>
+
+#### M17. Length of service (feature 002)
+
+- **Definition**: how long current staff in the filter group have been employed (spec 002
+  FR-001 to FR-004).
+- **Sources**: `employment.start`, `employment.end`; Entra `department`; `employment.jobTitle`.
+- **Formula**:
+  - *Current staff*: D6 with `d` = today, in the group by current department and role (D3 at
+    today). The picked month is ignored.
+  - *Completed years* `Y(e, d)`: whole years from `startDate` to `d`. A year is complete on the
+    start date's anniversary; a 29 February start counts as 28 February in a year without one.
+  - `years(e)` = calendar days from `startDate` to today ÷ 365.25.
+  - **Average** = mean of `years(e)`. **Median** = the middle `years(e)`, or the mean of the two
+    middle values for an even count. Both rounded to 1 dp (D8).
+  - **Bands** by `Y(e, today)`: 0 → Under 1 yr, 1 → 1–2 yrs, 2 → 2–3 yrs, 3 → 3–4 yrs,
+    4 → 4–5 yrs, 5 or more → 5+ yrs. **In first year** = the Under 1 yr count.
+- **Edge cases**: no current staff → "No staff in this group", no figures. Start date today →
+  0 years, Under 1 yr. Exactly 1 year today → 1–2 yrs. One employee → average = median. Even
+  count → median is the mean of the middle two. A leaver whose `endDate` = today counts; a
+  future starter doesn't. A 29 February start completes its year on 28 February in a year
+  without one.
+
+<a id="m18"></a>
+
+#### M18. Work anniversaries (feature 002)
+
+- **Definition**: anniversaries of start dates, for staff in the filter group, from today to 3
+  months ahead (spec 002 FR-006 to FR-009).
+- **Sources**: as M17, plus `name.givenName`, `name.familyName`.
+- **Formula**:
+  - Window: today to `today + 3 months` inclusive, clamped to the month's last day.
+  - For each employee in the group (current department and role) and each anniversary `a` of
+    `startDate` in the window (29 February → 28 February in a year without one): list
+    `{ date: a, years: Y(e, a), milestone: Y(e, a) is a multiple of 5 }` when `Y(e, a)` ≥ 1 and
+    the employee is employed on `a` (D6 with `d` = `a`).
+  - Sorted by date, then family name, then given name.
+  - Only while the `AnniversaryNames` setting is `On`; otherwise the list is switched off and
+    empty, because the names aren't stored.
+- **Edge cases**: anniversary today → listed. Leaving the day before the anniversary → not
+  listed; leaving on it → listed. A first anniversary → 1 yr. A 29 February start → listed on
+  28 February in a year without one. Several on one day → by family name. The window's end date
+  doesn't exist → the month's last day. No name stored → listed with no name ("Name not
+  recorded"). Nothing in the window → empty list.
+
 ---

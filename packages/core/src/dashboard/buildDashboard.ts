@@ -10,6 +10,7 @@ import { createContext, type DashboardContext } from './context';
 import { buildKpis } from './sections/kpis';
 import { buildAttrition } from './sections/attrition';
 import { buildAbsence, buildLeave, buildSickness } from './sections/trends';
+import { buildService } from './sections/service';
 import { salesAbsences } from '../metrics/salesAbsences';
 import { freshness, nextAllowedRefresh } from '../metrics/freshness';
 import { ALL, type DashboardQuery, type DashboardResponse, type Section } from './types';
@@ -36,13 +37,24 @@ export class BadRequestError extends Error {
   }
 }
 
+// The error text is not passed on: it could describe the data (constitution, Security).
+const sectionError = { status: 'error', message: 'This section could not be calculated.' } as const;
+
 /** FR-026: one section failing gives that section an error state and leaves the rest alone. */
 export function safeSection<T>(build: () => T): Section<T> {
   try {
     return { status: 'ok', data: build() };
   } catch {
-    // The error text is not passed on: it could describe the data (constitution, Security).
-    return { status: 'error', message: 'This section could not be calculated.' };
+    return sectionError;
+  }
+}
+
+/** As safeSection, for a builder that sets its own status (for example "empty"). */
+function safeBuild<T>(build: () => Section<T>): Section<T> {
+  try {
+    return build();
+  } catch {
+    return sectionError;
   }
 }
 
@@ -69,6 +81,7 @@ const sections: SectionBuilders = {
   absence: (ctx) => safeSection(() => buildAbsence(ctx)),
   attrition: (ctx) => safeSection(() => buildAttrition(ctx)),
   salesAbsences: (ctx) => safeSection(() => salesAbsences(ctx)),
+  service: (ctx) => safeBuild(() => buildService(ctx)),
 };
 
 const noDataYet: DashboardResponse['sections'] = {
@@ -78,6 +91,7 @@ const noDataYet: DashboardResponse['sections'] = {
   absence: { status: 'empty' },
   attrition: { status: 'empty' },
   salesAbsences: { status: 'empty' },
+  service: { status: 'empty' },
 };
 
 export function buildDashboard(input: BuildDashboardInput): DashboardResponse {
@@ -129,6 +143,7 @@ export function buildDashboard(input: BuildDashboardInput): DashboardResponse {
       absence: sections.absence(ctx),
       attrition: sections.attrition(ctx),
       salesAbsences: sections.salesAbsences(ctx),
+      service: sections.service(ctx),
     },
   };
 }

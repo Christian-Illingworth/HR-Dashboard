@@ -2,5 +2,6 @@
   "SalesDepartments": "Sales",
   "AbsenceTypeMap": "Bank holiday => publicHoliday\nCompassionate leave => compassionate\nUnpaid leave => unpaid",
   "PregnancyRelatedReasons": "Pregnancy-related illness",
-  "StandardDayHours": "7.5"
+  "StandardDayHours": "7.5",
+  "AnniversaryNames": "On"
 }
