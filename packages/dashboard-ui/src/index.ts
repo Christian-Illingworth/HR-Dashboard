@@ -2,4 +2,5 @@
 export { mountDashboard, type MountOptions, type MountedDashboard } from './mount';
 export { SampleDashboardClient, type SampleClientOptions } from './data/SampleDashboardClient';
 export type { DashboardClient, DashboardResult, RefreshResult } from './data/DashboardClient';
+export { ApiDashboardClient, type ApiTransport } from './data/ApiDashboardClient';
 export type { FontUrls, FontWeight } from './fonts';

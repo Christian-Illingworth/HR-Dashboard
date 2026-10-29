@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and a task list in [tasks.md](specs/001-hr-dashboard/tasks.md). Implementation has started. Delivery comes in three milestones: a mock-data web part first, then the sync function, then live data and access control. Milestone 1 is built and tested in the harness: every metric, chart, list, state and filter on mock data. Only the SPFx shell is missing (tasks T008, T039, T040, T095), and it needs Node 22 (see Build & run). Pending leave waits on BrightHR (research question B3). The repository is github.com/Christian-Illingworth/HR-Dashboard.
+The Consultiv Utilities HR Dashboard shows HR metrics from BrightHR inside SharePoint Online. The metrics include attrition, Bradford Factor, sickness and forecasts. Feature 001 has a clarified spec and a plan in [specs/001-hr-dashboard/](specs/001-hr-dashboard/), and a task list in [tasks.md](specs/001-hr-dashboard/tasks.md). Implementation has started. Delivery comes in three milestones: a mock-data web part first, then the sync function, then live data and access control. Milestone 1 is built and tested in the harness: every metric, chart, list, state and filter on mock data. Milestone 2's code is done too: the sync function (pps/sync-function) syncs mock BrightHR into a file or SharePoint store and serves /api/dashboard and /api/refresh, all tested locally. Deploying it is a human step ([docs/runbooks/deploy-function.md](docs/runbooks/deploy-function.md)). The SPFx shell is still missing (tasks T008, T039, T040, T095) because it needs Node 22 (see Build & run). Pending leave waits on BrightHR (research question B3). The repository is github.com/Christian-Illingworth/HR-Dashboard.
 
 **[.specify/memory/constitution.md](.specify/memory/constitution.md) is the governing document. Read it before any spec, plan or code work.** It wins over this file if the two ever disagree. This file only adds how Claude should work here. Do not copy the constitution's rules into this file.
 
@@ -48,9 +48,11 @@ Node 22 LTS is the target (`.nvmrc`). The npm workspaces also run on Node 24. Th
 
 | Command (repo root) | Does |
 |---|---|
-| `npm ci` | Installs the workspaces (`packages/core`, `packages/dashboard-ui`). |
-| `npm test` | Vitest for every workspace: calculations (core) and components (dashboard-ui). |
-| `npm run typecheck` | TypeScript for both workspaces. |
+| `npm ci` | Installs the workspaces (`packages/core`, `packages/dashboard-ui`, `apps/sync-function`). |
+| `npm test` | Vitest for every workspace: calculations (core), components (dashboard-ui), and the sync, store, auth and HTTP handlers (sync-function). |
+| `npm run typecheck` | TypeScript for all three workspaces. |
+| `npm run sync:mock` | One sync with mock BrightHR and mock Entra into `.local-data/` (gitignored). Add `-- --seed-history` for a year of synthetic history. Prints counts only. |
+| `npm run build -w @hrd/sync-function` | Bundles the Function app to `apps/sync-function/dist/` and copies the synthetic fixtures for mock mode. `func start` also needs Azure Functions Core Tools v4 and Azurite, which aren't installed here. |
 | `npm run lint` / `npm run lint:css` | ESLint (bans Fluent UI, chart libraries, PnPjs, and clock or I/O in core) and Stylelint (no colour literals). |
 | `npm run dev:harness` | The dashboard on mock data at `http://localhost:5173/?today=2026-10-27`. `&state=` simulates a state: `loading`, `noData`, `staleFailed`, `staleThreshold`, `staleOvernight`, `sectionError`, `forbidden`, `unavailable`. |
 | `npm run test:e2e` | Playwright + axe against the harness (desktop and 360 px phone, Chromium and WebKit). Needs `npx playwright install chromium webkit` once. |
