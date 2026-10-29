@@ -42,8 +42,8 @@ band counts match values worked out by hand, for the whole company and for one d
    they are not counted anywhere in it.
 4. **Given** an employee whose leaving date is today or later, **When** the section is shown,
    **Then** they still count, because they are still employed.
-5. **Given** the chart, **When** a keyboard or screen reader user reaches it, **Then** they can
-   read every band's count, and switch to a table showing the same figures.
+5. **Given** the bars, **When** a screen reader user reaches them, **Then** each band is read as
+   its name and count, with the counts also written as text beside the bars.
 
 ---
 
@@ -137,8 +137,10 @@ figures, bands and list include only that department's current staff.
 - **FR-004**: The section MUST show the number of current staff in each of six bands of completed
   years: Under 1 yr (0), 1–2 yrs (1), 2–3 yrs (2), 3–4 yrs (3), 4–5 yrs (4) and 5+ yrs (5 or
   more). Every current employee MUST fall in exactly one band.
-- **FR-005**: The bands MUST be shown as a bar chart with each count written beside its bar, with
-  tooltips and a table view as for every other chart (001 FR-017, FR-018).
+- **FR-005**: The bands MUST be shown as horizontal bars with each band's name and count written
+  beside its bar as text, readable by a screen reader as band and count. Because every value is
+  shown as text, the bars need no tooltip and the list is their text equivalent (constitution
+  Principle IV), instead of 001's chart tooltips and table view (001 FR-017, FR-018).
 
 **Work anniversaries**
 
@@ -170,7 +172,11 @@ figures, bands and list include only that department's current staff.
 - **FR-014**: To show names in the anniversary list, the dashboard MUST store the given and family
   name of every current employee, no longer only Sales staff. This MUST be recorded in the data
   inventory (purpose: work anniversaries; who can see it: the access group, through the
-  dashboard) before names are synced, and the HR data owner MUST approve it.
+  dashboard) before names are synced, and the HR data owner MUST approve it. The approval MUST
+  take the form of a setting that only the data administrators can change (001 FR-028), off by
+  default. While it is off, only Sales staff's names are stored, the length-of-service figures
+  still show, and the anniversary list says "Work anniversaries aren't switched on yet."
+  Turning it off again MUST remove non-Sales names at the next sync.
 - **FR-015**: A name MUST be removed from the stored copy at the first sync after the employee's
   employment ends. Leavers' names MUST NOT be kept for the 13-month history period.
 - **FR-016**: Names MUST reach the browser only inside anniversary entries and the existing "Who's
@@ -181,11 +187,12 @@ figures, bands and list include only that department's current staff.
 
 **Sample data**
 
-- **FR-018**: The sample data MUST let every rule above be demonstrated with a fixed "today" of
-  27 Oct 2026: at least one person in each band, at least one milestone anniversary and one
-  first anniversary in the next 3 months, a 29 February start date, a future starter, and a
-  person serving notice whose anniversary falls after their leaving date. All names MUST be made
-  up.
+- **FR-018**: With a fixed "today" of 27 Oct 2026, the sample data MUST show the section with
+  milestone and ordinary anniversaries in the next 3 months, a future starter, and a person
+  serving notice whose anniversary falls after their leaving date, without changing any feature
+  001 sample value. Cases that would change 001's values (someone under 1 year, a first
+  anniversary, a 29 February start) MUST be covered by automated tests instead. All names MUST
+  be made up.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -232,8 +239,9 @@ figures, bands and list include only that department's current staff.
 - **Placement**: the section sits below the attrition section, full width on desktop, with the
   chart above the list on phones.
 - **Styling**: the design kit's colours, bar styles and badges are used, not the blue in the mock.
-- **Dependency**: storing names for every current employee needs the HR data owner's approval.
-  Until then, Story 1 can be delivered and Story 2 shown on sample data only.
+- **Dependency**: storing names for every current employee needs the HR data owner's approval,
+  given by switching the setting on (FR-014). Until then, Story 1 works on live data and Story 2
+  shows on sample data only.
 - **Out of scope**: birthdays, notifications or emails about anniversaries, exporting the list,
   service history before the current BrightHR start date, and per-person service figures outside
   the anniversary list.
