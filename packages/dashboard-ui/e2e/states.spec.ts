@@ -9,7 +9,7 @@ const open = async (page: import('@playwright/test').Page, state: string) => {
 
 test('loading: every section shows a loading state, not blanks or zeros', async ({ page }) => {
   await open(page, 'loading');
-  await expect(page.getByText('Loading', { exact: true })).toHaveCount(6);
+  await expect(page.getByText('Loading', { exact: true })).toHaveCount(7);
   await expectNoAxeViolations(page);
 });
 
@@ -44,7 +44,7 @@ test('one section failing does not blank the others (FR-026)', async ({ page }) 
 test('unavailable: an error with a retry, and an error state in each section', async ({ page }) => {
   await open(page, 'unavailable');
   await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
-  await expect(page.getByText('This section could not be loaded.')).toHaveCount(6);
+  await expect(page.getByText('This section could not be loaded.')).toHaveCount(7);
   await expectNoAxeViolations(page);
 });
 

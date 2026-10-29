@@ -22,6 +22,12 @@ describe('role: Senior Energy Analyst', () => {
     expect(s.salesAbsences.data!.today.map((e) => e.name)).toEqual(['Chloe Patel']);
     expect(s.salesAbsences.data!.upcoming.map((e) => e.name)).toEqual(['Chloe Patel']);
   });
+
+  it('narrows length of service and anniversaries (002 US3; service.md)', () => {
+    expect(s.service.data).toMatchObject({ averageYears: 7.9, medianYears: 7.9, firstYear: 0 });
+    expect(s.service.data!.bands.map((b) => b.count)).toEqual([0, 0, 0, 0, 1, 3]);
+    expect(s.service.data!.anniversaries.entries.map((e) => e.name)).toEqual(['Grace Lindqvist', 'Chloe Patel', 'Noah Achebe']);
+  });
 });
 
 describe('department: Pricing', () => {
@@ -30,6 +36,12 @@ describe('department: Pricing', () => {
     expect(s.kpis.data).toMatchObject({ headcount: 2, onLeaveToday: 0, offSickToday: 0 });
     expect(s.salesAbsences.data!.outsideFilter).toBe(true);
     expect(s.attrition.data!.months[4]!.startersKnown.value).toBe(1);
+  });
+
+  it('narrows length of service; no anniversaries in the window (002 US3; service.md)', () => {
+    expect(s.service.data).toMatchObject({ averageYears: 6.6, medianYears: 6.6, firstYear: 0 });
+    expect(s.service.data!.bands.map((b) => b.count)).toEqual([0, 0, 0, 0, 1, 1]);
+    expect(s.service.data!.anniversaries).toMatchObject({ enabled: true, entries: [] });
   });
 });
 
@@ -53,6 +65,10 @@ describe('month: May 2026', () => {
   it('leaves the "today" KPIs and the Sales list unchanged (FR-022)', () => {
     expect(res.sections.kpis).toEqual(today.sections.kpis);
     expect(res.sections.salesAbsences).toEqual(today.sections.salesAbsences);
+  });
+
+  it('leaves the length of service section unchanged (002 FR-012)', () => {
+    expect(res.sections.service).toEqual(today.sections.service);
   });
 });
 

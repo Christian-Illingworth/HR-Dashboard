@@ -13,6 +13,7 @@ import { RefreshButton } from './components/RefreshButton';
 import { ChartSection } from './charts/ChartSection';
 import { Filters } from './components/Filters';
 import { NoAccess } from './components/NoAccess';
+import { ServiceSection } from './components/ServiceSection';
 import { attritionModel, attritionNotes } from './components/attritionChart';
 import {
   absenceModel,
@@ -93,6 +94,7 @@ export function App({ client, noAccessContact }: AppProps) {
       <Sections
         sections={problem && !data ? errorSections : sections}
         historyStartDate={data?.coverage.historyStartDate ?? null}
+        department={data?.filters.applied.department ?? 'All'}
       />
     </div>
   );
@@ -106,14 +108,17 @@ const errorSections: DashboardResponse['sections'] = {
   absence: sectionError,
   attrition: sectionError,
   salesAbsences: sectionError,
+  service: sectionError,
 };
 
 function Sections({
   sections,
   historyStartDate,
+  department,
 }: {
   sections: DashboardResponse['sections'] | undefined;
   historyStartDate: string | null;
+  department: string;
 }) {
   const [salesTab, setSalesTab] = useState<SalesTab>('today');
   return (
@@ -159,6 +164,7 @@ function Sections({
           toModel={attritionModel}
           notes={attritionNotes}
         />
+        <ServiceSection section={sections?.service} department={department} />
         <SectionCard
           id="hrd-sales"
           title="Who's off in Sales"

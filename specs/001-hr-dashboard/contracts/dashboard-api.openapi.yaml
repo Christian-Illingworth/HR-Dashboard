@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: HR Dashboard API
-  version: 0.1.0
+  version: 0.2.0
   description: |
     The back end the SPFx web part calls (research R3). Served by the Azure Function app.
     Every operation requires an Entra ID access token for the "HR Dashboard API" app
@@ -166,7 +166,7 @@ components:
             departmentHistoryStartMonth: { type: [string, 'null'], description: Department and role values before this month are the earliest known (D3). }
         sections:
           type: object
-          required: [kpis, leave, sickness, absence, attrition, salesAbsences]
+          required: [kpis, leave, sickness, absence, attrition, salesAbsences, service]
           properties:
             kpis: { $ref: '#/components/schemas/KpisSection' }
             leave: { $ref: '#/components/schemas/LeaveSection' }
@@ -174,6 +174,7 @@ components:
             absence: { $ref: '#/components/schemas/AbsenceSection' }
             attrition: { $ref: '#/components/schemas/AttritionSection' }
             salesAbsences: { $ref: '#/components/schemas/SalesSection' }
+            service: { $ref: '#/components/schemas/ServiceSection' }
 
     SectionStatus:
       type: string
@@ -355,3 +356,54 @@ components:
             part: { type: string, enum: [FullDay, FirstHalf, SecondHalf, Time] }
         returnDate: { type: [string, 'null'], format: date, description: null → "Not yet known". }
         status: { type: string, enum: [Approved, Pending] }
+
+    ServiceSection:
+      description: >
+        M17 length of service and M18 work anniversaries (feature 002), for current staff in the
+        department and role filter. Always relative to today, whatever month is picked (002 FR-012).
+        Carries no start dates and no per-person service figures (002 FR-016, FR-017).
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/SectionStatus' }
+        message: { type: string, description: '"No staff in this group" when status is empty.' }
+        data:
+          type: object
+          additionalProperties: false
+          required: [averageYears, medianYears, firstYear, bands, anniversaries]
+          properties:
+            averageYears: { type: number, description: Years to 1 dp. }
+            medianYears: { type: number, description: Years to 1 dp. }
+            firstYear: { type: integer, minimum: 0 }
+            bands:
+              type: array
+              minItems: 6
+              maxItems: 6
+              items:
+                type: object
+                additionalProperties: false
+                required: [band, label, count]
+                properties:
+                  band: { type: string, enum: [under1, y1, y2, y3, y4, y5plus] }
+                  label: { type: string, description: 'For example "Under 1 yr", "1–2 yrs", "5+ yrs".' }
+                  count: { type: integer, minimum: 0 }
+            anniversaries:
+              type: object
+              additionalProperties: false
+              required: [enabled, from, to, entries]
+              properties:
+                enabled: { type: boolean, description: False while the AnniversaryNames setting is Off; entries is then empty. }
+                from: { type: string, format: date, description: Today. }
+                to: { type: string, format: date, description: Today plus 3 months, clamped to the month's last day. }
+                entries: { type: array, items: { $ref: '#/components/schemas/AnniversaryEntry' } }
+
+    AnniversaryEntry:
+      type: object
+      additionalProperties: false
+      required: [name, role, date, years, milestone]
+      properties:
+        name: { type: [string, 'null'], description: Given and family name; null when BrightHR has none. }
+        role: { type: string }
+        date: { type: string, format: date }
+        years: { type: integer, minimum: 1 }
+        milestone: { type: boolean, description: True when years is a multiple of 5. }

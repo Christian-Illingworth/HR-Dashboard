@@ -46,6 +46,49 @@
   .hrd-kpis .kpi-mini:nth-child(-n+2) { border-top: none; }
 }
 
+/* ── Length of service (feature 002) ──
+   Three short figures stay in one row at every width (the kit's viewport rule would make it 2 + 1).
+   Bands and anniversaries sit side by side when there's room, stacked below that. */
+.hrd-service-sub { margin: calc(-1 * var(--sp-2)) 0 var(--sp-3); }
+.kpi-strip.hrd-service-figures { --cols: 3; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: var(--sp-4); }
+.hrd-service-figures .kpi-mini + .kpi-mini { border-left: 1px solid var(--bdr); }
+.hrd-service-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); }
+/* Band names are short, so they keep their full width and the bar takes the rest. */
+.bar-list.hrd-service-bands { grid-template-columns: max-content minmax(56px, 1fr) auto; align-content: start; }
+.hrd-service-figures .kpi-value { white-space: nowrap; }
+@container (min-width: 720px) {
+  .hrd-service-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container (max-width: 420px) {
+  .hrd-service-figures .kpi-mini { padding: var(--sp-2) var(--sp-3); }
+  .hrd-service-figures .kpi-value { font-size: var(--fs-lg); }
+}
+.hrd-subhead { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); font-weight: var(--fw-semibold); color: var(--txt); }
+.hrd-anniversaries-note { margin: 0; }
+/* The list scrolls inside the card (002 FR-010); it's a focusable region so keyboards can scroll it. */
+.hrd-anniversaries-scroll {
+  max-height: 260px; overflow-y: auto; overscroll-behavior: contain;
+  border: 1px solid var(--bdr); border-radius: var(--rsm);
+}
+.hrd-anniversaries-scroll:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--teal); }
+.hrd-anniversaries-list { list-style: none; margin: 0; padding: 0; }
+/* The kit's .list-row is a clickable row; these are static. */
+.list-row.hrd-anniversary {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-2);
+  cursor: default; border-left: none; padding: var(--sp-2) var(--sp-3);
+}
+.list-row.hrd-anniversary:hover { background: none; }
+.list-row.hrd-anniversary:last-child { border-bottom: none; }
+.hrd-anniversary .badge { min-width: 52px; justify-content: center; }
+.hrd-anniversary-who { flex: 1; min-width: 0; font-size: var(--fs-sm); color: var(--txt2); }
+.hrd-anniversary-who strong { color: var(--txt); font-weight: var(--fw-semibold); }
+.hrd-anniversary-date { margin-left: auto; font-size: var(--fs-xs); color: var(--txt2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* A narrow row (each kit .list-row is a size container): badges and date on the first line, name
+   and role on the second. */
+@container (max-width: 420px) {
+  .hrd-anniversary-who { order: 3; flex: 1 1 100%; }
+}
+
 /* ── Section states ── */
 .hrd-skeleton-chart { height: 220px; border-radius: var(--r); }
 .hrd-state { min-height: 120px; }

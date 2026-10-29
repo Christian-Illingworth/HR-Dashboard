@@ -105,6 +105,8 @@ export interface Settings {
   absenceTypeMap: AbsenceTypeMapping[];
   pregnancyRelatedReasons: string[];
   standardDayHours: number;
+  /** Feature 002 FR-014: store and show names for all current staff. Off unless "On". */
+  anniversaryNames: boolean;
 }
 
 /** Everything the dashboard reads from storage. */

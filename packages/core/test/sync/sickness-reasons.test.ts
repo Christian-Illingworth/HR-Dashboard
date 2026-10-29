@@ -7,7 +7,7 @@ import type { EmployeeRecord, Settings } from '../../src/records/types';
 import { sampleInput } from '../sampleInput';
 import { buildRecords } from '../../src/sync/buildRecords';
 
-const settings: Settings = { salesDepartments: ['Sales'], absenceTypeMap: [], pregnancyRelatedReasons: [], standardDayHours: 7.5 };
+const settings: Settings = { salesDepartments: ['Sales'], absenceTypeMap: [], pregnancyRelatedReasons: [], standardDayHours: 7.5, anniversaryNames: false };
 const person = (employeeId: string, department: string, endDate: string | null = null): EmployeeRecord => ({
   employeeId,
   startDate: '2020-01-06',

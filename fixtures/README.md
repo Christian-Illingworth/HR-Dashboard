@@ -36,11 +36,11 @@ Synthetic data for tests, the UI harness and the web part's mock-data mode.
 |---|---|---|---|---|
 | E01 | Amelia Hart | Sales | Sales Team Manager | 2019-03-04 → |
 | E02 | Ben Okafor | Sales | Energy Analyst | 2021-06-01 → |
-| E03 | Chloe Patel | Sales | Senior Energy Analyst | 2020-09-14 → |
+| E03 | Chloe Patel | Sales | Senior Energy Analyst | 2021-12-01 → |
 | E04 | Daniel Reyes | Sales (Analysis until 2026-07) | Energy Analyst | 2024-01-08 → |
 | E05 | Ella Novak | Pricing | Senior Pricing Specialist | 2018-05-21 → |
 | E06 | Finn Gallagher | Pricing | Senior Pricing Specialist | 2022-02-01 → |
-| E07 | Grace Lindqvist | Analysis | Senior Energy Analyst | 2017-11-06 → |
+| E07 | Grace Lindqvist | Analysis | Senior Energy Analyst | 2016-11-06 → |
 | E08 | Harry Mensah | Analysis | Energy Analyst | 2023-04-03 → |
 | E09 | Isla Moreau | Analysis | Energy Analyst | 2025-02-10 → |
 | E10 | Jacob Ferreira | Operations | Energy Analyst | 2022-08-15 → |

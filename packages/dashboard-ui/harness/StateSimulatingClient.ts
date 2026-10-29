@@ -35,7 +35,7 @@ function adjust(state: SimulatedState, d: DashboardResponse): DashboardResponse 
       return {
         ...d,
         freshness: { ...d.freshness, noDataYet: true, lastSuccessAt: null, isStale: false, staleReason: null },
-        sections: { kpis: empty, leave: empty, sickness: empty, absence: empty, attrition: empty, salesAbsences: empty },
+        sections: { kpis: empty, leave: empty, sickness: empty, absence: empty, attrition: empty, salesAbsences: empty, service: empty },
       };
     case 'staleFailed':
       return {
@@ -53,7 +53,7 @@ function adjust(state: SimulatedState, d: DashboardResponse): DashboardResponse 
         freshness: { ...d.freshness, isStale: true, staleReason: 'overnightMissed', lastSuccessAt: '2026-10-26T19:00:00.000Z' },
       };
     case 'sectionError':
-      return { ...d, sections: { ...d.sections, sickness: { status: 'error', message: 'This section could not be calculated.' } } };
+      return { ...d, sections: { ...d.sections, sickness: { status: 'error', message: 'This section could not be calculated.' }, service: { status: 'error', message: 'This section could not be calculated.' } } };
     default:
       return d;
   }

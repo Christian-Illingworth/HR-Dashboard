@@ -39,9 +39,32 @@ describe('records builder: what is kept', () => {
     }
   });
 
-  it('keeps names only for Sales-department employees', () => {
-    expect(emp(id(1))).toMatchObject({ givenName: 'Amelia', familyName: 'Hart', department: 'Sales' });
-    expect(emp(id(5))).toMatchObject({ givenName: null, familyName: null, department: 'Pricing' });
+  it('with AnniversaryNames off, keeps names only for Sales-department employees', () => {
+    const off = buildRecords({ employees, absencesByEmployee, entraUsers, settings: { ...settings, anniversaryNames: false }, today: '2026-10-27' });
+    const offEmp = (employeeId: string) => off.employees.find((e) => e.employeeId === employeeId)!;
+    expect(offEmp(id(1))).toMatchObject({ givenName: 'Amelia', familyName: 'Hart', department: 'Sales' });
+    expect(offEmp(id(5))).toMatchObject({ givenName: null, familyName: null, department: 'Pricing' });
+    expect(off.employees.filter((e) => e.givenName !== null).map((e) => e.department)).toEqual(['Sales', 'Sales', 'Sales', 'Sales', 'Sales']);
+  });
+
+  it('with AnniversaryNames on, keeps names for everyone employed on the sync date (002 FR-014)', () => {
+    expect(settings.anniversaryNames).toBe(true);
+    expect(emp(id(5))).toMatchObject({ givenName: 'Ella', familyName: 'Novak', department: 'Pricing' });
+    expect(emp(id(12))).toMatchObject({ givenName: 'Leo', familyName: 'Brennan' }); // last day is today
+    expect(emp(id(15))).toMatchObject({ givenName: null, familyName: null }); // starts 2026-11-16: not yet
+  });
+
+  it('clears the names of non-Sales leavers, but Sales leavers keep the 001 rule (002 FR-015)', () => {
+    expect(emp(T(1))).toMatchObject({ givenName: null, familyName: null }); // Analysis, left 2026-02-27
+    expect(emp(T(2))).toMatchObject({ givenName: 'Quinn', familyName: 'Adeyemi', department: 'Sales' }); // Sales leaver
+  });
+
+  it('a name kept while on is cleared at the next sync after the setting is turned off', () => {
+    const before = buildRecords({ employees, absencesByEmployee, entraUsers, settings, today: '2026-10-27' });
+    const after = buildRecords({ employees, absencesByEmployee, entraUsers, settings: { ...settings, anniversaryNames: false }, today: '2026-10-28' });
+    const ella = (out: typeof before) => out.employees.find((e) => e.employeeId === id(5))!;
+    expect(ella(before).givenName).toBe('Ella');
+    expect(ella(after)).toMatchObject({ givenName: null, familyName: null });
   });
 
   it('matches Entra users on mail or userPrincipalName, ignoring case', () => {

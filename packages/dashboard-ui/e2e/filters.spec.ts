@@ -51,3 +51,27 @@ test('filters work with the keyboard alone, and pass axe with a list open', asyn
   await expect(kpi(page, 'Headcount')).toContainText('2');
   await expectNoHorizontalScroll(page);
 });
+
+// Feature 002 US3. Expected values: fixtures/expected/service.md (worked out by hand).
+test('length of service follows department and role, but not the month', async ({ page }) => {
+  await openHarness(page);
+  const service = page.getByRole('region', { name: 'Length of service' });
+  const anniversaries = service.getByRole('region', { name: 'Work anniversaries' }).getByRole('listitem');
+
+  await pick(page, /^Department/, 'Sales');
+  await expect(service.getByText('Current staff · from BrightHR start dates · Sales')).toBeVisible();
+  await expect(service.getByRole('group', { name: 'Length of service figures' })).toContainText('Average5.2 yrs');
+  await expect(anniversaries).toHaveCount(2);
+  await expect(anniversaries.nth(0)).toContainText('Chloe Patel');
+  await expect(anniversaries.nth(1)).toContainText('Daniel Reyes');
+
+  await pick(page, /^Month/, 'May 2026');
+  await expect(page.getByText(/Charts show Feb 2026 to Aug 2026/)).toBeVisible();
+  await expect(service.getByRole('group', { name: 'Length of service figures' })).toContainText('Average5.2 yrs');
+  await expect(anniversaries).toHaveCount(2);
+
+  await pick(page, /^Role/, 'Senior Pricing Specialist');
+  await expect(service.getByText('No staff in this group')).toBeVisible();
+  await expectNoAxeViolations(page);
+  await expectNoHorizontalScroll(page);
+});

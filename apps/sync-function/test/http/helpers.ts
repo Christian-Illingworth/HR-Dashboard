@@ -37,9 +37,9 @@ export async function testAuth() {
 }
 
 /** A file store filled by one mock sync at `now` (the "just launched" case: 90 days of history). */
-export async function syncedStore(now = '2026-10-27T10:00:00.000Z') {
+export async function syncedStore(now = '2026-10-27T10:00:00.000Z', settings: Record<string, string> = rawSettings) {
   const store = new FileStore(mkdtempSync(join(tmpdir(), 'hrd-http-')));
-  store.writeSettings(rawSettings);
+  store.writeSettings(settings);
   await runSync({
     brightHr: new MockBrightHrClient({ fixturesDir, now: () => now }),
     directory: new MockDirectoryClient({ fixturesDir }),
